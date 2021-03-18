@@ -18,8 +18,8 @@ struct Image
 {
     void* pixels;
     ivec2 size;
-    i32   nchannels;
-    i32   stride;
+    int   nchannels;
+    int   stride;
 };
 
 struct Texture
@@ -33,7 +33,7 @@ struct Program
     GLuint             handle;
     std::string        filepath;
     std::string        programName;
-    u64                lastWriteTimestamp; // What is this for?
+    uint64             lastWriteTimestamp; // What is this for?
 };
 
 enum Mode
@@ -45,7 +45,7 @@ enum Mode
 struct App
 {
     // Loop
-    f32  deltaTime;
+    float  deltaTime;
     bool isRunning;
 
     // Input
@@ -61,14 +61,14 @@ struct App
     std::vector<Program>  programs;
 
     // program indices
-    u32 texturedGeometryProgramIdx;
+    uint texturedGeometryProgramIdx;
     
     // texture indices
-    u32 diceTexIdx;
-    u32 whiteTexIdx;
-    u32 blackTexIdx;
-    u32 normalTexIdx;
-    u32 magentaTexIdx;
+    uint diceTexIdx;
+    uint whiteTexIdx;
+    uint blackTexIdx;
+    uint normalTexIdx;
+    uint magentaTexIdx;
 
     // Mode
     Mode mode;

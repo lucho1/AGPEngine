@@ -28,8 +28,8 @@
 #define WINDOW_HEIGHT 600
 
 #define GLOBAL_FRAME_ARENA_SIZE MB(16)
-u8* GlobalFrameArenaMemory = NULL;
-u32 GlobalFrameArenaHead = 0;
+unsigned char* GlobalFrameArenaMemory = NULL;
+uint GlobalFrameArenaHead = 0;
 
 void OnGlfwError(int errorCode, const char *errorMessage)
 {
@@ -195,9 +195,9 @@ int main()
         return -1;
     }
 
-    f64 lastFrameTime = glfwGetTime();
+    double lastFrameTime = glfwGetTime();
 
-    GlobalFrameArenaMemory = (u8*)malloc(GLOBAL_FRAME_ARENA_SIZE);
+    GlobalFrameArenaMemory = (unsigned char*)malloc(GLOBAL_FRAME_ARENA_SIZE);
 
     Init(&app);
 
@@ -215,11 +215,11 @@ int main()
 
         // Clear input state if required by ImGui
         if (ImGui::GetIO().WantCaptureKeyboard)
-            for (u32 i = 0; i < KEY_COUNT; ++i)
+            for (uint i = 0; i < KEY_COUNT; ++i)
                 app.input.keys[i] = BUTTON_IDLE;
 
         if (ImGui::GetIO().WantCaptureMouse)
-            for (u32 i = 0; i < MOUSE_BUTTON_COUNT; ++i)
+            for (uint i = 0; i < MOUSE_BUTTON_COUNT; ++i)
                 app.input.mouseButtons[i] = BUTTON_IDLE;
 
         // Update
@@ -227,12 +227,12 @@ int main()
 
         // Transition input key/button states
         if (!ImGui::GetIO().WantCaptureKeyboard)
-            for (u32 i = 0; i < KEY_COUNT; ++i)
+            for (uint i = 0; i < KEY_COUNT; ++i)
                 if      (app.input.keys[i] == BUTTON_PRESS)   app.input.keys[i] = BUTTON_PRESSED;
                 else if (app.input.keys[i] == BUTTON_RELEASE) app.input.keys[i] = BUTTON_IDLE;
 
         if (!ImGui::GetIO().WantCaptureMouse)
-            for (u32 i = 0; i < MOUSE_BUTTON_COUNT; ++i)
+            for (uint i = 0; i < MOUSE_BUTTON_COUNT; ++i)
                 if      (app.input.mouseButtons[i] == BUTTON_PRESS)   app.input.mouseButtons[i] = BUTTON_PRESSED;
                 else if (app.input.mouseButtons[i] == BUTTON_RELEASE) app.input.mouseButtons[i] = BUTTON_IDLE;
 
@@ -254,8 +254,8 @@ int main()
         glfwSwapBuffers(window);
 
         // Frame time
-        f64 currentFrameTime = glfwGetTime();
-        app.deltaTime = (f32)(currentFrameTime - lastFrameTime);
+        double currentFrameTime = glfwGetTime();
+        app.deltaTime = (float)(currentFrameTime - lastFrameTime);
         lastFrameTime = currentFrameTime;
 
         // Reset frame allocator
@@ -274,113 +274,109 @@ int main()
     return 0;
 }
 
-u32 Strlen(const char* string)
+uint Strlen(const char* string)
 {
-    u32 len = 0;
-    while (*string++) len++;
+    uint len = 0;
+    while (*string++) ++len;
     return len;
 }
 
-void* PushSize(u32 byteCount)
+void* PushSize(uint byteCount)
 {
     ASSERT(GlobalFrameArenaHead + byteCount <= GLOBAL_FRAME_ARENA_SIZE,
            "Trying to allocate more temp memory than available");
 
-    u8* curPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
+    unsigned char* curPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
     GlobalFrameArenaHead += byteCount;
     return curPtr;
 }
 
-void* PushBytes(const void* bytes, u32 byteCount)
+void* PushBytes(const void* bytes, uint byteCount)
 {
     ASSERT(GlobalFrameArenaHead + byteCount <= GLOBAL_FRAME_ARENA_SIZE,
             "Trying to allocate more temp memory than available");
 
-    u8* srcPtr = (u8*)bytes;
-    u8* curPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
-    u8* dstPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
+    unsigned char* srcPtr = (unsigned char*)bytes;
+    unsigned char* curPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
+    unsigned char* dstPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
     GlobalFrameArenaHead += byteCount;
     while (byteCount--) *dstPtr++ = *srcPtr++;
     return curPtr;
 }
 
-u8* PushChar(u8 c)
+unsigned char* PushChar(unsigned char c)
 {
     ASSERT(GlobalFrameArenaHead + 1 <= GLOBAL_FRAME_ARENA_SIZE,
             "Trying to allocate more temp memory than available");
-    u8* ptr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
+    unsigned char* ptr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
     GlobalFrameArenaHead++;
     *ptr = c;
     return ptr;
 }
 
-String MakeString(const char *cstr)
+std::string MakeString(const char *cstr)
 {
-    String str = {};
-    str.len = Strlen(cstr);
-    str.str = (char*)PushBytes(cstr, str.len);
-              PushChar(0);
+    char* str = (char*)PushBytes(cstr, Strlen(cstr));
+    PushChar(0);
     return str;
 }
 
-String MakePath(String dir, String filename)
+std::string MakePath(const std::string& dir, const std::string& filename)
 {
-    String str = {};
-    str.len = dir.len + filename.len + 1;
-    str.str = (char*)PushBytes(dir.str, dir.len);
-              PushChar('/');
-              PushBytes(filename.str, filename.len);
-              PushChar(0);
+    char* str = (char*)PushBytes(dir.c_str(), dir.size());
+    PushChar('/');
+    PushBytes(filename.c_str(), filename.size());
+    PushChar(0);
+
     return str;
 }
 
-String GetDirectoryPart(String path)
+std::string GetDirectoryPart(const std::string& path)
 {
-    String str = {};
-    i32 len = (i32)path.len;
-    while (len >= 0) {
-        len--;
-        if (path.str[len] == '/' || path.str[len] == '\\')
+    size_t length = path.size();
+    while (length >= 0)
+    {
+        length--;
+        if (path[length] == '/' || path[length] == '\\')
             break;
     }
-    str.len = (u32)len;
-    str.str = (char*)PushBytes(path.str, str.len);
-              PushChar(0);
+    
+    char* str = (char*)PushBytes(path.c_str(), length);
+    PushChar(0);
+    
     return str;
 }
 
-String ReadTextFile(const char* filepath)
+std::string ReadTextFile(const char* filepath)
 {
-    String fileText = {};
-
     FILE* file = fopen(filepath, "rb");
+    std::string ret;
 
     if (file)
     {
         fseek(file, 0, SEEK_END);
-        fileText.len = ftell(file);
+        uint length = ftell(file);
         fseek(file, 0, SEEK_SET);
 
-        fileText.str = (char*)PushSize(fileText.len + 1);
-        fread(fileText.str, sizeof(char), fileText.len, file);
-        fileText.str[fileText.len] = '\0';
+        char* str = (char*)PushSize(length + 1);
+        fread(str, sizeof(char), length, file);
+        str[length] = '\0';
 
         fclose(file);
+        ret = str;
     }
     else
-    {
         ELOG("fopen() failed reading file %s", filepath);
-    }
 
-    return fileText;
+    return ret;
 }
 
-u64 GetFileLastWriteTimestamp(const char* filepath)
+uint64 GetFileLastWriteTimestamp(const char* filepath)
 {
 #ifdef _WIN32
     union Filetime2u64 {
         FILETIME filetime;
-        u64      u64time;
+        unsigned long long int      u64time;
     } conversor;
 
     WIN32_FILE_ATTRIBUTE_DATA Data;

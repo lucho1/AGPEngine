@@ -10,7 +10,7 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
-GLuint CreateProgramFromSource(String programSource, const char* shaderName)
+GLuint CreateProgramFromSource(const std::string& programSource, const char* shaderName)
 {
     GLchar  infoLogBuffer[1024] = {};
     GLsizei infoLogBufferSize = sizeof(infoLogBuffer);
@@ -27,25 +27,25 @@ GLuint CreateProgramFromSource(String programSource, const char* shaderName)
         versionString,
         shaderNameDefine,
         vertexShaderDefine,
-        programSource.str
+        programSource.c_str()
     };
     const GLint vertexShaderLengths[] = {
         (GLint) strlen(versionString),
         (GLint) strlen(shaderNameDefine),
         (GLint) strlen(vertexShaderDefine),
-        (GLint) programSource.len
+        (GLint) programSource.size()
     };
     const GLchar* fragmentShaderSource[] = {
         versionString,
         shaderNameDefine,
         fragmentShaderDefine,
-        programSource.str
+        programSource.c_str()
     };
     const GLint fragmentShaderLengths[] = {
         (GLint) strlen(versionString),
         (GLint) strlen(shaderNameDefine),
         (GLint) strlen(fragmentShaderDefine),
-        (GLint) programSource.len
+        (GLint) programSource.size()
     };
 
     GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
@@ -89,9 +89,9 @@ GLuint CreateProgramFromSource(String programSource, const char* shaderName)
     return programHandle;
 }
 
-u32 LoadProgram(App* app, const char* filepath, const char* programName)
+uint LoadProgram(App* app, const char* filepath, const char* programName)
 {
-    String programSource = ReadTextFile(filepath);
+    std::string programSource = ReadTextFile(filepath);
 
     Program program = {};
     program.handle = CreateProgramFromSource(programSource, programName);
@@ -152,9 +152,9 @@ GLuint CreateTexture2DFromImage(Image image)
     return texHandle;
 }
 
-u32 LoadTexture2D(App* app, const char* filepath)
+uint LoadTexture2D(App* app, const char* filepath)
 {
-    for (u32 texIdx = 0; texIdx < app->textures.size(); ++texIdx)
+    for (uint texIdx = 0; texIdx < app->textures.size(); ++texIdx)
         if (app->textures[texIdx].filepath == filepath)
             return texIdx;
 
@@ -166,7 +166,7 @@ u32 LoadTexture2D(App* app, const char* filepath)
         tex.handle = CreateTexture2DFromImage(image);
         tex.filepath = filepath;
 
-        u32 texIdx = app->textures.size();
+        uint texIdx = app->textures.size();
         app->textures.push_back(tex);
 
         FreeImage(image);
