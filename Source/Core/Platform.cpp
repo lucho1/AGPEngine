@@ -1,5 +1,5 @@
 //
-// platform.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// Platform.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // The platform layer is in charge to create the environment necessary so the engine disposes of what
 // it needs in order to create the application (e.g. window, graphics context, I/O, allocators, etc).
 //
@@ -15,7 +15,7 @@
 #include <unistd.h>
 #endif
 
-#include "engine.h"
+#include "Engine.h"
 
 #include <GLFW/glfw3.h>
 #include <stdio.h>

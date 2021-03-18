@@ -1,5 +1,5 @@
 //
-// platform.h : This file contains basic platform types and tools. Also, it exposes
+// Platform.h : This file contains basic platform types and tools. Also, it exposes
 // the necessary functions for the Engine to communicate with the Platform layer.
 //
 

@@ -1,10 +1,10 @@
 //
-// engine.h: This file contains the types and functions relative to the engine.
+// Engine.h: This file contains the types and functions relative to the engine.
 //
 
 #pragma once
 
-#include "platform.h"
+#include "Platform.h"
 #include <glad/glad.h>
 
 typedef glm::vec2  vec2;

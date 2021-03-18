@@ -1,11 +1,11 @@
 //
-// engine.cpp : Put all your graphics stuff in this file. This is kind of the graphics module.
+// Engine.cpp : Put all your graphics stuff in this file. This is kind of the graphics module.
 // In here, you should type all your OpenGL commands, and you can also type code to handle
 // input platform events (e.g to move the camera or react to certain shortcuts), writing some
 // graphics related GUI options, and so on.
 //
 
-#include "engine.h"
+#include "Engine.h"
 #include <imgui.h>
 #include <stb_image.h>
 #include <stb_image_write.h>

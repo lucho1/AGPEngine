@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\engine.cpp" />
-    <ClCompile Include="Source\platform.cpp" />
+    <ClCompile Include="Source\Core\Engine.cpp" />
+    <ClCompile Include="Source\Core\Platform.cpp" />
     <ClCompile Include="ThirdParty\glad\include\glad\glad.c" />
     <ClCompile Include="ThirdParty\glm\include\glm\detail\glm.cpp" />
     <ClCompile Include="ThirdParty\imgui-docking\imgui.cpp" />
@@ -25,8 +25,8 @@
     <ClCompile Include="ThirdParty\stb\stb.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\engine.h" />
-    <ClInclude Include="Source\platform.h" />
+    <ClInclude Include="Source\Core\Engine.h" />
+    <ClInclude Include="Source\Core\Platform.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\ai_assert.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\anim.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\camera.h" />
