@@ -2,7 +2,9 @@
 #define _PLATFORM_H_
 
 #include "Globals.h"
-
+#include "Engine.h"
+//#include "Window.h"
+//#include <GLFW/glfw3.h> //TODO: Delete this line
 
 // Platform.h : This file contains basic platform types and tools. Also, it exposes
 // the necessary functions for the Engine to communicate with the Platform layer.
@@ -25,17 +27,16 @@ std::string ReadTextFile(const char *filepath);
  */
 uint64 GetFileLastWriteTimestamp(const char *filepath);
 
-/**
- * It logs a string to whichever outputs are configured in the platform layer.
- * By default, the string is printed in the output console of VisualStudio.
- */
-void LogString(const char* str);
+void* GetApplicationWindow();
+void* GetImGuiLayer();
+
 
 #define ILOG(...)                 \
 {                                 \
 char logBuffer[1024] = {};        \
 sprintf(logBuffer, __VA_ARGS__);  \
-LogString(logBuffer);             \
+}
+//LogString(logBuffer);             \
 }
 
 #define ELOG(...) ILOG(__VA_ARGS__)
@@ -44,11 +45,6 @@ LogString(logBuffer);             \
 
 #define ASSERT(condition, message) assert((condition) && message)
 
-#define KB(count) (1024*(count))
-#define MB(count) (1024*KB(count))
-#define GB(count) (1024*MB(count))
 
-#define PI  3.14159265359f
-#define TAU 6.28318530718f
 
 #endif //_PLATFORM_H_

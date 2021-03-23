@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Globals.h"
 #include "Platform.h"
 #include <glad/glad.h>
 
@@ -47,9 +48,6 @@ struct App
     // Loop
     float  deltaTime;
     bool isRunning;
-
-    // Input
-    Input input;
 
     // Graphics
     char gpuName[64];

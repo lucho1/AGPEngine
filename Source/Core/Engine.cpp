@@ -192,9 +192,9 @@ void Init(App* app)
 
 void Gui(App* app)
 {
-    ImGui::Begin("Info");
-    ImGui::Text("FPS: %f", 1.0f/app->deltaTime);
-    ImGui::End();
+    //ImGui::Begin("Info");
+    //ImGui::Text("FPS: %f", 1.0f/app->deltaTime);
+    //ImGui::End();
 }
 
 void Update(App* app)

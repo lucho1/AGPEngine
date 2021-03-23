@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -12,7 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Engine.cpp" />
+    <ClCompile Include="Source\Core\ImGuiLayer.cpp" />
+    <ClCompile Include="Source\Core\Input.cpp" />
     <ClCompile Include="Source\Core\Platform.cpp" />
+    <ClCompile Include="Source\Core\Window.cpp" />
     <ClCompile Include="ThirdParty\glad\include\glad\glad.c" />
     <ClCompile Include="ThirdParty\glm\include\glm\detail\glm.cpp" />
     <ClCompile Include="ThirdParty\imgui-docking\imgui.cpp" />
@@ -27,7 +30,10 @@
   <ItemGroup>
     <ClInclude Include="Source\Core\Engine.h" />
     <ClInclude Include="Source\Core\Globals.h" />
+    <ClInclude Include="Source\Core\ImGuiLayer.h" />
+    <ClInclude Include="Source\Core\Input.h" />
     <ClInclude Include="Source\Core\Platform.h" />
+    <ClInclude Include="Source\Core\Window.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\ai_assert.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\anim.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\camera.h" />
