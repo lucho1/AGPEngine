@@ -5,7 +5,6 @@
 #pragma once
 
 #include "Globals.h"
-#include "Platform.h"
 #include <glad/glad.h>
 
 typedef glm::vec2  vec2;
@@ -91,3 +90,5 @@ void Update(App* app);
 
 void Render(App* app);
 
+void* GetApplicationWindow();
+void* GetImGuiLayer();
