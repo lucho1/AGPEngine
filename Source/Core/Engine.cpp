@@ -50,7 +50,12 @@ int main()
     {
         // Tell GLFW to call platform callbacks
         glfwPollEvents();
-        m_ImGuiLayer->Update(app);
+
+        // ImGui Begin
+        m_ImGuiLayer->Begin(app);
+
+        // ImGui Prepare Render
+        m_ImGuiLayer->PrepareRender(app);
 
         // Clear input state if required by ImGui
         Input::ResetInput();
@@ -64,7 +69,7 @@ int main()
         // Render
         Render(&app);
 
-        // ImGui Render
+        // ImGui Render, after Input Update
         m_ImGuiLayer->Render();
 
         // Present image on screen
@@ -295,6 +300,9 @@ void Update(App* app)
 
 void Render(App* app)
 {
+    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     switch (app->mode)
     {
         case Mode_TexturedQuad:

@@ -12,7 +12,8 @@ public:
 	~ImGuiLayer();
 
 	void Init(const Window* window);
-	void Update(const App& app);
+	void Begin(const App& app);
+	void PrepareRender(const App& app);
 	void Render();
 
 	bool CapturingKeyboard() const;
