@@ -51,22 +51,21 @@ static void LogString(const char* str)
 
 
 // --- Conversions ---
-#define KB(count) (1024*(count))
-#define MB(count) (1024*KB(count))
-#define GB(count) (1024*MB(count))
+#define KBTOBYTE(val) (1024*(val))
+#define MBTOBYTE(val) (1024*KBTOBYTE(val))
 
 #define PI  3.14159265359f
 #define TAU 6.28318530718f
 
 
 // --- Typedefs ---
-typedef unsigned int uint;
-typedef unsigned long long int uint64;
-typedef unsigned short     uint16_t;
+typedef unsigned int            uint;
+typedef unsigned long long int  uint64;
+typedef unsigned short          uint16_t;
 
 
 // --- Memory Pool ---
-#define GLOBAL_FRAME_ARENA_SIZE MB(16)
+#define GLOBAL_FRAME_ARENA_SIZE MBTOBYTE(16)
 static unsigned char* GlobalFrameArenaMemory = NULL;
 static uint GlobalFrameArenaHead = 0;
 
