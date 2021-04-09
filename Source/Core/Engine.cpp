@@ -6,6 +6,7 @@
 //
 
 #include "Engine.h"
+#include "Utils/FileStringUtils.h"
 #include <imgui.h>
 #include <stb_image.h>
 #include <stb_image_write.h>
@@ -55,7 +56,7 @@ GLuint CreateProgramFromSource(const std::string& programSource, const char* sha
     if (!success)
     {
         glGetShaderInfoLog(vshader, infoLogBufferSize, &infoLogSize, infoLogBuffer);
-        ELOG("glCompileShader() failed with vertex shader %s\nReported message:\n%s\n", shaderName, infoLogBuffer);
+        ENGINE_LOG("glCompileShader() failed with vertex shader %s\nReported message:\n%s\n", shaderName, infoLogBuffer);
     }
 
     GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -65,7 +66,7 @@ GLuint CreateProgramFromSource(const std::string& programSource, const char* sha
     if (!success)
     {
         glGetShaderInfoLog(fshader, infoLogBufferSize, &infoLogSize, infoLogBuffer);
-        ELOG("glCompileShader() failed with fragment shader %s\nReported message:\n%s\n", shaderName, infoLogBuffer);
+        ENGINE_LOG("glCompileShader() failed with fragment shader %s\nReported message:\n%s\n", shaderName, infoLogBuffer);
     }
 
     GLuint programHandle = glCreateProgram();
@@ -76,7 +77,7 @@ GLuint CreateProgramFromSource(const std::string& programSource, const char* sha
     if (!success)
     {
         glGetProgramInfoLog(programHandle, infoLogBufferSize, &infoLogSize, infoLogBuffer);
-        ELOG("glLinkProgram() failed with program %s\nReported message:\n%s\n", shaderName, infoLogBuffer);
+        ENGINE_LOG("glLinkProgram() failed with program %s\nReported message:\n%s\n", shaderName, infoLogBuffer);
     }
 
     glUseProgram(0);
@@ -91,13 +92,13 @@ GLuint CreateProgramFromSource(const std::string& programSource, const char* sha
 
 uint LoadProgram(App* app, const char* filepath, const char* programName)
 {
-    std::string programSource = ReadTextFile(filepath);
+    std::string programSource = FileUtils::ReadTextFile(filepath);
 
     Program program = {};
     program.handle = CreateProgramFromSource(programSource, programName);
     program.filepath = filepath;
     program.programName = programName;
-    program.lastWriteTimestamp = GetFileLastWriteTimestamp(filepath);
+    program.lastWriteTimestamp = FileUtils::GetFileLastWriteTimestamp(filepath);
     app->programs.push_back(program);
 
     return app->programs.size() - 1;
@@ -114,7 +115,7 @@ Image LoadImage(const char* filename)
     }
     else
     {
-        ELOG("Could not open file %s", filename);
+        ENGINE_LOG("Could not open file %s", filename);
     }
     return img;
 }
@@ -134,7 +135,7 @@ GLuint CreateTexture2DFromImage(Image image)
     {
         case 3: dataFormat = GL_RGB; internalFormat = GL_RGB8; break;
         case 4: dataFormat = GL_RGBA; internalFormat = GL_RGBA8; break;
-        default: ELOG("LoadTexture2D() - Unsupported number of channels");
+        default: ENGINE_LOG("LoadTexture2D() - Unsupported number of channels");
     }
 
     GLuint texHandle;

@@ -42,13 +42,13 @@ void ImGuiLayer::Init(const Window* window)
 
     if (!ImGui_ImplGlfw_InitForOpenGL(&window->GetWindow(), true))
     {
-        ELOG("ImGui_ImplGlfw_InitForOpenGL() failed\n");
+        ENGINE_LOG("ImGui_ImplGlfw_InitForOpenGL() failed\n");
         return;
     }
 
     if (!ImGui_ImplOpenGL3_Init())
     {
-        ELOG("Failed to initialize ImGui OpenGL wrapper\n");
+        ENGINE_LOG("Failed to initialize ImGui OpenGL wrapper\n");
         return;
     }
 }

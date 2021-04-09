@@ -1,6 +1,9 @@
 #ifndef _GLOBALS_H_
 #define _GLOBALS_H_
 
+
+// --- Standard Definitions & Includes ---
+#pragma warning(disable : 4267) // conversions, possible loss of data
 #define _CRT_SECURE_NO_WARNINGS
 
 #ifdef _WIN32
@@ -14,6 +17,7 @@
 #endif
 
 #include <stdio.h>
+#include <iostream>
 
 #include <assert.h>
 #include <math.h>
@@ -26,9 +30,27 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
+// --- Engine Definitions ---
+#define ASSERT(condition, message) assert((condition) && message)
+#define ARRAY_COUNT(array) (sizeof(array)/sizeof(array[0]))
 
-#pragma warning(disable : 4267) // conversion from X to Y, possible loss of data
+// Logs string to outputs configured in platform layer & engine console. By default, string is printed in the output console of VisualStudio
+static void LogString(const char* str)
+{
+	std::cout << str << std::endl;
+    #ifdef _WIN32
+        OutputDebugStringA(str);
+        OutputDebugStringA("\n");
+    #else
+        fprintf(stderr, "%s\n", str);
+    #endif
+}
 
+#define ILOG(...) { char logBuffer[1024] = {}; sprintf(logBuffer, __VA_ARGS__); LogString(logBuffer); }
+#define ENGINE_LOG(...) ILOG(__VA_ARGS__)
+
+
+// --- Conversions ---
 #define KB(count) (1024*(count))
 #define MB(count) (1024*KB(count))
 #define GB(count) (1024*MB(count))
@@ -37,30 +59,15 @@
 #define TAU 6.28318530718f
 
 
+// --- Typedefs ---
 typedef unsigned int uint;
 typedef unsigned long long int uint64;
 typedef unsigned short     uint16_t;
 
-/**
- * It logs a string to whichever outputs are configured in the platform layer.
- * By default, the string is printed in the output console of VisualStudio.
- */
-//void LogString(const char* str)
-//{
-//#ifdef _WIN32
-//    OutputDebugStringA(str);
-//    OutputDebugStringA("\n");
-//#else
-//    fprintf(stderr, "%s\n", str);
-//#endif
-//}
 
-
-
-
-//#define GLOBAL_POOL_SIZE MB(16)
-//unsigned char* GlobalPoolMemory = NULL;
-//uint GlobalPoolHead = 0;
-
+// --- Memory Pool ---
+#define GLOBAL_FRAME_ARENA_SIZE MB(16)
+static unsigned char* GlobalFrameArenaMemory = NULL;
+static uint GlobalFrameArenaHead = 0;
 
 #endif //_GLOBALS_H_

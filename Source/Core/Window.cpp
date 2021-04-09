@@ -5,7 +5,7 @@
 
 static void ErrorCallback(int error_code, const char* error_msg)
 {
-    ELOG("GLFW Error: %s (%i)", error_msg, error_code);
+    ENGINE_LOG("GLFW Error: %s (%i)", error_msg, error_code);
 }
 
 
@@ -14,7 +14,7 @@ static void ErrorCallback(int error_code, const char* error_msg)
 Window::~Window()
 {
     glfwDestroyWindow(m_Window);
-    ELOG("Terminating GLFW");
+    ENGINE_LOG("Terminating GLFW");
     glfwTerminate();
 }
 
@@ -24,7 +24,7 @@ void Window::Init(App& app)
     glfwSetErrorCallback(ErrorCallback);
     if (!glfwInit())
     {
-        ELOG("GLFW Initialization Failed\n");
+        ENGINE_LOG("GLFW Initialization Failed\n");
         return;
     }
     
@@ -44,7 +44,7 @@ void Window::Init(App& app)
 
     if (!m_Window)
     {
-        ELOG("glfwCreateWindow() failed\n");
+        ENGINE_LOG("glfwCreateWindow() failed\n");
         return;
     }
     
@@ -61,7 +61,7 @@ void Window::Init(App& app)
     // Load all OpenGL functions using the glfw loader function
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        ELOG("Failed to initialize OpenGL context\n");
+        ENGINE_LOG("Failed to initialize OpenGL context\n");
         return;
     }
 }
