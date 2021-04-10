@@ -14,28 +14,6 @@ typedef glm::ivec2 ivec2;
 typedef glm::ivec3 ivec3;
 typedef glm::ivec4 ivec4;
 
-struct Image
-{
-    void* pixels;
-    ivec2 size;
-    int   nchannels;
-    int   stride;
-};
-
-struct Texture
-{
-    GLuint      handle;
-    std::string filepath;
-};
-
-struct Program
-{
-    GLuint             handle;
-    std::string        filepath;
-    std::string        programName;
-    uint64             lastWriteTimestamp; // What is this for?
-};
-
 enum Mode
 {
     Mode_TexturedQuad,
@@ -54,8 +32,8 @@ struct App
 
     ivec2 displaySize;
 
-    std::vector<Texture>  textures;
-    std::vector<Program>  programs;
+    //std::vector<Texture>  textures;
+    //std::vector<Program>  programs;
 
     // program indices
     uint texturedGeometryProgramIdx;

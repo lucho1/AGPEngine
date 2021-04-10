@@ -38,7 +38,7 @@ void Window::Init(App& app)
     #endif
 
     // -- Window Creation --
-    ILOG("Creating Window '%s' of %ix%i\n", m_Name.c_str(), m_Width, m_Height);
+    ENGINE_LOG("Creating Window '%s' of %ix%i\n", m_Name.c_str(), m_Width, m_Height);
     m_Window = glfwCreateWindow(m_Width, m_Height, m_Name.c_str(), NULL, NULL);
 
     if (!m_Window)

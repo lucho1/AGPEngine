@@ -64,6 +64,18 @@ typedef unsigned long long int  uint64;
 typedef unsigned short          uint16_t;
 
 
+// --- Smart Ptrs ----
+template<typename T>
+using ScopePtr = std::unique_ptr<T>;
+template<typename T, typename ... Args>
+constexpr ScopePtr<T> CreateScopePtr(Args&& ... args) { return std::make_unique<T>(std::forward<Args>(args)...); }
+
+template<typename T>
+using Ref = std::shared_ptr<T>;
+template<typename T, typename ... Args>
+constexpr Ref<T> CreateRef(Args&& ... args) { return std::make_shared<T>(std::forward<Args>(args)...); }
+
+
 // --- Memory Pool ---
 #define GLOBAL_FRAME_ARENA_SIZE MBTOBYTE(16)
 static unsigned char* GlobalFrameArenaMemory = NULL;

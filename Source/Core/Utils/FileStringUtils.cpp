@@ -46,17 +46,17 @@ namespace FileUtils
     std::string FileUtils::ReadTextFile(const char* filepath)
     {
         FILE* file = fopen(filepath, "rb");
-         std::string ret;
+        std::string ret;
         if (file)
         {
             fseek(file, 0, SEEK_END);
             uint length = ftell(file);
             fseek(file, 0, SEEK_SET);
-
+            
             char* str = (char*)PushSize(length + 1);
             fread(str, sizeof(char), length, file);
             str[length] = '\0';
-
+            
             fclose(file);
             ret = str;
         }
