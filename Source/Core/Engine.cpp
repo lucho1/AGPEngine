@@ -143,21 +143,11 @@ int main()
 
 void Init(App* app)
 {
-    // TODO: Initialize your resources here!
-    // - vertex buffers
-    // - element/index buffers
-    // - vaos
-    // - programs (and retrieve uniform indices)
-    // - textures
-
     app->mode = Mode_TexturedQuad;
 }
 
 void Gui(App* app)
 {
-    //ImGui::Begin("Info");
-    //ImGui::Text("FPS: %f", 1.0f/app->deltaTime);
-    //ImGui::End();
 }
 
 void Update(App* app)
@@ -171,8 +161,6 @@ void Render(App* app)
     RenderCommand::Clear();
     RenderCommand::SetViewport(0, 0, app->displaySize.x, app->displaySize.y);
 
-    
-    //m_VArray->Bind();
     m_TextureShader->Bind();
     m_TestTexture->Bind();
     
