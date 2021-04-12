@@ -62,21 +62,13 @@ void ImGuiLayer::Begin(const App& app)
 }
 
 
-void ImGuiLayer::PrepareRender(const App& app)
-{
-    ImGui::Begin("Info");
-    ImGui::Text("FPS: %f", 1.0f / app.deltaTime);
-    ImGui::End();
-    ImGui::Render();
-}
-
-
 void ImGuiLayer::Render()
 {
     ImGuiIO& io = ImGui::GetIO();
     Window* window = (Window*)GetApplicationWindow();
-    
-    io.DisplaySize = ImVec2((float)window->GetWidth(), (float)window->GetHeight());
+    io.DisplaySize = ImVec2((float)window->GetWidth(), (float)window->GetHeight());    
+
+    ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

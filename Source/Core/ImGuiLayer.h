@@ -13,7 +13,6 @@ public:
 
 	void Init(const Window* window);
 	void Begin(const App& app);
-	void PrepareRender(const App& app);
 	void Render();
 
 	bool CapturingKeyboard() const;

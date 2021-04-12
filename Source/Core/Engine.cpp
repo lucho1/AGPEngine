@@ -116,7 +116,6 @@ int main()
 
         // ImGui Prepare Render
         Gui(&app);
-        m_ImGuiLayer->PrepareRender(app);
 
         // ImGui Render, after Input Update
         m_ImGuiLayer->Render();
@@ -149,14 +148,16 @@ void Init(App* app)
 
 void Gui(App* app)
 {
-    ImGui::Begin("Renderer Statistics");
+    ImGui::Begin("Info");
+    ImGui::Text("FPS: %f", 1.0f / app->deltaTime);
+    ImGui::End();
     
+    ImGui::Begin("Renderer Statistics");
     RendererStatistics stats = m_Renderer->GetStatistics();
     ImGui::Text("- Graphics by %s -", stats.GLVendor.c_str());
     ImGui::Text("Graphics Card:     %s", stats.GraphicsCard.c_str());
     ImGui::Text("OpenGL Version:    %i.%i (%s)", stats.OGL_MajorVersion, stats.OGL_MinorVersion, stats.GLVersion.c_str());
     ImGui::Text("Shading Version:   GLSL %s", stats.GLShadingVersion.c_str());
-    
     ImGui::End();
 }
 
