@@ -16,6 +16,7 @@ public:
 	// --- Class Methods ---
 	void Bind() const;
 	void Unbind() const;
+	void CheckLastModification();
 
 	// --- Getters ---
 	const std::string& GetName() const { return m_Name; }
@@ -41,7 +42,7 @@ private:
 
 	// --- Variables ---
 	uint m_ID = 0;
-	std::string m_Name = "unnamed";
+	std::string m_Name = "unnamed", m_Path = "unpathed";
 	uint64 m_LastModificationTimestamp = 0;
 
 	mutable std::unordered_map<std::string, int> m_UniformLocationCache;

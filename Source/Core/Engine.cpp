@@ -109,6 +109,9 @@ int main()
         // Update
         Update(&app);
 
+        // Shader hot-reload
+        m_TextureShader->CheckLastModification();
+
         // Render
         m_Renderer->BeginScene(glm::mat4(1.0f));
         Render(&app);

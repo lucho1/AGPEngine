@@ -37,6 +37,7 @@ Shader::Shader(const std::string& filepath)
 	
 	// -- File Last Modification Time --
 	m_LastModificationTimestamp = FileUtils::GetFileLastWriteTimestamp(filepath.c_str()); // If problems, try: std::filesystem::last_write_time(path);
+	m_Path = filepath;
 }
 
 Shader::~Shader()
@@ -52,6 +53,18 @@ void Shader::Bind() const
 void Shader::Unbind() const
 {
 	glUseProgram(0);
+}
+
+void Shader::CheckLastModification()
+{
+	uint64 last_time = FileUtils::GetFileLastWriteTimestamp(m_Path.c_str());
+	if (last_time > m_LastModificationTimestamp)
+	{
+		CompileShader(PreProcessShader(ReadShaderFile(m_Path)));
+		std::filesystem::path path = m_Path;
+		m_Name = path.stem().string();
+		m_LastModificationTimestamp = last_time; // If problems, try: std::filesystem::last_write_time(path);
+	}
 }
 
 
