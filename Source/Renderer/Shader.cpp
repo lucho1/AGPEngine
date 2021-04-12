@@ -61,8 +61,6 @@ void Shader::CheckLastModification()
 	if (last_time > m_LastModificationTimestamp)
 	{
 		CompileShader(PreProcessShader(ReadShaderFile(m_Path)));
-		std::filesystem::path path = m_Path;
-		m_Name = path.stem().string();
 		m_LastModificationTimestamp = last_time; // If problems, try: std::filesystem::last_write_time(path);
 	}
 }
