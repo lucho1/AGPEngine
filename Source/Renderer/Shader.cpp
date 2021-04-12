@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "Utils/RendererUtils.h"
+#include "Core/Utils/FileStringUtils.h"
 
 #include <filesystem>
 #include <fstream>
@@ -32,7 +33,10 @@ Shader::Shader(const std::string& filepath)
 
 	// This is better:
 	std::filesystem::path path = filepath;
-	m_Name = path.stem().string(); // Returns the file's name stripped of the extension.
+	m_Name = path.stem().string(); // Returns the file's name stripped of the extension
+	
+	// -- File Last Modification Time --
+	m_LastModificationTimestamp = FileUtils::GetFileLastWriteTimestamp(filepath.c_str()); // If problems, try: std::filesystem::last_write_time(path);
 }
 
 Shader::~Shader()

@@ -2,40 +2,53 @@
 
 
 // ------------------------------------------------------------------------------
-static uint Strlen(const char* string)
+namespace StringUtils
 {
-    uint len = 0;
-    while (*string++) ++len;
-    return len;
-}
+    // --- Non-Header Global Functions ---
+    static uint Strlen(const char* string)
+    {
+        uint len = 0;
+        while (*string++) ++len;
+        return len;
+    }
 
-static void* PushSize(uint byteCount)
-{
-    ASSERT(GlobalFrameArenaHead + byteCount <= GLOBAL_FRAME_ARENA_SIZE, "Trying to allocate more temp memory than available");
-    unsigned char* curPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
-    GlobalFrameArenaHead += byteCount;
-    return curPtr;
-}
+    static void* PushSize(uint byteCount)
+    {
+        ASSERT(GlobalFrameArenaHead + byteCount <= GLOBAL_FRAME_ARENA_SIZE, "Trying to allocate more temp memory than available");
+        unsigned char* curPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
+        GlobalFrameArenaHead += byteCount;
+        return curPtr;
+    }
 
-static void* PushBytes(const void* bytes, uint byteCount)
-{
-    ASSERT(GlobalFrameArenaHead + byteCount <= GLOBAL_FRAME_ARENA_SIZE, "Trying to allocate more temp memory than available");
-    unsigned char* srcPtr = (unsigned char*)bytes;
-    unsigned char* curPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
-    unsigned char* dstPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
+    static void* PushBytes(const void* bytes, uint byteCount)
+    {
+        ASSERT(GlobalFrameArenaHead + byteCount <= GLOBAL_FRAME_ARENA_SIZE, "Trying to allocate more temp memory than available");
+        unsigned char* srcPtr = (unsigned char*)bytes;
+        unsigned char* curPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
+        unsigned char* dstPtr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
 
-    GlobalFrameArenaHead += byteCount;
-    while (byteCount--) *dstPtr++ = *srcPtr++;
-    return curPtr;
-}
+        GlobalFrameArenaHead += byteCount;
+        while (byteCount--) *dstPtr++ = *srcPtr++;
+        return curPtr;
+    }
 
-static unsigned char* PushChar(unsigned char c)
-{
-    ASSERT(GlobalFrameArenaHead + 1 <= GLOBAL_FRAME_ARENA_SIZE, "Trying to allocate more temp memory than available");
-    unsigned char* ptr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
-    GlobalFrameArenaHead++;
-    *ptr = c;
-    return ptr;
+    static unsigned char* PushChar(unsigned char c)
+    {
+        ASSERT(GlobalFrameArenaHead + 1 <= GLOBAL_FRAME_ARENA_SIZE, "Trying to allocate more temp memory than available");
+        unsigned char* ptr = GlobalFrameArenaMemory + GlobalFrameArenaHead;
+        GlobalFrameArenaHead++;
+        *ptr = c;
+        return ptr;
+    }
+
+
+    // --- Header Functions ---
+    std::string StringUtils::MakeString(const char* cstr)
+    {
+        char* str = (char*)PushBytes(cstr, Strlen(cstr));
+        PushChar(0);
+        return str;
+    }
 }
 
 
@@ -53,7 +66,7 @@ namespace FileUtils
             uint length = ftell(file);
             fseek(file, 0, SEEK_SET);
             
-            char* str = (char*)PushSize(length + 1);
+            char* str = (char*)StringUtils::PushSize(length + 1);
             fread(str, sizeof(char), length, file);
             str[length] = '\0';
             
@@ -68,10 +81,10 @@ namespace FileUtils
 
     std::string FileUtils::MakePath(const std::string& dir, const std::string& filename)
     {
-        char* str = (char*)PushBytes(dir.c_str(), dir.size());
-        PushChar('/');
-        PushBytes(filename.c_str(), filename.size());
-        PushChar(0);
+        char* str = (char*)StringUtils::PushBytes(dir.c_str(), dir.size());
+        StringUtils::PushChar('/');
+        StringUtils::PushBytes(filename.c_str(), filename.size());
+        StringUtils::PushChar(0);
         return str;
     }
 
@@ -109,18 +122,8 @@ namespace FileUtils
                 break;
         }
 
-        char* str = (char*)PushBytes(path.c_str(), length);
-        PushChar(0);
-        return str;
-    }
-}
-
-namespace StringUtils
-{
-    std::string StringUtils::MakeString(const char* cstr)
-    {
-        char* str = (char*)PushBytes(cstr, Strlen(cstr));
-        PushChar(0);
+        char* str = (char*)StringUtils::PushBytes(path.c_str(), length);
+        StringUtils::PushChar(0);
         return str;
     }
 }
