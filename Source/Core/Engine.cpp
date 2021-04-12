@@ -100,22 +100,23 @@ int main()
         // ImGui Begin
         m_ImGuiLayer->Begin(app);
 
-        // ImGui Prepare Render
-        m_ImGuiLayer->PrepareRender(app);
-
         // Clear input state if required by ImGui
         Input::ResetInput();
 
-        // Update
-        Update(&app);
-
         // Transition input key/button states
         Input::Update();
+
+        // Update
+        Update(&app);
 
         // Render
         m_Renderer->BeginScene(glm::mat4(1.0f));
         Render(&app);
         m_Renderer->EndScene();
+
+        // ImGui Prepare Render
+        Gui(&app);
+        m_ImGuiLayer->PrepareRender(app);
 
         // ImGui Render, after Input Update
         m_ImGuiLayer->Render();
@@ -148,6 +149,15 @@ void Init(App* app)
 
 void Gui(App* app)
 {
+    ImGui::Begin("Renderer Statistics");
+    
+    RendererStatistics stats = m_Renderer->GetStatistics();
+    ImGui::Text("- Graphics by %s -", stats.GLVendor.c_str());
+    ImGui::Text("Graphics Card:     %s", stats.GraphicsCard.c_str());
+    ImGui::Text("OpenGL Version:    %i.%i (%s)", stats.OGL_MajorVersion, stats.OGL_MinorVersion, stats.GLVersion.c_str());
+    ImGui::Text("Shading Version:   GLSL %s", stats.GLShadingVersion.c_str());
+    
+    ImGui::End();
 }
 
 void Update(App* app)

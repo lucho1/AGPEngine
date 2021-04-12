@@ -24,6 +24,13 @@ void Renderer::Init()
 	glGetIntegerv(GL_MINOR_VERSION, &v_min);
 	ASSERT((v_maj == 4 && v_min <= 6), "Wrong OpenGL version!");
 
+	m_RendererStatistics.OGL_MinorVersion = v_min;
+	m_RendererStatistics.OGL_MajorVersion = v_maj;
+	m_RendererStatistics.GLVersion = std::string((const char*)glGetString(GL_VERSION));
+	m_RendererStatistics.GraphicsCard = std::string((const char*)glGetString(GL_RENDERER));
+	m_RendererStatistics.GLVendor = std::string((const char*)glGetString(GL_VENDOR));
+	m_RendererStatistics.GLShadingVersion = std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+
 	// -- Enable OGL Debugging --
 	#ifdef _DEBUG
 		glEnable(GL_DEBUG_OUTPUT);
