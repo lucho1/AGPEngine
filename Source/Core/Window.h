@@ -30,6 +30,4 @@ private:
 	std::string m_Name = "Unnamed Window";
 };
 
-
-
 #endif //_WINDOW_H_
