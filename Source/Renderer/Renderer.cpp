@@ -30,9 +30,7 @@ void Renderer::Init()
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(RendererUtils::OpenGLMessageCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
-	#endif
-
-	
+	#endif	
 
 	// -- Set Default Textures --
 	// First 2 Fs are for alpha, rest for bgr (in that order!)
