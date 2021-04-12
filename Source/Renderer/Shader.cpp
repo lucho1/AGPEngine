@@ -1,8 +1,7 @@
 #include "Shader.h"
-#include "RendererUtils.h"
+#include "Utils/RendererUtils.h"
 
-//#include <filesystem>
-//#include <experimental/filesystem>
+#include <filesystem>
 #include <fstream>
 
 
@@ -24,16 +23,16 @@ Shader::Shader(const std::string& filepath)
 	CompileShader(PreProcessShader(ReadShaderFile(filepath)));
 
 	// -- Shader name from filepath --
-	size_t lastSlash = filepath.find_last_of("/\\");
-	size_t lastDot = filepath.rfind('.');
+	//size_t lastSlash = filepath.find_last_of("/\\");
+	//size_t lastDot = filepath.rfind('.');
+	//
+	//lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+	//lastDot = (lastDot == std::string::npos ? filepath.size() : lastDot) - lastSlash;
+	//m_Name = filepath.substr(lastSlash, lastDot);	
 
-	lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-	lastDot = (lastDot == std::string::npos ? filepath.size() : lastDot) - lastSlash;
-	m_Name = filepath.substr(lastSlash, lastDot);	
-
-	// This might be better: TODO: Test this
-	//std::experimental::filesystem::path path = filepath;
-	//m_Name = path.stem().string(); // Returns the file's name stripped of the extension.
+	// This is better:
+	std::filesystem::path path = filepath;
+	m_Name = path.stem().string(); // Returns the file's name stripped of the extension.
 }
 
 Shader::~Shader()
@@ -73,9 +72,14 @@ void Shader::SetUniformInt(const std::string& uniform_name, int value)
 	glUniform1i(GetUniformLocation(uniform_name), value);
 }
 
-void Shader::SetUniformVec4(const std::string& uniform_name, float r, float g, float b, float a)
+void Shader::SetUniformVec4(const std::string& uniform_name, const glm::vec4& color)
 {
-	glUniform4f(GetUniformLocation(uniform_name), r, g, b, a);
+	glUniform4f(GetUniformLocation(uniform_name), color.r, color.g, color.b, color.a);
+}
+
+void Shader::SetUniformMat4(const std::string& uniform_name, const glm::mat4& matrix)
+{
+	glUniformMatrix4fv(GetUniformLocation(uniform_name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 

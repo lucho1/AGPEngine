@@ -7,6 +7,37 @@
 namespace RendererUtils
 {
 	// ------------------------------------------------------------------------------
+	// ----- Error Callback -----
+	static void APIENTRY OpenGLMessageCallback(GLenum msg_source, GLenum msg_type, GLuint msg_id, GLenum msg_severity, GLsizei msg_length, const GLchar* msg, const void* user_param)
+	{
+		// Take into account that "ShaderRecompilation" message (#131218) warns you that there is a shader already bound on a shader-bind call
+		std::string error_message = " --- OpenGL Error (#" + std::to_string(msg_id) + "): ";
+		switch (msg_type)
+		{
+			case GL_DEBUG_TYPE_ERROR:				error_message += "GL Error";			break;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:	error_message += "Deprecated Behavior";	break;
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:	error_message += "Undefined Behavior";	break;
+			case GL_DEBUG_TYPE_PORTABILITY:			error_message += "Portability Error";	break;
+			case GL_DEBUG_TYPE_PERFORMANCE:			error_message += "Performance Error";	break;
+			case GL_DEBUG_TYPE_OTHER:				error_message += "Other Error";			break;
+			default:								error_message += "Unknown Error";		break;
+		}
+
+		switch (msg_severity)
+		{
+			case GL_DEBUG_SEVERITY_HIGH:			ENGINE_LOG((error_message + " - High Sev. -" + msg).c_str());		return;
+			case GL_DEBUG_SEVERITY_MEDIUM:			ENGINE_LOG((error_message + " - Mid Sev. -" + msg).c_str());		return;
+			case GL_DEBUG_SEVERITY_LOW:				ENGINE_LOG((error_message + " - Low Sev. -" + msg).c_str());		return;
+			case GL_DEBUG_SEVERITY_NOTIFICATION:	ENGINE_LOG((error_message + " - Notification -" + msg).c_str());	return;
+		}
+
+		ENGINE_LOG((error_message + " - UNKNOWN SEVERITY -" + msg).c_str());
+		ASSERT(false, "Error of Unknown Severity Level!");
+	}
+
+
+
+	// ------------------------------------------------------------------------------
 	// ----- Shader Data Type Stuff -----
 	enum class SHADER_DATA { NONE = 0, FLOAT, FLOAT2, FLOAT3, FLOAT4, MAT3, MAT4, INT, INT2, INT3, INT4, BOOL };
 
@@ -53,6 +84,7 @@ namespace RendererUtils
 	}
 
 
+
 	// ------------------------------------------------------------------------------
 	// ----- Shader Type Stuff -----
 	static GLenum ShaderTypeFromString(const std::string& ShaderType)
@@ -76,6 +108,7 @@ namespace RendererUtils
 		ASSERT(false, "Unknown Shader Type '%s'", ShaderType);
 		return 0;
 	}
+
 
 
 	// ------------------------------------------------------------------------------

@@ -6,6 +6,7 @@
 //
 
 #include "Engine.h"
+#include "Globals.h"
 #include "Utils/FileStringUtils.h"
 #include <imgui.h>
 #include <stb_image.h>
@@ -15,9 +16,11 @@
 #include "Window.h"
 #include "Input.h"
 #include "ImGuiLayer.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/Buffers.h"
 #include "Renderer/Texture.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Utils/RenderCommand.h"
 
 
 static Window* m_Window = nullptr;
@@ -25,6 +28,9 @@ void* GetApplicationWindow() { return (void*)m_Window; }
 
 static ImGuiLayer* m_ImGuiLayer = nullptr;
 void* GetImGuiLayer() { return (void*)m_ImGuiLayer; }
+
+static Renderer* m_Renderer = nullptr;
+void* GetRenderer() { return (void*)m_Renderer; }
 
 Ref<VertexBuffer> m_VBuffer;
 Ref<IndexBuffer> m_IBuffer;
@@ -53,6 +59,9 @@ int main()
     ENGINE_LOG("-- APP INIT --");
     Init(&app);
 
+    ENGINE_LOG("-- RENDERER INIT --");
+    m_Renderer = new Renderer();
+    m_Renderer->Init();
     
     // -- Buffers Test --
     uint indices[6] = { 0, 1, 2, 2, 3, 0 };
@@ -112,7 +121,9 @@ int main()
         Input::Update();
 
         // Render
+        m_Renderer->BeginScene(glm::mat4(1.0f));
         Render(&app);
+        m_Renderer->EndScene();
 
         // ImGui Render, after Input Update
         m_ImGuiLayer->Render();
@@ -130,6 +141,7 @@ int main()
     }
 
     free(GlobalFrameArenaMemory);
+    delete m_Renderer;
     delete m_Window;
     delete m_ImGuiLayer;
     return 0;
@@ -163,40 +175,21 @@ void Update(App* app)
 
 void Render(App* app)
 {
-    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glViewport(0, 0, app->displaySize.x, app->displaySize.y);
+    RenderCommand::SetClearColor(glm::vec3(0.15f));
+    RenderCommand::Clear();
+    RenderCommand::SetViewport(0, 0, app->displaySize.x, app->displaySize.y);
 
     
-    m_VArray->Bind();
+    //m_VArray->Bind();
     m_TextureShader->Bind();
     m_WhiteTexture->Bind();
     m_TextureShader->SetUniformInt("u_Texture", 0);
-    //m_TextureShader->SetUniformVec4("u_Color", 0.6f, 0.2f, 0.2f, 1.0f);
-    glDrawElements(GL_TRIANGLES, m_VArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
+
+    m_Renderer->Submit(m_TextureShader, m_VArray);
+
     m_WhiteTexture->Unbind();
     m_TextureShader->Unbind();
     m_VArray->Unbind();
-
-    switch (app->mode)
-    {
-        case Mode_TexturedQuad:
-            {
-                // TODO: Draw your textured quad here!
-                // - clear the framebuffer
-                // - set the viewport
-                // - set the blending state
-                // - bind the texture into unit 0
-                // - bind the program 
-                //   (...and make its texture sample from unit 0)
-                // - bind the vao
-                // - glDrawElements() !!!
-            }
-            break;
-
-        default:;
-    }
 }
 

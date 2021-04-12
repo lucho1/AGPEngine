@@ -18,8 +18,10 @@
     <ClCompile Include="Source\Core\Utils\FileStringUtils.cpp" />
     <ClCompile Include="Source\Core\Window.cpp" />
     <ClCompile Include="Source\Renderer\Buffers.cpp" />
+    <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Renderer\Shader.cpp" />
     <ClCompile Include="Source\Renderer\Texture.cpp" />
+    <ClCompile Include="Source\Renderer\Utils\RenderCommand.cpp" />
     <ClCompile Include="ThirdParty\glad\include\glad\glad.c" />
     <ClCompile Include="ThirdParty\glm\include\glm\detail\glm.cpp" />
     <ClCompile Include="ThirdParty\imgui-docking\imgui.cpp" />
@@ -40,7 +42,9 @@
     <ClInclude Include="Source\Core\Utils\FileStringUtils.h" />
     <ClInclude Include="Source\Core\Window.h" />
     <ClInclude Include="Source\Renderer\Buffers.h" />
-    <ClInclude Include="Source\Renderer\RendererUtils.h" />
+    <ClInclude Include="Source\Renderer\Utils\RenderCommand.h" />
+    <ClInclude Include="Source\Renderer\Renderer.h" />
+    <ClInclude Include="Source\Renderer\Utils\RendererUtils.h" />
     <ClInclude Include="Source\Renderer\Shader.h" />
     <ClInclude Include="Source\Renderer\Texture.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\ai_assert.h" />

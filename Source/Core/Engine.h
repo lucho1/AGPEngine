@@ -70,3 +70,4 @@ void Render(App* app);
 
 void* GetApplicationWindow();
 void* GetImGuiLayer();
+void* GetRenderer();
