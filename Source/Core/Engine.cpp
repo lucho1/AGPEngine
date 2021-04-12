@@ -18,10 +18,10 @@
 #include "ImGuiLayer.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Buffers.h"
+#include "Renderer/Utils/RendererPrimitives.h"
 #include "Renderer/Texture.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Utils/RenderCommand.h"
-
 
 static Window* m_Window = nullptr;
 void* GetApplicationWindow() { return (void*)m_Window; }
@@ -35,7 +35,7 @@ void* GetRenderer() { return (void*)m_Renderer; }
 Ref<VertexBuffer> m_VBuffer;
 Ref<IndexBuffer> m_IBuffer;
 Ref<VertexArray> m_VArray;
-Ref<Texture> m_WhiteTexture;
+Ref<Texture> m_TestTexture;
 Ref<Shader> m_TextureShader;
 
 int main()
@@ -87,7 +87,7 @@ int main()
     m_IBuffer->Unbind();
 
     // -- Texture Test --
-    m_WhiteTexture = CreateRef<Texture>("Resources/dice.png");
+    m_TestTexture = CreateRef<Texture>("Resources/dice.png");
 
     //uint whiteTextData = 0xffffffff; // Full Fs for every channel there (2x4 channels - rgba -)
     //m_WhiteTexture = CreateRef<Texture>(1, 1);
@@ -182,13 +182,14 @@ void Render(App* app)
     
     //m_VArray->Bind();
     m_TextureShader->Bind();
-    m_WhiteTexture->Bind();
+    RendererPrimitives::DefaultTextures::TempNormalTexture->Bind();
+    
     m_TextureShader->SetUniformInt("u_Texture", 0);
     //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
 
     m_Renderer->Submit(m_TextureShader, m_VArray);
 
-    m_WhiteTexture->Unbind();
+    RendererPrimitives::DefaultTextures::TempNormalTexture->Unbind();
     m_TextureShader->Unbind();
     m_VArray->Unbind();
 }

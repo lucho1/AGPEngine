@@ -22,6 +22,7 @@
     <ClCompile Include="Source\Renderer\Shader.cpp" />
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\Renderer\Utils\RenderCommand.cpp" />
+    <ClCompile Include="Source\Renderer\Utils\RendererPrimitives.cpp" />
     <ClCompile Include="ThirdParty\glad\include\glad\glad.c" />
     <ClCompile Include="ThirdParty\glm\include\glm\detail\glm.cpp" />
     <ClCompile Include="ThirdParty\imgui-docking\imgui.cpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="Source\Renderer\Buffers.h" />
     <ClInclude Include="Source\Renderer\Utils\RenderCommand.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
+    <ClInclude Include="Source\Renderer\Utils\RendererPrimitives.h" />
     <ClInclude Include="Source\Renderer\Utils\RendererUtils.h" />
     <ClInclude Include="Source\Renderer\Shader.h" />
     <ClInclude Include="Source\Renderer\Texture.h" />
