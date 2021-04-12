@@ -87,18 +87,10 @@ int main()
     m_IBuffer->Unbind();
 
     // -- Texture Test --
-    m_TestTexture = CreateRef<Texture>("Resources/dice.png");
-
-    //uint whiteTextData = 0xffffffff; // Full Fs for every channel there (2x4 channels - rgba -)
-    //m_WhiteTexture = CreateRef<Texture>(1, 1);
-    //m_WhiteTexture->SetData(&whiteTextData, sizeof(whiteTextData)); // or sizeof(uint)
+    m_TestTexture = CreateRef<Texture>("Resources/textures/dice.png");
 
     // -- Shader Test --
     m_TextureShader = CreateRef<Shader>("Resources/shaders/TexturedShader.glsl");
-    //m_TextureShader->Bind();
-    //m_TextureShader->SetUniformInt("u_Texture", m_WhiteTexture->GetTextureID());
-    //m_TextureShader->Unbind();
-
 
     while (app.isRunning)
     {
@@ -182,14 +174,14 @@ void Render(App* app)
     
     //m_VArray->Bind();
     m_TextureShader->Bind();
-    RendererPrimitives::DefaultTextures::TempNormalTexture->Bind();
+    m_TestTexture->Bind();
     
     m_TextureShader->SetUniformInt("u_Texture", 0);
     //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
 
     m_Renderer->Submit(m_TextureShader, m_VArray);
 
-    RendererPrimitives::DefaultTextures::TempNormalTexture->Unbind();
+    m_TestTexture->Unbind();
     m_TextureShader->Unbind();
     m_VArray->Unbind();
 }

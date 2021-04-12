@@ -35,19 +35,16 @@ void Renderer::Init()
 	
 
 	// -- Set Default Textures --
-	// First 2 Fs are for alpha, rest for bgr
+	// First 2 Fs are for alpha, rest for bgr (in that order!)
 	uint white_data = 0xffffffff; // Full Fs (1) for every channel (2x4 channels - rgba -), same logic for the next ones
 	uint black_data = 0xff000000;
 	uint magenta_data = 0xffff00ff;
-	uint normal_data = 0xff8080ff;
-
-	normal_data = 0xffff8080;
+	uint normal_data = 0xffff8080;
 
 	RendererPrimitives::DefaultTextures::WhiteTexture = CreateScopePtr<Texture>(1, 1);
 	RendererPrimitives::DefaultTextures::BlackTexture = CreateScopePtr<Texture>(1, 1);
 	RendererPrimitives::DefaultTextures::MagentaTexture = CreateScopePtr<Texture>(1, 1);
 	RendererPrimitives::DefaultTextures::TempNormalTexture = CreateScopePtr<Texture>(1, 1);
-
 
 	RendererPrimitives::DefaultTextures::WhiteTexture->SetData(&white_data, sizeof(white_data)); // or sizeof(uint)
 	RendererPrimitives::DefaultTextures::BlackTexture->SetData(&black_data, sizeof(black_data));
