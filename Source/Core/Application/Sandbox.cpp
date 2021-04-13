@@ -1,12 +1,14 @@
 #include "Sandbox.h"
 
 #include "Core/Platform/Input.h"
+#include "Core/Application/Resources.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/Utils/RenderCommand.h"
 #include "Renderer/Utils/RendererPrimitives.h"
 
 #include <imgui.h>
+
 
 
 // ------------------------------------------------------------------------------
@@ -35,7 +37,7 @@ void Sandbox::Init()
     vb->Unbind(); ib->Unbind();
 
     // -- Texture Test --
-    m_TestTexture = CreateRef<Texture>("Resources/textures/dice.png");
+    m_TestTexture = Resources::CreateTexture("Resources/textures/dice.png");
 
     // -- Shader Test --
     m_TextureShader = CreateRef<Shader>("Resources/shaders/TexturedShader.glsl");
@@ -50,14 +52,19 @@ void Sandbox::OnUpdate(float dt)
     m_TextureShader->CheckLastModification();
 
     // -- Render Stuff --
+    // Texture Bind
+    Renderer::BindTexture(Resources::TexturesIndex::ALBEDO, m_TestTexture);
+    
+    // Shader Bind & Uniforms
     m_TextureShader->Bind();
-    m_TestTexture->Bind();
-
-    m_TextureShader->SetUniformInt("u_Texture", 0);
+    m_TextureShader->SetUniformInt("u_Texture", (int)Resources::TexturesIndex::ALBEDO);
     //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
-    Renderer::Submit(m_TextureShader, m_SquareVArray);
 
-    m_TestTexture->Unbind();
+    // Draw Call
+    Renderer::Submit(m_TextureShader, m_SquareVArray);
+    
+    // Unbinds
+    Renderer::UnbindTexture(Resources::TexturesIndex::ALBEDO, m_TestTexture);
     m_TextureShader->Unbind();
     m_SquareVArray->Unbind();
 }

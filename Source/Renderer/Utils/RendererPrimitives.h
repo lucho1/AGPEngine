@@ -12,6 +12,18 @@ namespace RendererPrimitives
 		static UniquePtr<Texture> BlackTexture;
 		static UniquePtr<Texture> MagentaTexture;
 		static UniquePtr<Texture> TempNormalTexture;
+
+		static Texture* GetTextureFromIndex(uint index)
+		{
+			switch (index)
+			{
+				case 0:		return WhiteTexture.get();
+				case 1:		return BlackTexture.get();
+				case 2:		return MagentaTexture.get();
+				case 3:		return TempNormalTexture.get();
+				default:	return nullptr;
+			}
+		}
 	};
 }
 

@@ -29,7 +29,7 @@ private:
 private:
 
 	Ref<VertexArray> m_SquareVArray;
-	Ref<Texture> m_TestTexture;
+	Ref<Texture> m_TestTexture, m_TTe;
 	Ref<Shader> m_TextureShader;
 	
 	uint m_MemoryAllocations[ALLOCATIONS_SAMPLES] = { 0 };

@@ -59,9 +59,11 @@ Application::Application(const std::string& name, uint window_width, uint window
 
 Application::~Application()
 {
-    Renderer::Shutdown();
-    delete m_ImGuiLayer;
     delete s_Sandbox;
+
+    Renderer::Shutdown();
+    Resources::CleanUp();
+    delete m_ImGuiLayer;
 }
 
 void Application::OnWindowResize(uint width, uint height)

@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "Core/Application/Resources.h"
 
 #include <stb_image.h>
 #include <stb_image_write.h>
@@ -26,6 +27,9 @@ Texture::Texture(uint width, uint height) : m_Width(width), m_Height(height)
 	// -- Mipmap & Unbind --
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// -- Add Texture to Resources --
+	
 }
 
 Texture::Texture(const std::string& path)
@@ -44,6 +48,8 @@ Texture::Texture(const std::string& path)
 
 	// -- Set Parameters --
 	m_Width = w; m_Height = h;
+	m_Path = path;
+
 	if (channels == 4)
 	{
 		m_InternalFormat = GL_RGBA8;

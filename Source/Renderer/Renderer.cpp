@@ -85,6 +85,35 @@ void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_
 
 
 // ------------------------------------------------------------------------------
+void Renderer::BindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture)
+{
+	const uint index = (uint)texture_type;
+	uint materials_textures_pos = (uint)Resources::TexturesIndex::ALBEDO;
+
+	if (index < materials_textures_pos)
+		RendererPrimitives::DefaultTextures::GetTextureFromIndex(index)->Bind(index);
+	else if (index >= materials_textures_pos && texture)
+		texture->Bind(index);
+	else
+		ENGINE_LOG("Tried to Bind a nullptr texture!");
+}
+
+void Renderer::UnbindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture)
+{
+	const uint index = (uint)texture_type;
+	uint materials_textures_pos = (uint)Resources::TexturesIndex::ALBEDO;
+
+	if (index < materials_textures_pos)
+		RendererPrimitives::DefaultTextures::GetTextureFromIndex(index)->Unbind();
+	else if (index >= materials_textures_pos && texture)
+		texture->Unbind();
+	else
+		ENGINE_LOG("Tried to Unbind a nullptr texture!");
+}
+
+
+
+// ------------------------------------------------------------------------------
 void Renderer::SetRendererStatistics(int ogl_major_version, int ogl_min_version)
 {
 	m_RendererStatistics.OGL_MajorVersion = ogl_major_version;
@@ -97,15 +126,16 @@ void Renderer::SetRendererStatistics(int ogl_major_version, int ogl_min_version)
 
 void Renderer::LoadDefaultTextures()
 {
-	// First 2 Fs are for alpha, rest for bgr (in that order!)
-	uint white_data = 0xffffffff; // Full Fs (1) for every channel (2x4 channels - rgba -), same logic for the next ones
-	uint black_data = 0xff000000, magenta_data = 0xffff00ff, normal_data = 0xffff8080;
+	// Default textures with default colors, made with hex values
+	// First 2 Fs are for alpha, rest for blue, green and red (in that order!)
+	// Full Fs (1) for every channel (2x4 channels - rgba -) is white, same logic for the next ones
+	uint white_data = 0xffffffff, black_data = 0xff000000, magenta_data = 0xffff00ff, normal_data = 0xffff8080;
 
 	RendererPrimitives::DefaultTextures::WhiteTexture = CreateUnique<Texture>(1, 1);
 	RendererPrimitives::DefaultTextures::BlackTexture = CreateUnique<Texture>(1, 1);
 	RendererPrimitives::DefaultTextures::MagentaTexture = CreateUnique<Texture>(1, 1);
 	RendererPrimitives::DefaultTextures::TempNormalTexture = CreateUnique<Texture>(1, 1);
-
+	
 	RendererPrimitives::DefaultTextures::WhiteTexture->SetData(&white_data, sizeof(white_data)); // or sizeof(uint)
 	RendererPrimitives::DefaultTextures::BlackTexture->SetData(&black_data, sizeof(black_data));
 	RendererPrimitives::DefaultTextures::MagentaTexture->SetData(&magenta_data, sizeof(magenta_data));

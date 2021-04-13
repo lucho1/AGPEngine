@@ -6,11 +6,16 @@
 
 class Texture
 {
-public:
+	friend class Resources;
+	friend class Renderer;
+private:
 
 	// --- Des/Construction ---
-	Texture(uint width, uint height);
 	Texture(const std::string& path);
+
+public:
+	
+	Texture(uint width, uint height);
 	~Texture();
 
 	// --- Class Methods ---

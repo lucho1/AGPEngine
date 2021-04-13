@@ -117,17 +117,17 @@ namespace RendererUtils
 	{
 		switch (type)
 		{
-		case SHADER_DATA::FLOAT:		return GL_FLOAT;
-		case SHADER_DATA::FLOAT2:		return GL_FLOAT;
-		case SHADER_DATA::FLOAT3:		return GL_FLOAT;
-		case SHADER_DATA::FLOAT4:		return GL_FLOAT;
-		case SHADER_DATA::MAT3:			return GL_FLOAT;
-		case SHADER_DATA::MAT4:			return GL_FLOAT;
-		case SHADER_DATA::INT:			return GL_INT;
-		case SHADER_DATA::INT2:			return GL_INT;
-		case SHADER_DATA::INT3:			return GL_INT;
-		case SHADER_DATA::INT4:			return GL_INT;
-		case SHADER_DATA::BOOL:			return GL_BOOL;
+			case SHADER_DATA::FLOAT:		return GL_FLOAT;
+			case SHADER_DATA::FLOAT2:		return GL_FLOAT;
+			case SHADER_DATA::FLOAT3:		return GL_FLOAT;
+			case SHADER_DATA::FLOAT4:		return GL_FLOAT;
+			case SHADER_DATA::MAT3:			return GL_FLOAT;
+			case SHADER_DATA::MAT4:			return GL_FLOAT;
+			case SHADER_DATA::INT:			return GL_INT;
+			case SHADER_DATA::INT2:			return GL_INT;
+			case SHADER_DATA::INT3:			return GL_INT;
+			case SHADER_DATA::INT4:			return GL_INT;
+			case SHADER_DATA::BOOL:			return GL_BOOL;
 		}
 
 		ASSERT(false, "ShaderData passed Unknown or Incorrect!");

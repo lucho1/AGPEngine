@@ -2,6 +2,7 @@
 #define _RENDERER_H_
 
 #include "Core/Globals.h"
+#include "Core/Application/Resources.h"
 
 #include "Resources/Buffers.h"
 #include "Resources/Shader.h"
@@ -33,9 +34,14 @@ public:
 
 	// --- Rendering Stuff ---
 	static void ClearRenderer(uint viewport_width, uint viewport_height);
+
 	static void BeginScene(glm::mat4 viewproj_mat);
 	static void EndScene();
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
+
+	// --- Resources Stuff ---
+	static void BindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture = nullptr);
+	static void UnbindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture = nullptr);
 
 	// --- Events ---
 	static void OnWindowResized(uint width, uint height);
