@@ -47,8 +47,9 @@ static void LogString(const char* str)
 
 
 // --- Conversions ---
-#define KBTOBYTE(val) (1024*(val))
-#define MBTOBYTE(val) (1024*KBTOBYTE(val))
+#define KBTOBYTE(val) (1024.0f*val)
+#define MBTOBYTE(val) (1024.0f*KBTOBYTE(val))
+#define BYTETOKB(val) (val/1024.0f)
 
 #define PI  3.14159265359f
 #define TAU 6.28318530718f

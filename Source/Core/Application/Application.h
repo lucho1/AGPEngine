@@ -12,6 +12,26 @@ int main(int argc, char** argv);
 
 
 
+// --- Memory Usage ---
+class MemoryMetrics
+{
+public:
+
+	uint GetAllocations()			const { return m_TotalAllocated; }
+	uint GetDeallocations()			const { return m_TotalFreed; }
+	uint GetCurrentMemoryUsage()	const { return m_TotalAllocated - m_TotalFreed; }
+
+	void AddAllocation(uint size)	const { m_TotalAllocated += size; }
+	void AddDeallocation(uint size)	const { m_TotalFreed += size; }
+
+private:
+
+	mutable uint m_TotalAllocated = 0;
+	mutable uint m_TotalFreed = 0;
+};
+
+
+
 // --- Application Class ---
 class Application
 {
@@ -30,11 +50,16 @@ public:
 	inline ImGuiLayer* GetImGuiLayer()	const	{ return m_ImGuiLayer; }
 	inline static Application& Get()			{ return *s_ApplicationInstance; }
 
+	inline static const MemoryMetrics& GetMemoryMetrics() { return s_MemoryMetrics; }
+
 private:
 
 	void Update();
 
 private:
+
+	// --- Memory ---
+	static MemoryMetrics s_MemoryMetrics;
 
 	// --- App Singleton & Classes ---
 	static Application* s_ApplicationInstance;

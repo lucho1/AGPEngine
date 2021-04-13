@@ -2,10 +2,13 @@
 #define _SANDBOX_H_
 
 #include "Core/Globals.h"
+#include "Application.h"
 
 #include "Renderer/Resources/Buffers.h"
 #include "Renderer/Resources/Texture.h"
 #include "Renderer/Resources/Shader.h"
+
+#define ALLOCATIONS_SAMPLES 90
 
 
 class Sandbox
@@ -21,11 +24,19 @@ public:
 
 private:
 
+	void SetMemoryMetrics();
+
+private:
+
 	Ref<VertexBuffer> m_VBuffer;
 	Ref<IndexBuffer> m_IBuffer;
 	Ref<VertexArray> m_VArray;
 	Ref<Texture> m_TestTexture;
 	Ref<Shader> m_TextureShader;
+	
+	uint m_MemoryAllocations[ALLOCATIONS_SAMPLES] = { 0 };
+	uint m_AllocationsIndex = 0;
+	MemoryMetrics m_MemoryMetrics = {};
 };
 
 #endif //_SANDBOX_H_

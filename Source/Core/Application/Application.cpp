@@ -9,6 +9,24 @@ static Sandbox* s_Sandbox;
 // ---------------------
 
 
+
+// ------------------------------------------------------------------------------
+MemoryMetrics Application::s_MemoryMetrics = {};
+
+void* operator new(size_t size)
+{
+    Application::GetMemoryMetrics().AddAllocation((uint)size);
+    return malloc(size);
+}
+
+void operator delete(void* memory, size_t size)
+{
+    Application::GetMemoryMetrics().AddDeallocation((uint)size);
+    free(memory);
+}
+
+
+
 // ------------------------------------------------------------------------------
 Application* Application::s_ApplicationInstance = nullptr;
 
@@ -38,7 +56,6 @@ Application::Application(const std::string& name, uint window_width, uint window
 	m_DeltaTime = 1.0f / framerate;
 	m_LastFrameTime = m_AppWindow->GetGLFWTime();
 }
-
 
 Application::~Application()
 {
