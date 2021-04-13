@@ -8,10 +8,10 @@ namespace RendererPrimitives
 {
 	struct DefaultTextures
 	{
-		static ScopePtr<Texture> WhiteTexture;
-		static ScopePtr<Texture> BlackTexture;
-		static ScopePtr<Texture> MagentaTexture;
-		static ScopePtr<Texture> TempNormalTexture;
+		static UniquePtr<Texture> WhiteTexture;
+		static UniquePtr<Texture> BlackTexture;
+		static UniquePtr<Texture> MagentaTexture;
+		static UniquePtr<Texture> TempNormalTexture;
 	};
 }
 

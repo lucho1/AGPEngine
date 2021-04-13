@@ -2,8 +2,8 @@
 
 namespace RendererPrimitives
 {
-	ScopePtr<Texture> DefaultTextures::WhiteTexture = nullptr;
-	ScopePtr<Texture> DefaultTextures::BlackTexture = nullptr;
-	ScopePtr<Texture> DefaultTextures::MagentaTexture = nullptr;
-	ScopePtr<Texture> DefaultTextures::TempNormalTexture = nullptr;
+	UniquePtr<Texture> DefaultTextures::WhiteTexture = nullptr;
+	UniquePtr<Texture> DefaultTextures::BlackTexture = nullptr;
+	UniquePtr<Texture> DefaultTextures::MagentaTexture = nullptr;
+	UniquePtr<Texture> DefaultTextures::TempNormalTexture = nullptr;
 }

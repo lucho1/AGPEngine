@@ -46,10 +46,10 @@ void Renderer::Init()
 	uint magenta_data = 0xffff00ff;
 	uint normal_data = 0xffff8080;
 
-	RendererPrimitives::DefaultTextures::WhiteTexture = CreateScopePtr<Texture>(1, 1);
-	RendererPrimitives::DefaultTextures::BlackTexture = CreateScopePtr<Texture>(1, 1);
-	RendererPrimitives::DefaultTextures::MagentaTexture = CreateScopePtr<Texture>(1, 1);
-	RendererPrimitives::DefaultTextures::TempNormalTexture = CreateScopePtr<Texture>(1, 1);
+	RendererPrimitives::DefaultTextures::WhiteTexture = CreateUnique<Texture>(1, 1);
+	RendererPrimitives::DefaultTextures::BlackTexture = CreateUnique<Texture>(1, 1);
+	RendererPrimitives::DefaultTextures::MagentaTexture = CreateUnique<Texture>(1, 1);
+	RendererPrimitives::DefaultTextures::TempNormalTexture = CreateUnique<Texture>(1, 1);
 
 	RendererPrimitives::DefaultTextures::WhiteTexture->SetData(&white_data, sizeof(white_data)); // or sizeof(uint)
 	RendererPrimitives::DefaultTextures::BlackTexture->SetData(&black_data, sizeof(black_data));

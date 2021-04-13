@@ -22,11 +22,11 @@ Application::Application(const std::string& name, uint window_width, uint window
 	s_ApplicationInstance = this;
 
 	ENGINE_LOG("--- Initializing Application Window ---");
-	m_AppWindow = CreateScopePtr<Window>(window_width, window_height, name);
+	m_AppWindow = CreateUnique<Window>(window_width, window_height, name);
 	m_AppWindow->Init();
 
 	ENGINE_LOG("--- Initializing Application Renderer ---");
-	m_AppRenderer = CreateScopePtr<Renderer>();
+	m_AppRenderer = CreateUnique<Renderer>();
 	m_AppRenderer->Init();
 
 	ENGINE_LOG("--- Initializing ImGui Layer ---");

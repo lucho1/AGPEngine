@@ -43,8 +43,8 @@ private:
 	static Application* s_ApplicationInstance;
 	friend int ::main(int argc, char** argv);
 
-	ScopePtr<Window> m_AppWindow = nullptr;
-	ScopePtr<Renderer> m_AppRenderer = nullptr;
+	UniquePtr<Window> m_AppWindow = nullptr;
+	UniquePtr<Renderer> m_AppRenderer = nullptr;
 	ImGuiLayer* m_ImGuiLayer = nullptr;
 
 	// --- App Properties ---
