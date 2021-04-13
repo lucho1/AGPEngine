@@ -1,13 +1,14 @@
 #include "Application.h"
-#include "Input.h"
+
+#include "Core/Platform/Input.h"
 #include "Renderer/Renderer.h"
 
 Application* Application::s_ApplicationInstance = nullptr;
 
 // TODO: TEMP
-#include "Renderer/Texture.h"
-#include "Renderer/Buffers.h"
-#include "Renderer/Shader.h"
+#include "Renderer/Resources/Texture.h"
+#include "Renderer/Resources/Buffers.h"
+#include "Renderer/Resources/Shader.h"
 #include "Renderer/Utils/RenderCommand.h"
 Ref<VertexBuffer> m_VBuffer;
 Ref<IndexBuffer> m_IBuffer;

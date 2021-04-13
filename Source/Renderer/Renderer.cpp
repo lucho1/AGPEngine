@@ -1,8 +1,10 @@
 #include "Renderer.h"
+
 #include "Utils/RendererUtils.h"
 #include "Utils/RenderCommand.h"
-#include "Texture.h"
 #include "Utils/RendererPrimitives.h"
+
+#include "Resources/Texture.h"
 
 #include <glad/glad.h>
 

@@ -1,7 +1,7 @@
 #include "Window.h"
-
-#include "Application.h"
 #include "Input.h"
+
+#include "Core/Application/Application.h"
 
 
 static void ErrorCallback(int error_code, const char* error_msg)

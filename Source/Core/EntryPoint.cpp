@@ -1,5 +1,5 @@
 #include "Globals.h"
-#include "Application.h"
+#include "Core/Application/Application.h"
 
 
 // ----------------------- Graphics Card Usage --------------------------------------------------------

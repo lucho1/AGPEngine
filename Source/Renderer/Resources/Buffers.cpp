@@ -1,5 +1,7 @@
 #include "Buffers.h"
+
 #include <glad/glad.h>
+
 
 // ------------------------------------------------------------------------------
 VertexBuffer::VertexBuffer(float* vertices, uint size)

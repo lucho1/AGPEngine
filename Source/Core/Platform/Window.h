@@ -1,7 +1,7 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
-#include "Globals.h"
+#include "Core/Globals.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

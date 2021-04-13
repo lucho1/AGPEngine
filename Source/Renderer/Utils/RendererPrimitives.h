@@ -2,7 +2,7 @@
 #define _RENDERERPRIMITIVES_H_
 
 #include "Core/Globals.h"
-#include "Renderer/Texture.h"
+#include "Renderer/Resources/Texture.h"
 
 namespace RendererPrimitives
 {

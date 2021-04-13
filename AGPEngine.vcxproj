@@ -11,16 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Core\Application.cpp" />
+    <ClCompile Include="Source\Core\Application\Application.cpp" />
     <ClCompile Include="Source\Core\EntryPoint.cpp" />
-    <ClCompile Include="Source\Core\ImGuiLayer.cpp" />
-    <ClCompile Include="Source\Core\Input.cpp" />
+    <ClCompile Include="Source\Core\Application\ImGuiLayer.cpp" />
+    <ClCompile Include="Source\Core\Platform\Input.cpp" />
     <ClCompile Include="Source\Core\Utils\FileStringUtils.cpp" />
-    <ClCompile Include="Source\Core\Window.cpp" />
-    <ClCompile Include="Source\Renderer\Buffers.cpp" />
+    <ClCompile Include="Source\Core\Platform\Window.cpp" />
+    <ClCompile Include="Source\Renderer\Resources\Buffers.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
-    <ClCompile Include="Source\Renderer\Shader.cpp" />
-    <ClCompile Include="Source\Renderer\Texture.cpp" />
+    <ClCompile Include="Source\Renderer\Resources\Shader.cpp" />
+    <ClCompile Include="Source\Renderer\Resources\Texture.cpp" />
     <ClCompile Include="Source\Renderer\Utils\RenderCommand.cpp" />
     <ClCompile Include="Source\Renderer\Utils\RendererPrimitives.cpp" />
     <ClCompile Include="ThirdParty\glad\include\glad\glad.c" />
@@ -35,19 +35,19 @@
     <ClCompile Include="ThirdParty\stb\stb.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Core\Application.h" />
+    <ClInclude Include="Source\Core\Application\Application.h" />
     <ClInclude Include="Source\Core\Globals.h" />
-    <ClInclude Include="Source\Core\ImGuiLayer.h" />
-    <ClInclude Include="Source\Core\Input.h" />
+    <ClInclude Include="Source\Core\Application\ImGuiLayer.h" />
+    <ClInclude Include="Source\Core\Platform\Input.h" />
     <ClInclude Include="Source\Core\Utils\FileStringUtils.h" />
-    <ClInclude Include="Source\Core\Window.h" />
-    <ClInclude Include="Source\Renderer\Buffers.h" />
+    <ClInclude Include="Source\Core\Platform\Window.h" />
+    <ClInclude Include="Source\Renderer\Resources\Buffers.h" />
     <ClInclude Include="Source\Renderer\Utils\RenderCommand.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Renderer\Utils\RendererPrimitives.h" />
     <ClInclude Include="Source\Renderer\Utils\RendererUtils.h" />
-    <ClInclude Include="Source\Renderer\Shader.h" />
-    <ClInclude Include="Source\Renderer\Texture.h" />
+    <ClInclude Include="Source\Renderer\Resources\Shader.h" />
+    <ClInclude Include="Source\Renderer\Resources\Texture.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\ai_assert.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\anim.h" />
     <ClInclude Include="ThirdParty\Assimp\include\assimp\camera.h" />

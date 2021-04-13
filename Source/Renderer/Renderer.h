@@ -2,8 +2,9 @@
 #define _RENDERER_H_
 
 #include "Core/Globals.h"
-#include "Buffers.h"
-#include "Shader.h"
+
+#include "Resources/Buffers.h"
+#include "Resources/Shader.h"
 
 #include <glm/glm.hpp>
 

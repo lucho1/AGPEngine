@@ -1,7 +1,7 @@
 #include "Input.h"
 
-#include "Application.h"
-#include "ImGuiLayer.h"
+#include "Core/Application/Application.h"
+#include "Core/Application/ImGuiLayer.h"
 
 
 glm::vec2 Input::m_MousePos = glm::vec2(0.0f);

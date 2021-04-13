@@ -1,9 +1,10 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
-#include "Globals.h"
-#include "Window.h"
+#include "Core/Globals.h"
 #include "ImGuiLayer.h"
+
+#include "Core/Platform/Window.h"
 
 
 // --- Main Declaration, Defined on Main ---

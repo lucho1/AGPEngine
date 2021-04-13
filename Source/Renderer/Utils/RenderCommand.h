@@ -2,8 +2,10 @@
 #define _RENDERCOMMANDS_H_
 
 #include "Core/Globals.h"
-#include "Renderer/Buffers.h"
+#include "Renderer/Resources/Buffers.h"
+
 #include <glad/glad.h>
+
 
 class RenderCommand
 {
