@@ -1,4 +1,6 @@
 #include "Window.h"
+
+#include "Application.h"
 #include "Input.h"
 
 
@@ -10,14 +12,22 @@ static void ErrorCallback(int error_code, const char* error_msg)
 
 
 // ------------------------------------------------------------------------------
+float Window::GetGLFWTime() const
+{
+    return (float)glfwGetTime();
+}
+
+
+
+// ------------------------------------------------------------------------------
 Window::~Window()
 {
-    glfwDestroyWindow(m_Window);
     ENGINE_LOG("Terminating GLFW");
+    glfwDestroyWindow(m_Window);
     glfwTerminate();
 }
 
-void Window::Init(App& app)
+void Window::Init()
 {
     // -- GLFW Initialization --
     glfwSetErrorCallback(ErrorCallback);
@@ -51,7 +61,7 @@ void Window::Init(App& app)
     glfwMakeContextCurrent(m_Window);
 
     // -- GLFW Window User ptr & VSYNC --
-    glfwSetWindowUserPointer(m_Window, (void*)&app);
+    glfwSetWindowUserPointer(m_Window, this);
     glfwSwapInterval(1); //TODO: Set VSYNC
 
     // -- Set GLFW Callbacks --
@@ -65,6 +75,27 @@ void Window::Init(App& app)
     }
 }
 
+void Window::Update()
+{
+    // -- Call Platform Callbacks --
+    glfwPollEvents();
+
+    // -- Present image on Screen --
+    glfwSwapBuffers(m_Window);
+}
+
+void Window::ResizeWindow(uint width, uint height)
+{
+    m_Width = width;
+    m_Height = height;
+    Application::Get().OnWindowResize(width, height);
+}
+
+void Window::CloseWindow()
+{
+    Application::Get().CloseApplication();
+}
+
 
 
 // ------------------------------------------------------------------------------
@@ -73,14 +104,13 @@ void Window::SetGLFWEventCallbacks() const
     // Window/Application Events
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int w, int h)
         {
-            ((Window*)GetApplicationWindow())->m_Width = w;
-            ((Window*)GetApplicationWindow())->m_Height = h;
-            ((App*)glfwGetWindowUserPointer(window))->displaySize = vec2(w, h);
+            ((Window*)glfwGetWindowUserPointer(window))->ResizeWindow(w, h);
         });
 
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
         {
-            ((App*)glfwGetWindowUserPointer(window))->isRunning = false;
+            ((Window*)glfwGetWindowUserPointer(window))->CloseWindow();
+            //((App*)glfwGetWindowUserPointer(window))->isRunning = false;
         });
 
     // Mouse Events

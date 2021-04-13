@@ -1,4 +1,5 @@
 #include "ImGuiLayer.h"
+#include "Application.h"
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -17,7 +18,7 @@ ImGuiLayer::~ImGuiLayer()
 
 
 // ------------------------------------------------------------------------------
-void ImGuiLayer::Init(const Window* window)
+void ImGuiLayer::Init()
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -40,7 +41,7 @@ void ImGuiLayer::Init(const Window* window)
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    if (!ImGui_ImplGlfw_InitForOpenGL(&window->GetWindow(), true))
+    if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true))
     {
         ENGINE_LOG("ImGui_ImplGlfw_InitForOpenGL() failed\n");
         return;
@@ -54,7 +55,7 @@ void ImGuiLayer::Init(const Window* window)
 }
 
 
-void ImGuiLayer::Begin(const App& app)
+void ImGuiLayer::Begin()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -65,8 +66,8 @@ void ImGuiLayer::Begin(const App& app)
 void ImGuiLayer::Render()
 {
     ImGuiIO& io = ImGui::GetIO();
-    Window* window = (Window*)GetApplicationWindow();
-    io.DisplaySize = ImVec2((float)window->GetWidth(), (float)window->GetHeight());    
+    Window& window = Application::Get().GetWindow();
+    io.DisplaySize = ImVec2((float)window.GetWidth(), (float)window.GetHeight());
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

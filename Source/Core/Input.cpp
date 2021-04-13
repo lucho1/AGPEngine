@@ -1,4 +1,6 @@
 #include "Input.h"
+
+#include "Application.h"
 #include "ImGuiLayer.h"
 
 glm::vec2 Input::m_MousePos = glm::vec2(0.0f);
@@ -12,7 +14,7 @@ STATE::BUTTON_STATE Input::m_Keys[KEY::KEY_COUNT] = {};
 // ------------------------------------------------------------------------------
 void Input::ResetInput()
 {
-    ImGuiLayer* ui_layer = (ImGuiLayer*)GetImGuiLayer();
+    ImGuiLayer* ui_layer = Application::Get().GetImGuiLayer();
 
     if (ui_layer->CapturingKeyboard())
     {
@@ -30,7 +32,7 @@ void Input::ResetInput()
 
 void Input::Update()
 {
-    ImGuiLayer* ui_layer = (ImGuiLayer*)GetImGuiLayer();
+    ImGuiLayer* ui_layer = Application::Get().GetImGuiLayer();
 
     if (!ui_layer->CapturingKeyboard())
     {

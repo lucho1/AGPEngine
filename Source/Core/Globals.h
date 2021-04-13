@@ -46,7 +46,7 @@ static void LogString(const char* str)
     #endif
 }
 
-#define ILOG(...) { char logBuffer[1024] = {}; sprintf(logBuffer, __VA_ARGS__); LogString(logBuffer); }
+#define ILOG(...) { char logBuffer[1024] = {}; sprintf_s(logBuffer, __VA_ARGS__); LogString(logBuffer); }
 #define ENGINE_LOG(...) ILOG(__VA_ARGS__)
 
 

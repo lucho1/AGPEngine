@@ -11,8 +11,8 @@ public:
 	ImGuiLayer() = default;
 	~ImGuiLayer();
 
-	void Init(const Window* window);
-	void Begin(const App& app);
+	void Init();
+	void Begin();
 	void Render();
 
 	bool CapturingKeyboard() const;
