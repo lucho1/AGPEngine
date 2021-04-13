@@ -2,10 +2,8 @@
 #define _APPLICATION_H_
 
 #include "Globals.h"
-
 #include "Window.h"
 #include "ImGuiLayer.h"
-#include "Renderer/Renderer.h"
 
 
 // --- Main Declaration, Defined on Main ---
@@ -44,13 +42,11 @@ private:
 	friend int ::main(int argc, char** argv);
 
 	UniquePtr<Window> m_AppWindow = nullptr;
-	UniquePtr<Renderer> m_AppRenderer = nullptr;
 	ImGuiLayer* m_ImGuiLayer = nullptr;
 
 	// --- App Properties ---
 	bool m_Running = true;
 	float m_LastFrameTime = 0.0f, m_DeltaTime = 0.0f;
 };
-
 
 #endif //_APPLICATION_H_

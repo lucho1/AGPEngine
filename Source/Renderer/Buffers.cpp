@@ -114,12 +114,6 @@ void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertex_buffer)
 			case SHADER_DATA::FLOAT3:
 			case SHADER_DATA::FLOAT4:
 			{
-				//glEnableVertexAttribArray(m_VBufferIndex);
-				//glVertexAttribPointer(m_VBufferIndex, element.GetElementTypeCount(),
-				//	ShaderDataTypeToOpenGLType(element.Type),
-				//	element.Normalized ? GL_TRUE : GL_FALSE,
-				//	layout.GetStride(), (const void*)element.Offset);
-
 				SetFloatAttribute(element, m_VBufferIndex, layout.GetStride());
 				++m_VBufferIndex;
 				break;
@@ -130,11 +124,6 @@ void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertex_buffer)
 			case SHADER_DATA::INT4:
 			case SHADER_DATA::BOOL:
 			{
-				//glEnableVertexAttribArray(m_VBufferIndex);
-				//glVertexAttribIPointer(m_VBufferIndex, element.GetElementTypeCount(),
-				//	ShaderDataTypeToOpenGLType(element.Type),
-				//	layout.GetStride(), (const void*)element.Offset);
-
 				SetIntAttribute(element, m_VBufferIndex, layout.GetStride());
 				++m_VBufferIndex;
 				break;
@@ -142,22 +131,6 @@ void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertex_buffer)
 			case SHADER_DATA::MAT3:
 			case SHADER_DATA::MAT4:
 			{
-				//uint8_t count = element.GetElementTypeCount();
-				//for (uint8_t i = 0; i < count; ++i)
-				//{
-					//glEnableVertexAttribArray(m_VBufferIndex);
-					//glVertexAttribPointer(m_VBufferIndex, count,
-					//	ShaderDataTypeToOpenGLType(element.Type),
-					//	element.Normalized ? GL_TRUE : GL_FALSE,
-					//	layout.GetStride(), (const void*)(element.Offset + sizeof(float) * count * i));
-					//
-					//glVertexAttribDivisor(m_VBufferIndex, 1);
-
-					
-
-					//++m_VBufferIndex;
-				//}
-
 				SetMatrixAttribute(element, m_VBufferIndex, layout.GetStride());
 				m_VBufferIndex += element.GetElementTypeCount();
 				break;

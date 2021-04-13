@@ -2,9 +2,10 @@
 #define _WINDOW_H_
 
 #include "Globals.h"
-#include "Engine.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 
 class Window
 {
