@@ -3,6 +3,8 @@
 #include "Renderer/Utils/RendererUtils.h"
 #include "Core/Utils/FileStringUtils.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include <filesystem>
 #include <fstream>
 

@@ -25,10 +25,6 @@
 #include <string>
 #include <unordered_map>
 
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 
 // --- Engine Definitions ---
 #define ASSERT(condition, message) assert((condition) && message)
