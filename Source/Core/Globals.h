@@ -27,9 +27,6 @@
 
 
 // --- Engine Definitions ---
-#define ASSERT(condition, message) assert((condition) && message)
-#define ARRAY_COUNT(array) (sizeof(array)/sizeof(array[0]))
-
 // Logs string to outputs configured in platform layer & engine console. By default, string is printed in the output console of VisualStudio
 static void LogString(const char* str)
 {
@@ -44,6 +41,11 @@ static void LogString(const char* str)
 
 #define ILOG(...) { char logBuffer[1024] = {}; sprintf_s(logBuffer, __VA_ARGS__); LogString(logBuffer); }
 #define ENGINE_LOG(...) ILOG(__VA_ARGS__)
+
+#define ENGINE_BREAK(...) { ILOG("ENGINE BREAK: "); ILOG(__VA_ARGS__); assert(false); }
+#define ASSERT(condition, ...) { if(!(condition)) ENGINE_BREAK(__VA_ARGS__); }
+
+#define ARRAY_COUNT(array) (sizeof(array)/sizeof(array[0]))
 
 
 // --- Conversions ---
