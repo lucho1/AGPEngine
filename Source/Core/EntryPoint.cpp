@@ -1,7 +1,8 @@
+#include "Globals.h"
+#include "Application.h"
 
 
 // ----------------------- Graphics Card Usage --------------------------------------------------------
-#include "Globals.h"
 extern "C" {
 	// http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
 	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
@@ -12,15 +13,7 @@ extern "C" {
 }
 
 
-
 // ----------------------- Application ----------------------------------------------------------------
-#include "Application.h"
-
-#define APPLICATION_NAME "AGPEngine by Lucho Suaya"
-#define WINDOW_WIDTH 960
-#define WINDOW_HEIGHT 540
-#define FRAMERATE 60.0f
-
 int main(int argc, char** argv)
 {
     // -- Initialization --

@@ -58,6 +58,13 @@ static void LogString(const char* str)
 #define TAU 6.28318530718f
 
 
+// --- Application Definitions ---
+#define APPLICATION_NAME "AGPEngine by Lucho Suaya"
+#define WINDOW_WIDTH 960
+#define WINDOW_HEIGHT 540
+#define FRAMERATE 60.0f
+
+
 // --- Typedefs ---
 typedef unsigned int            uint;
 typedef unsigned long long int  uint64;
