@@ -27,10 +27,9 @@ class Renderer
 public:
 
 	// --- Class Stuff ---
-	//Renderer();
-	//~Renderer();
 	static void Init();
 	static void Shutdown();
+
 
 	// --- Rendering Stuff ---
 	static void ClearRenderer(uint viewport_width, uint viewport_height);
@@ -45,6 +44,12 @@ public:
 
 	// --- Getters ---
 	static const RendererStatistics& GetStatistics() { return m_RendererStatistics; }
+
+private:
+
+	// --- Private Class Methods ---
+	static void SetRendererStatistics(int ogl_major_version, int ogl_min_version);
+	static void LoadDefaultTextures();
 
 private:
 

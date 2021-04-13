@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Utils/RenderCommand.h"
+#include "Renderer/Utils/RendererPrimitives.h"
 
 #include <imgui.h>
 
