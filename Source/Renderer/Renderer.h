@@ -33,9 +33,13 @@ public:
 	static void Shutdown();
 
 	// --- Rendering Stuff ---
+	static void ClearRenderer(uint viewport_width, uint viewport_height);
 	static void BeginScene(glm::mat4 viewproj_mat);
 	static void EndScene();
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
+
+	// --- Events ---
+	static void OnWindowResized(uint width, uint height);
 
 public:
 

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Application\Application.cpp" />
+    <ClCompile Include="Source\Core\Application\Sandbox.cpp" />
     <ClCompile Include="Source\Core\EntryPoint.cpp" />
     <ClCompile Include="Source\Core\Application\ImGuiLayer.cpp" />
     <ClCompile Include="Source\Core\Platform\Input.cpp" />
@@ -36,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Application\Application.h" />
+    <ClInclude Include="Source\Core\Application\Sandbox.h" />
     <ClInclude Include="Source\Core\Globals.h" />
     <ClInclude Include="Source\Core\Application\ImGuiLayer.h" />
     <ClInclude Include="Source\Core\Platform\Input.h" />

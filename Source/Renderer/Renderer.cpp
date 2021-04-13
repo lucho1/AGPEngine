@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Core/Application/Application.h"
 
 #include "Utils/RendererUtils.h"
 #include "Utils/RenderCommand.h"
@@ -28,6 +29,11 @@ void Renderer::Init()
 	m_RendererStatistics.GLVendor = std::string((const char*)glGetString(GL_VENDOR));
 	m_RendererStatistics.GLShadingVersion = std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+	// -- Set OGL Init Stuff --
+	RenderCommand::SetBlending(true);
+	RenderCommand::SetBlendingFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	RenderCommand::SetDepthTest(true);
+
 	// -- Enable OGL Debugging --
 	#ifdef _DEBUG
 		glEnable(GL_DEBUG_OUTPUT);
@@ -52,21 +58,29 @@ void Renderer::Init()
 	RendererPrimitives::DefaultTextures::BlackTexture->SetData(&black_data, sizeof(black_data));
 	RendererPrimitives::DefaultTextures::MagentaTexture->SetData(&magenta_data, sizeof(magenta_data));
 	RendererPrimitives::DefaultTextures::TempNormalTexture->SetData(&normal_data, sizeof(normal_data));
-	
-
-	// -- Set OGL Init Stuff --
-	RenderCommand::SetBlending(true);
-	RenderCommand::SetBlendingFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	RenderCommand::SetDepthTest(true);
 }
+
 
 void Renderer::Shutdown()
 {
 }
 
 
+void Renderer::OnWindowResized(uint width, uint height)
+{
+	RenderCommand::SetViewport(0, 0, width, height);
+}
+
+
 
 // ------------------------------------------------------------------------------
+void Renderer::ClearRenderer(uint viewport_width, uint viewport_height)
+{
+	RenderCommand::SetClearColor(glm::vec3(0.15f));
+	RenderCommand::Clear();
+	RenderCommand::SetViewport(0, 0, viewport_width, viewport_height);
+}
+
 void Renderer::BeginScene(glm::mat4 viewproj_mat)
 {
 	m_ViewProjectionMatrix = viewproj_mat;
