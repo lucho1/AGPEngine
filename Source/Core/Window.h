@@ -20,6 +20,8 @@ public:
 	void CloseWindow();
 
 	// --- Getters/Setters ---
+	void SetVSYNC(bool enabled);
+
 	inline void* GetNativeWindow()	const { return m_Window; }
 	inline uint GetWidth()			const { return m_Width; }
 	inline uint GetHeight()			const { return m_Height; }
@@ -37,6 +39,7 @@ private:
 	GLFWwindow* m_Window = nullptr;
 	uint m_Width = 960, m_Height = 540;
 	std::string m_Name = "Unnamed Window";
+	bool m_VSYNC = true;
 };
 
 #endif //_WINDOW_H_

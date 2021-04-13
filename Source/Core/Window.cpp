@@ -62,7 +62,7 @@ void Window::Init()
 
     // -- GLFW Window User ptr & VSYNC --
     glfwSetWindowUserPointer(m_Window, this);
-    glfwSwapInterval(1); //TODO: Set VSYNC
+    SetVSYNC(true);
 
     // -- Set GLFW Callbacks --
     SetGLFWEventCallbacks();
@@ -94,6 +94,12 @@ void Window::ResizeWindow(uint width, uint height)
 void Window::CloseWindow()
 {
     Application::Get().CloseApplication();
+}
+
+void Window::SetVSYNC(bool enabled)
+{
+    enabled ? glfwSwapInterval(1) : glfwSwapInterval(0);
+    m_VSYNC = enabled;
 }
 
 
