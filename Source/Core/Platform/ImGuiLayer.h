@@ -1,7 +1,7 @@
 #ifndef _IMGUILAYER_H_
 #define _IMGUILAYER_H_
 
-#include "Core/Platform/Window.h"
+#include "Window.h"
 
 class ImGuiLayer
 {

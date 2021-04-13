@@ -2,9 +2,9 @@
 #define _APPLICATION_H_
 
 #include "Core/Globals.h"
-#include "ImGuiLayer.h"
 
 #include "Core/Platform/Window.h"
+#include "Core/Platform/ImGuiLayer.h"
 
 
 // --- Main Declaration, Defined on Main ---
