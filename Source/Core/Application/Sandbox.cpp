@@ -22,18 +22,17 @@ void Sandbox::Init()
     };
 
     BufferLayout layout = { { SHADER_DATA::FLOAT3, "a_Position" }, { SHADER_DATA::FLOAT2, "a_TexCoord" } };
+    Ref<VertexBuffer> vb = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
+    Ref<IndexBuffer> ib = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
 
-    m_VArray = CreateRef<VertexArray>();
-    m_VBuffer = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
-    m_IBuffer = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
+    m_SquareVArray = CreateRef<VertexArray>();
+    vb->SetLayout(layout);
 
-    m_VBuffer->SetLayout(layout);
-    m_VArray->AddVertexBuffer(m_VBuffer);
-    m_VArray->SetIndexBuffer(m_IBuffer);
+    m_SquareVArray->AddVertexBuffer(vb);
+    m_SquareVArray->SetIndexBuffer(ib);
 
-    m_VArray->Unbind();
-    m_VBuffer->Unbind();
-    m_IBuffer->Unbind();
+    m_SquareVArray->Unbind();
+    vb->Unbind(); ib->Unbind();
 
     // -- Texture Test --
     m_TestTexture = CreateRef<Texture>("Resources/textures/dice.png");
@@ -56,11 +55,11 @@ void Sandbox::OnUpdate(float dt)
 
     m_TextureShader->SetUniformInt("u_Texture", 0);
     //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
-    Renderer::Submit(m_TextureShader, m_VArray);
+    Renderer::Submit(m_TextureShader, m_SquareVArray);
 
     m_TestTexture->Unbind();
     m_TextureShader->Unbind();
-    m_VArray->Unbind();
+    m_SquareVArray->Unbind();
 }
 
 

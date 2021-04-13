@@ -28,9 +28,7 @@ private:
 
 private:
 
-	Ref<VertexBuffer> m_VBuffer;
-	Ref<IndexBuffer> m_IBuffer;
-	Ref<VertexArray> m_VArray;
+	Ref<VertexArray> m_SquareVArray;
 	Ref<Texture> m_TestTexture;
 	Ref<Shader> m_TextureShader;
 	
