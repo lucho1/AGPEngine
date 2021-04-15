@@ -9,6 +9,7 @@
 #ifdef _WIN32
     #define VC_EXTRALEAN
     #define WIN32_LEAN_AND_MEAN
+    #define NOMINMAX
     #include <Windows.h>
 #else
     #include <sys/types.h>
@@ -85,11 +86,5 @@ template<typename T, typename ... Args>
 constexpr Ref<T> CreateRef(Args&& ... args) { return std::make_shared<T>(std::forward<Args>(args)...); }
 template<typename T>
 constexpr Ref<T> CreateRef(T* t) { return std::shared_ptr<T>(t); }
-
-
-// --- Memory Pool ---
-#define GLOBAL_FRAME_ARENA_SIZE MBTOBYTE(16.0f)
-static unsigned char* GlobalFrameArenaMemory = NULL;
-static uint GlobalFrameArenaHead = 0;
 
 #endif //_GLOBALS_H_

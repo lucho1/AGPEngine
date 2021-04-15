@@ -105,8 +105,5 @@ void Application::Update()
         // -- Input & Window Update --
         Input::Update();
         m_AppWindow->Update();
-
-        // -- Arena Global Variable Reset --
-        GlobalFrameArenaHead = 0;
     }
 }

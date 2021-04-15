@@ -7,13 +7,11 @@
 namespace FileUtils
 {
 	// --- File Standard Functions ---
-	// Reads file & returns string with its contents
-	std::string ReadTextFile(const char* filepath);
 	std::string MakePath(const std::string& dir, const std::string& filename);
+	std::string GetDirectory(const std::string& path);
 
 	// Last time file was modified. Check for file modifications for hot reloads.
 	uint64 GetFileLastWriteTimestamp(const char* filepath);
-	std::string GetDirectoryPart(const std::string& path);
 
 
 	// --- Files Dialogues ---
@@ -27,11 +25,6 @@ namespace FileUtils
 		// If cancelled, returns empty string
 		static std::string SaveFile(const char* filter, const char* filename, GLFWwindow* window);
 	};
-}
-
-namespace StringUtils
-{
-	std::string MakeString(const char* cstr);
 }
 
 #endif //_FILESTRINGUTILS_H_
