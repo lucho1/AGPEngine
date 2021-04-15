@@ -7,6 +7,7 @@
 #include "Renderer/Resources/Buffers.h"
 #include "Renderer/Resources/Texture.h"
 #include "Renderer/Resources/Shader.h"
+#include "Renderer/Resources/Mesh.h"
 
 #define ALLOCATIONS_SAMPLES 90
 
@@ -28,7 +29,7 @@ private:
 
 private:
 
-	Ref<VertexArray> m_SquareVArray;
+	Ref<Mesh> m_TestMesh;
 	Ref<Texture> m_TestTexture;
 	Ref<Shader> m_TextureShader;
 	

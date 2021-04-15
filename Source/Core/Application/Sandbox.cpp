@@ -9,7 +9,7 @@
 
 #include <imgui.h>
 
-#include "Renderer/Resources/Mesh.h"
+
 
 // ------------------------------------------------------------------------------
 void Sandbox::Init()
@@ -24,15 +24,17 @@ void Sandbox::Init()
     };
 
     BufferLayout layout = { { SHADER_DATA::FLOAT3, "a_Position" }, { SHADER_DATA::FLOAT2, "a_TexCoord" } };
-    Ref<VertexBuffer> vb = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
-    Ref<IndexBuffer> ib = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
+    Ref<VertexBuffer> vbo = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
+    Ref<IndexBuffer> ibo = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
+    Ref<VertexArray> vao = CreateRef<VertexArray>();
 
-    vb->SetLayout(layout);
-    m_SquareVArray = CreateRef<VertexArray>();
+    vbo->SetLayout(layout);
+    vao->AddVertexBuffer(vbo);
+    vao->SetIndexBuffer(ibo);
+    vao->Unbind(); vbo->Unbind(); ibo->Unbind();
 
-    m_SquareVArray->AddVertexBuffer(vb);
-    m_SquareVArray->SetIndexBuffer(ib);
-    m_SquareVArray->Unbind();
+    // -- Mesh Test --
+    m_TestMesh = CreateRef<Mesh>(vao);
 
     // -- Texture Test --
     m_TestTexture = Resources::CreateTexture("Resources/textures/dice.png");
@@ -59,12 +61,12 @@ void Sandbox::OnUpdate(float dt)
     //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
 
     // Draw Call
-    Renderer::Submit(m_TextureShader, m_SquareVArray);
+    Renderer::Submit(m_TextureShader, m_TestMesh->GetVertexArray());
     
     // Unbinds
     Renderer::UnbindTexture(Resources::TexturesIndex::ALBEDO, m_TestTexture);
     m_TextureShader->Unbind();
-    m_SquareVArray->Unbind();
+    m_TestMesh->GetVertexArray()->Unbind();
 }
 
 

@@ -2,11 +2,7 @@
 #define _MESH_H_
 
 #include "Core/Globals.h"
-#include "Core/Application/Resources.h"
-#include "Renderer/Resources/Buffers.h"
-
 #include <filesystem>
-
 
 
 // ------------------------------------------------------------------------------
@@ -49,11 +45,12 @@ public:
 	~Mesh() { DeleteMesh(); }
 	Mesh(const Mesh&) = default;
 
-	Mesh(Ref<VertexArray> vertex_array, uint material_index = 0, Mesh* parent = nullptr)
+	Mesh(const Ref<VertexArray>& vertex_array, uint material_index = 0, Mesh* parent = nullptr)
 		: m_VertexArray(vertex_array), m_MaterialIndex(material_index), m_ParentMesh(parent) {}
 
 
 	// --- Getters ---
+	inline const Ref<VertexArray>& GetVertexArray()	const	{ return m_VertexArray; }
 	inline const Mesh* GetParent()					const	{ return m_ParentMesh; }
 	inline const Ref<Mesh>* GetSubmesh(uint index)			{ if (index < m_Submeshes.size()) return &m_Submeshes[index]; return nullptr; }
 
