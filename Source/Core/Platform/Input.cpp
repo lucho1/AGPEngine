@@ -77,9 +77,9 @@ void Input::SetKeyCallback(int glfw_key, int action)
 
 void Input::SetCursorCallback(double xpos, double ypos)
 {
-    m_MouseDelta.x = xpos - m_MousePos.x;
-    m_MouseDelta.y = xpos - m_MousePos.y;
-    m_MousePos = { xpos, ypos };
+    m_MouseDelta.x = (float)xpos - m_MousePos.x;
+    m_MouseDelta.y = (float)xpos - m_MousePos.y;
+    m_MousePos = { (float)xpos, (float)ypos };
 }
 
 void Input::SetScrollCallback(double xoff, double yoff)
@@ -195,4 +195,6 @@ KEY::KEY_CODE Input::ConvertGLFWKeyCode(int glfw_key)
         case GLFW_KEY_8:        return KEY::K8;
         case GLFW_KEY_9:        return KEY::K9;
     }
+
+    return KEY::NONE;
 }

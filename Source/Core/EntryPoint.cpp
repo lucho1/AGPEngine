@@ -17,7 +17,8 @@ extern "C" {
 int main(int argc, char** argv)
 {
     // -- Initialization --
-    GlobalFrameArenaMemory = (unsigned char*)malloc(GLOBAL_FRAME_ARENA_SIZE);
+    float arena_size = GLOBAL_FRAME_ARENA_SIZE;
+    GlobalFrameArenaMemory = static_cast<unsigned char*>(malloc(static_cast<size_t>(arena_size)));
     Application* application = new Application(APPLICATION_NAME, WINDOW_WIDTH, WINDOW_HEIGHT, FRAMERATE);
     
     // -- App Update --
