@@ -46,6 +46,7 @@
     <ClInclude Include="Source\Core\Utils\FileStringUtils.h" />
     <ClInclude Include="Source\Core\Platform\Window.h" />
     <ClInclude Include="Source\Renderer\Resources\Buffers.h" />
+    <ClInclude Include="Source\Renderer\Resources\Mesh.h" />
     <ClInclude Include="Source\Renderer\Utils\RenderCommand.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Renderer\Utils\RendererPrimitives.h" />

@@ -9,7 +9,7 @@
 
 #include <imgui.h>
 
-
+#include "Renderer/Resources/Mesh.h"
 
 // ------------------------------------------------------------------------------
 void Sandbox::Init()
@@ -27,14 +27,12 @@ void Sandbox::Init()
     Ref<VertexBuffer> vb = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
     Ref<IndexBuffer> ib = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
 
-    m_SquareVArray = CreateRef<VertexArray>();
     vb->SetLayout(layout);
+    m_SquareVArray = CreateRef<VertexArray>();
 
     m_SquareVArray->AddVertexBuffer(vb);
     m_SquareVArray->SetIndexBuffer(ib);
-
     m_SquareVArray->Unbind();
-    vb->Unbind(); ib->Unbind();
 
     // -- Texture Test --
     m_TestTexture = Resources::CreateTexture("Resources/textures/dice.png");

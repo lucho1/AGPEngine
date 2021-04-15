@@ -81,7 +81,7 @@ using Ref = std::shared_ptr<T>;
 template<typename T, typename ... Args>
 constexpr Ref<T> CreateRef(Args&& ... args) { return std::make_shared<T>(std::forward<Args>(args)...); }
 template<typename T>
-constexpr Ref<T> CreateRef(T* t) { return std::unique_ptr<T>(t); }
+constexpr Ref<T> CreateRef(T* t) { return std::shared_ptr<T>(t); }
 
 
 // --- Memory Pool ---

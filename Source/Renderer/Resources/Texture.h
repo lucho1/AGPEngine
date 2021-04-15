@@ -7,14 +7,14 @@
 class Texture
 {
 	friend class Resources;
-	friend class Renderer;
 private:
 
 	// --- Des/Construction ---
 	Texture(const std::string& path);
 
 public:
-	
+
+	// --- Des/Construction ---
 	Texture(uint width, uint height);
 	~Texture();
 

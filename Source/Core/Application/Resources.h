@@ -2,8 +2,9 @@
 #define _RESOURCES_H_
 
 #include "Core/Globals.h"
+#include "Renderer/Resources/Buffers.h"
 #include "Renderer/Resources/Texture.h"
-
+#include "Renderer/Resources/Mesh.h"
 
 // Take into account that push_back() adds a reference into the smart ptr,
 // that's what's CleanUp for, although not needed because smart ptrs clean
@@ -19,17 +20,21 @@ public:
 public:
 	
 	// --- Remove Resources References ---
-	static void CleanUp() { m_Textures.clear(); } //Meshes.clear(); //Materials.clear(); }
+	static void CleanUp() { m_Textures.clear(); m_Models.clear(); } //m_Materials.clear(); }
 
 	// --- Create Resources ---
 	static Ref<Texture> CreateTexture(const std::string& filepath);
+	static Ref<Model> CreateModel(const std::string& filepath);
+
+	// --- Unload Resources ---
+	static void DeleteAllMeshReferences(Ref<Mesh>* mesh);	
 
 private:
 
 	// --- Resources ---
 	static std::vector<Ref<Texture>> m_Textures;
-	//std::vector<Mesh> Meshes;
-	//std::vector<Material> Materials;
+	static std::vector<Ref<Model>> m_Models;
+	//std::vector<Material> m_Materials;
 };
 
 #endif //_RESOURCES_H_
