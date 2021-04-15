@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Application\Application.cpp" />
+    <ClCompile Include="Source\Core\Resources\MeshImporter.cpp" />
     <ClCompile Include="Source\Core\Resources\Resources.cpp" />
     <ClCompile Include="Source\Core\Application\Sandbox.cpp" />
     <ClCompile Include="Source\Core\EntryPoint.cpp" />
@@ -38,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Application\Application.h" />
+    <ClInclude Include="Source\Core\Resources\MeshImporter.h" />
     <ClInclude Include="Source\Core\Resources\Resources.h" />
     <ClInclude Include="Source\Core\Application\Sandbox.h" />
     <ClInclude Include="Source\Core\Globals.h" />

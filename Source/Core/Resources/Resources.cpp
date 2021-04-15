@@ -1,4 +1,30 @@
 #include "Resources.h"
+#include "MeshImporter.h"
+
+
+// ------------------------------------------------------------------------------
+void Resources::PrintResourcesReferences()
+{
+	ENGINE_LOG("\n\n----- RESOURCES REFERENCES -----");
+	ENGINE_LOG("\t- Materials (%i)", m_Materials.size());
+	for (auto& mat : m_Materials)
+		ENGINE_LOG("\t\tMat %i '%s' -> Refs: %i", mat.first, mat.second->m_Name.c_str(), mat.second.use_count());
+
+	ENGINE_LOG("\t- Meshes (%i)", m_Meshes.size());
+	for (auto& mesh : m_Meshes)
+		ENGINE_LOG("\t\tMesh %i -> Refs: %i", mesh.first, mesh.second.use_count());
+
+	ENGINE_LOG("\t- Models (%i)", m_Models.size());
+	for(auto& model : m_Models)
+		ENGINE_LOG("\t\tModel '%s' -> Refs: %i", model->m_Name.c_str(), model.use_count());
+
+	ENGINE_LOG("\t- Textures (%i)\n\t\tFirst 5 are Default ones", m_Textures.size());
+	for(auto& tex : m_Textures)
+		ENGINE_LOG("\t\tTexture %i -> Refs: %i", tex->m_ID, tex.use_count());
+
+	ENGINE_LOG("\n");
+}
+
 
 
 // ------------------------------------------------------------------------------
@@ -21,6 +47,7 @@ Ref<Texture> Resources::CreateTexture(const std::string& filepath)
 }
 
 
+
 // ------------------------------------------------------------------------------
 // --- Models ---
 std::vector<Ref<Model>> Resources::m_Models = {};
@@ -35,10 +62,13 @@ Ref<Model> Resources::CreateModel(const std::string& filepath, Mesh* root_mesh)
 	}
 
 	// --- Create Resource ---
+	MeshImporter::LoadModel(filepath);
+
 	Ref<Model> model = CreateRef<Model>(new Model(filepath, root_mesh));
 	m_Models.push_back(model);
 	return model;
 }
+
 
 
 // ------------------------------------------------------------------------------
@@ -54,13 +84,19 @@ const Ref<Mesh>* Resources::CreateMesh(const Ref<VertexArray>& vertex_array, uin
 	return &m_Meshes[id];
 }
 
+
 const Ref<Material>* Resources::CreateMaterial(const std::string& name)
 {
 	int id = m_Materials.size(); // TODO: There should be some default materials (white, ...) which are indexes 0-4!!!
-	Ref<Material> mat = CreateRef<Material>(new Material(id, name));
+	std::string mat_name = name;
+	if (name.find_last_of('.') != name.npos)
+		mat_name = name.substr((size_t)0, name.find_last_of('.'));
+
+	Ref<Material> mat = CreateRef<Material>(new Material(id, mat_name));
 	m_Materials.insert({ id, mat });	
 	return &m_Materials[id];
 }
+
 
 void Resources::DeleteAllMeshReferences(uint meshID_to_delete)
 {
@@ -91,6 +127,7 @@ void Resources::DeleteAllMeshReferences(uint meshID_to_delete)
 	m_Meshes[meshID_to_delete].reset();
 }
 
+
 void Resources::DeleteAllMaterialReferences(uint materialID_to_delete)
 {
 	if (m_Materials.find(materialID_to_delete) == m_Materials.end())
@@ -106,6 +143,7 @@ void Resources::DeleteAllMaterialReferences(uint materialID_to_delete)
 	m_Materials[materialID_to_delete].reset();
 	m_Materials.erase(materialID_to_delete);
 }
+
 
 void Resources::SetMeshMaterial(uint meshID, uint materialID)
 {

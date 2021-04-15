@@ -45,10 +45,11 @@ private:
 
 public:
 
-	float Smoothness = 1.0f;
-	bool IsTransparent = false, IsEmissive = false;
+	float Smoothness = 1.0f;// , Metallic = 0.0f; TODO: ? -> Also a Metallic texture?
+	bool IsTransparent = false, IsEmissive = false, IsTwoSided = false;
 
 	glm::vec4 AlbedoColor = glm::vec4(1.0f);
+	glm::vec4 SpecularColor = glm::vec4(0.0f);
 	glm::vec4 EmissiveColor = glm::vec4(1.0f);
 
 	Ref<Texture> Albedo = nullptr;

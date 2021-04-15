@@ -22,8 +22,8 @@ namespace RendererPrimitives
 				case 0:		return WhiteTexture.get();
 				case 1:		return BlackTexture.get();
 				case 2:		return MagentaTexture.get();
-				case 3:		return TempAlbedoTexture.get();
-				case 4:		return TempNormalTexture.get();
+				case 3:		return TempNormalTexture.get();
+				case 4:		return TempAlbedoTexture.get();
 				default:	return nullptr;
 			}
 		}

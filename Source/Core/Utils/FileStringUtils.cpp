@@ -18,7 +18,11 @@ namespace FileUtils
 
     std::string FileUtils::GetDirectory(const std::string& path)
     {
-        return path.substr((size_t)0, path.find_last_of("/\\"));
+        size_t last_slash = path.find_last_of("/\\");
+        if (last_slash != path.npos)
+            return path.substr((size_t)0, path.find_last_of("/\\"));
+        else
+            return "INVALID PATH!";
     }
 
     uint64 FileUtils::GetFileLastWriteTimestamp(const char* filepath)

@@ -36,12 +36,15 @@ void Sandbox::Init()
 
     // -- Mesh Test --
     m_TestMesh = Resources::CreateMesh(vao);
+    Ref<Model> pmodel2 = Resources::CreateModel("Resources/models/Patrick/Patrick.obj");
 
     const Ref<Material>& mat1 = *Resources::CreateMaterial("DefMat");
     Resources::SetMeshMaterial((*m_TestMesh)->GetID(), (*mat1).GetID());
 
     // -- Shader Test --
     m_TextureShader = CreateRef<Shader>("Resources/shaders/TexturedShader.glsl");
+
+    Resources::PrintResourcesReferences();
 }
 
 

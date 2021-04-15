@@ -16,7 +16,7 @@ class Resources
 {
 public:
 
-	enum class TexturesIndex { WHITE = 0, BLACK, MAGENTA, TESTALBEDO, TESTNORMAL, ALBEDO, SPECULAR, NORMAL, EMISSIVE, BUMP };
+	enum class TexturesIndex { WHITE = 0, BLACK, MAGENTA, TESTNORMAL, TESTALBEDO, ALBEDO, SPECULAR, NORMAL, EMISSIVE, BUMP };
 
 public:
 	
@@ -36,6 +36,7 @@ public:
 
 	// --- Other Resources Stuff --
 	static void SetMeshMaterial(uint meshID, uint materialID);
+	static void PrintResourcesReferences();
 
 private:
 

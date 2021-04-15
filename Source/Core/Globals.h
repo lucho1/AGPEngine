@@ -80,7 +80,7 @@ using Ref = std::shared_ptr<T>;
 template<typename T, typename ... Args>
 constexpr UniquePtr<T> CreateUnique(Args&& ... args) { return std::make_unique<T>(std::forward<Args>(args)...); }
 template<typename T>
-constexpr UniquePtr<T> CreateUnique(T* t) { return std::make_unique<T>(t); }
+constexpr UniquePtr<T> CreateUnique(T* t) { return std::unique_ptr<T>(t); }
 
 template<typename T, typename ... Args>
 constexpr Ref<T> CreateRef(Args&& ... args) { return std::make_shared<T>(std::forward<Args>(args)...); }
