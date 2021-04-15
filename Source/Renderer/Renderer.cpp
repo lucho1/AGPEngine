@@ -86,7 +86,7 @@ void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_
 
 
 // ------------------------------------------------------------------------------
-void Renderer::BindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture)
+void Renderer::BindTexture(Resources::TexturesIndex texture_type, const Ref<Texture>* texture)
 {
 	const uint index = (uint)texture_type;
 	uint materials_textures_pos = (uint)Resources::TexturesIndex::ALBEDO;
@@ -94,12 +94,12 @@ void Renderer::BindTexture(Resources::TexturesIndex texture_type, Ref<Texture> t
 	if (index < materials_textures_pos)
 		RendererPrimitives::DefaultTextures::GetTextureFromIndex(index)->Bind(index);
 	else if (index >= materials_textures_pos && texture)
-		texture->Bind(index);
+		(*texture)->Bind(index);
 	else
 		ENGINE_LOG("Tried to Bind a nullptr texture!");
 }
 
-void Renderer::UnbindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture)
+void Renderer::UnbindTexture(Resources::TexturesIndex texture_type, const Ref<Texture>* texture)
 {
 	const uint index = (uint)texture_type;
 	uint materials_textures_pos = (uint)Resources::TexturesIndex::ALBEDO;
@@ -107,7 +107,7 @@ void Renderer::UnbindTexture(Resources::TexturesIndex texture_type, Ref<Texture>
 	if (index < materials_textures_pos)
 		RendererPrimitives::DefaultTextures::GetTextureFromIndex(index)->Unbind();
 	else if (index >= materials_textures_pos && texture)
-		texture->Unbind();
+		(*texture)->Unbind();
 	else
 		ENGINE_LOG("Tried to Unbind a nullptr texture!");
 }

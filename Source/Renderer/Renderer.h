@@ -41,8 +41,8 @@ public:
 
 	// --- Resources Stuff ---
 	// If a default texture is to be bound, just pass its TexturesIndex and a nullptr, otherwise pass the desired index (albedo, specular...) and a pointer to the texture
-	static void BindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture = nullptr);
-	static void UnbindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture = nullptr);
+	static void BindTexture(Resources::TexturesIndex texture_type, const Ref<Texture>* texture = nullptr);
+	static void UnbindTexture(Resources::TexturesIndex texture_type, const Ref<Texture>* texture = nullptr);
 
 	// --- Events ---
 	static void OnWindowResized(uint width, uint height);
