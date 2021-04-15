@@ -26,7 +26,7 @@ Ref<Texture> Resources::CreateTexture(const std::string& filepath)
 void Resources::DeleteAllMeshReferences(Ref<Mesh>* mesh_to_delete)
 {
 	// -- Delete from Parent --
-	Mesh* parent = (*mesh_to_delete)->GetParent();	
+	Mesh* parent = (*mesh_to_delete)->m_ParentMesh;
 	if (parent)
 	{
 		std::vector<Ref<Mesh>>::iterator it = parent->m_Submeshes.begin();

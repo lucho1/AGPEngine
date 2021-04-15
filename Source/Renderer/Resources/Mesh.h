@@ -54,11 +54,11 @@ public:
 
 
 	// --- Getters ---
-	Mesh* GetParent()						const	{ return m_ParentMesh; }
-	Ref<Mesh>* GetSubmesh(uint index)				{ if (index < m_Submeshes.size()) return &m_Submeshes[index]; return nullptr; }
+	inline const Mesh* GetParent()					const	{ return m_ParentMesh; }
+	inline const Ref<Mesh>* GetSubmesh(uint index)			{ if (index < m_Submeshes.size()) return &m_Submeshes[index]; return nullptr; }
 
-	uint GetMaterialIndex()					const	{ return m_MaterialIndex; }
-	void SetMaterialIndex(uint index)				{ m_MaterialIndex = index; }
+	uint GetMaterialIndex()							const	{ return m_MaterialIndex; }
+	void SetMaterialIndex(uint index)						{ m_MaterialIndex = index; }
 
 
 	// --- Mesh Methods ---
