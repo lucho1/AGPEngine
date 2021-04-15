@@ -8,6 +8,7 @@
 #include "Renderer/Utils/RendererPrimitives.h"
 
 #include <imgui.h>
+#include "Renderer/Resources/Material.h"
 
 
 
@@ -34,7 +35,10 @@ void Sandbox::Init()
     vao->Unbind(); vbo->Unbind(); ibo->Unbind();
 
     // -- Mesh Test --
-    m_TestMesh = CreateRef<Mesh>(vao);
+    m_TestMesh = Resources::CreateMesh(vao);
+
+    const Ref<Material>& mat1 = *Resources::CreateMaterial("DefMat");
+    Resources::SetMeshMaterial((*m_TestMesh)->GetID(), (*mat1).GetID());
 
     // -- Texture Test --
     m_TestTexture = Resources::CreateTexture("Resources/textures/dice.png");
@@ -61,12 +65,12 @@ void Sandbox::OnUpdate(float dt)
     //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
 
     // Draw Call
-    Renderer::Submit(m_TextureShader, m_TestMesh->GetVertexArray());
+    Renderer::Submit(m_TextureShader, (*m_TestMesh)->GetVertexArray());
     
     // Unbinds
     Renderer::UnbindTexture(Resources::TexturesIndex::ALBEDO, m_TestTexture);
     m_TextureShader->Unbind();
-    m_TestMesh->GetVertexArray()->Unbind();
+    (*m_TestMesh)->GetVertexArray()->Unbind();
 }
 
 
@@ -76,7 +80,7 @@ void Sandbox::OnUIRender(float dt)
 {
     // --- Performance Info Display ---
     ImGui::Begin("Info");
-    ImGui::Text("FPS: %f", 1.0f / dt);
+    ImGui::Text("FPS: %.0f", 1.0f / dt);
     
     if (Input::IsKeyPressed(KEY::A))
     {

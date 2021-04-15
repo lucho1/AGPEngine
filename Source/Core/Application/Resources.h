@@ -5,6 +5,7 @@
 #include "Renderer/Resources/Buffers.h"
 #include "Renderer/Resources/Texture.h"
 #include "Renderer/Resources/Mesh.h"
+#include "Renderer/Resources/Material.h"
 
 // Take into account that push_back() adds a reference into the smart ptr,
 // that's what's CleanUp for, although not needed because smart ptrs clean
@@ -20,21 +21,30 @@ public:
 public:
 	
 	// --- Remove Resources References ---
-	static void CleanUp() { m_Textures.clear(); m_Models.clear(); } //m_Materials.clear(); }
+	static void CleanUp() { m_Textures.clear(); m_Models.clear(); m_Meshes.clear(); m_Materials.clear(); }
 
 	// --- Create Resources ---
 	static Ref<Texture> CreateTexture(const std::string& filepath);
-	static Ref<Model> CreateModel(const std::string& filepath);
+	static Ref<Model> CreateModel(const std::string& filepath, Mesh* root_mesh = nullptr);
+	
+	const static Ref<Mesh>* CreateMesh(const Ref<VertexArray>& vertex_array, uint material_index = 0, Mesh* parent = nullptr);
+	const static Ref<Material>* CreateMaterial(const std::string& name = "unnamed");
 
 	// --- Unload Resources ---
-	static void DeleteAllMeshReferences(Ref<Mesh>* mesh);	
+	static void DeleteAllMeshReferences(uint meshID_to_delete);
+	static void DeleteAllMaterialReferences(uint materialID_to_delete);
+
+	// --- Other Resources Stuff --
+	static void SetMeshMaterial(uint meshID, uint materialID);
 
 private:
 
 	// --- Resources ---
 	static std::vector<Ref<Texture>> m_Textures;
 	static std::vector<Ref<Model>> m_Models;
-	//std::vector<Material> m_Materials;
+
+	static std::unordered_map<int, Ref<Mesh>> m_Meshes;
+	static std::unordered_map<int, Ref<Material>> m_Materials;
 };
 
 #endif //_RESOURCES_H_

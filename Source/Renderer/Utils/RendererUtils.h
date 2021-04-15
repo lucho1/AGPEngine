@@ -87,25 +87,25 @@ namespace RendererUtils
 
 	// ------------------------------------------------------------------------------
 	// ----- Shader Type Stuff -----
-	static GLenum ShaderTypeFromString(const std::string& ShaderType)
+	static GLenum ShaderTypeFromString(const std::string& shader_type_str)
 	{
-		if (ShaderType == "VERTEX_SHADER")
+		if (shader_type_str == "VERTEX_SHADER")
 			return GL_VERTEX_SHADER;
-		if (ShaderType == "FRAGMENT_SHADER" || ShaderType == "PIXEL_SHADER")
+		if (shader_type_str == "FRAGMENT_SHADER" || shader_type_str == "PIXEL_SHADER")
 			return GL_FRAGMENT_SHADER;
 
-		ASSERT(false, "Unknown Shader Type '%s'", ShaderType.c_str());
+		ASSERT(false, "Unknown Shader Type '%s'", shader_type_str.c_str());
 		return 0;
 	}
 
-	static const char* StringFromShaderType(const GLenum& ShaderType)
+	static const char* StringFromShaderType(const GLenum& shader_type)
 	{
-		if (ShaderType == GL_VERTEX_SHADER)
+		if (shader_type == GL_VERTEX_SHADER)
 			return "Vertex";
-		if (ShaderType == GL_FRAGMENT_SHADER)
+		if (shader_type == GL_FRAGMENT_SHADER)
 			return "Fragment/Pixel";
 
-		ASSERT(false, "Unknown Shader Type '%s'", ShaderType);
+		ASSERT(false, "Unknown Shader Type '%i'", (int)shader_type);
 		return 0;
 	}
 

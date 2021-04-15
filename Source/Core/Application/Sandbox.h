@@ -29,7 +29,7 @@ private:
 
 private:
 
-	Ref<Mesh> m_TestMesh;
+	const Ref<Mesh>* m_TestMesh;
 	Ref<Texture> m_TestTexture;
 	Ref<Shader> m_TextureShader;
 	
