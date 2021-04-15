@@ -1,7 +1,7 @@
 #include "Sandbox.h"
 
 #include "Core/Platform/Input.h"
-#include "Core/Application/Resources.h"
+#include "Core/Resources/Resources.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/Utils/RenderCommand.h"

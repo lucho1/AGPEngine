@@ -2,7 +2,7 @@
 #define _RENDERER_H_
 
 #include "Core/Globals.h"
-#include "Core/Application/Resources.h"
+#include "Core/Resources/Resources.h"
 
 #include "Resources/Buffers.h"
 #include "Resources/Shader.h"

@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Application\Application.cpp" />
-    <ClCompile Include="Source\Core\Application\Resources.cpp" />
+    <ClCompile Include="Source\Core\Resources\Resources.cpp" />
     <ClCompile Include="Source\Core\Application\Sandbox.cpp" />
     <ClCompile Include="Source\Core\EntryPoint.cpp" />
     <ClCompile Include="Source\Core\Platform\ImGuiLayer.cpp" />
@@ -38,7 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Application\Application.h" />
-    <ClInclude Include="Source\Core\Application\Resources.h" />
+    <ClInclude Include="Source\Core\Resources\Resources.h" />
     <ClInclude Include="Source\Core\Application\Sandbox.h" />
     <ClInclude Include="Source\Core\Globals.h" />
     <ClInclude Include="Source\Core\Platform\ImGuiLayer.h" />

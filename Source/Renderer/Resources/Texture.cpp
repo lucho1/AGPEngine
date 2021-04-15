@@ -1,5 +1,5 @@
 #include "Texture.h"
-#include "Core/Application/Resources.h"
+#include "Core/Resources/Resources.h"
 
 #include <stb_image.h>
 #include <stb_image_write.h>
