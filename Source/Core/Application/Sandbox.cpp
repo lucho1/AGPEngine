@@ -40,9 +40,6 @@ void Sandbox::Init()
     const Ref<Material>& mat1 = *Resources::CreateMaterial("DefMat");
     Resources::SetMeshMaterial((*m_TestMesh)->GetID(), (*mat1).GetID());
 
-    // -- Texture Test --
-    m_TestTexture = Resources::CreateTexture("Resources/textures/dice.png");
-
     // -- Shader Test --
     m_TextureShader = CreateRef<Shader>("Resources/shaders/TexturedShader.glsl");
 }
@@ -57,18 +54,18 @@ void Sandbox::OnUpdate(float dt)
 
     // -- Render Stuff --
     // Texture Bind
-    Renderer::BindTexture(Resources::TexturesIndex::ALBEDO, m_TestTexture);
+    Renderer::BindTexture(Resources::TexturesIndex::TESTALBEDO);
     
     // Shader Bind & Uniforms
     m_TextureShader->Bind();
-    m_TextureShader->SetUniformInt("u_Texture", (int)Resources::TexturesIndex::ALBEDO);
+    m_TextureShader->SetUniformInt("u_Texture", (int)Resources::TexturesIndex::TESTALBEDO);
     //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
 
     // Draw Call
     Renderer::Submit(m_TextureShader, (*m_TestMesh)->GetVertexArray());
     
     // Unbinds
-    Renderer::UnbindTexture(Resources::TexturesIndex::ALBEDO, m_TestTexture);
+    Renderer::UnbindTexture(Resources::TexturesIndex::TESTALBEDO);
     m_TextureShader->Unbind();
     (*m_TestMesh)->GetVertexArray()->Unbind();
 }

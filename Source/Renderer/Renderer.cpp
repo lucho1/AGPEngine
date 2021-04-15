@@ -42,6 +42,7 @@ void Renderer::Init()
 
 	// -- Load Default Textures --
 	LoadDefaultTextures();
+	RendererPrimitives::DefaultTextures::TempAlbedoTexture = std::make_unique<Texture>(*Resources::CreateTexture("Resources/textures/dice.png"));
 }
 
 void Renderer::Shutdown()

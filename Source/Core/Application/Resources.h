@@ -16,7 +16,7 @@ class Resources
 {
 public:
 
-	enum class TexturesIndex { WHITE = 0, BLACK, MAGENTA, TESTNORMAL, ALBEDO, SPECULAR, NORMAL, EMISSIVE, BUMP };
+	enum class TexturesIndex { WHITE = 0, BLACK, MAGENTA, TESTALBEDO, TESTNORMAL, ALBEDO, SPECULAR, NORMAL, EMISSIVE, BUMP };
 
 public:
 	

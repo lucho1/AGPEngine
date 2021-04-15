@@ -7,10 +7,16 @@
 class Texture
 {
 	friend class Resources;
+	friend class Renderer;
 private:
 
 	// --- Des/Construction ---
 	Texture(const std::string& path);
+
+	// --- Class Private Methods ---
+	void Bind(uint slot = 0) const;
+	void Unbind() const;
+	void SetData(void* data, uint size);
 
 public:
 
@@ -20,9 +26,8 @@ public:
 
 	// --- Class Methods ---
 	// Slot 0 should be left for internal stuff, 1 for white. Use from there.
-	void Bind(uint slot = 0) const;
-	void Unbind() const;
-	void SetData(void* data, uint size);
+	
+	
 
 	// --- Getters ---
 	uint GetWidth()		const { return m_Width; }

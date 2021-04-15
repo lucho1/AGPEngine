@@ -73,11 +73,14 @@ typedef unsigned short          uint16_t;
 // --- Smart Ptrs ----
 template<typename T>
 using UniquePtr = std::unique_ptr<T>;
-template<typename T, typename ... Args>
-constexpr UniquePtr<T> CreateUnique(Args&& ... args) { return std::make_unique<T>(std::forward<Args>(args)...); }
-
 template<typename T>
 using Ref = std::shared_ptr<T>;
+
+template<typename T, typename ... Args>
+constexpr UniquePtr<T> CreateUnique(Args&& ... args) { return std::make_unique<T>(std::forward<Args>(args)...); }
+template<typename T>
+constexpr UniquePtr<T> CreateUnique(T* t) { return std::make_unique<T>(t); }
+
 template<typename T, typename ... Args>
 constexpr Ref<T> CreateRef(Args&& ... args) { return std::make_shared<T>(std::forward<Args>(args)...); }
 template<typename T>
@@ -85,7 +88,7 @@ constexpr Ref<T> CreateRef(T* t) { return std::shared_ptr<T>(t); }
 
 
 // --- Memory Pool ---
-#define GLOBAL_FRAME_ARENA_SIZE MBTOBYTE(16)
+#define GLOBAL_FRAME_ARENA_SIZE MBTOBYTE(16.0f)
 static unsigned char* GlobalFrameArenaMemory = NULL;
 static uint GlobalFrameArenaHead = 0;
 

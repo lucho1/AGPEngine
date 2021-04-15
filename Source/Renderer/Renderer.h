@@ -40,6 +40,7 @@ public:
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
 
 	// --- Resources Stuff ---
+	// If a default texture is to be bound, just pass its TexturesIndex and a nullptr, otherwise pass the desired index (albedo, specular...) and a pointer to the texture
 	static void BindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture = nullptr);
 	static void UnbindTexture(Resources::TexturesIndex texture_type, Ref<Texture> texture = nullptr);
 
