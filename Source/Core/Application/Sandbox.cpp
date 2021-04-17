@@ -37,10 +37,10 @@ void Sandbox::Init()
 
     // -- Mesh Test --
     const Ref<Material>& default_mat = *Resources::CreateMaterial("AGPDefaultMaterial");
-    m_PatrickModel = Resources::CreateModel("Resources/models/Patrick/Patrick.obj");
+    m_PatrickModel = Resources::CreateModel("Resources/Models/Patrick/Patrick.obj");
 
     // -- Shader Test --
-    m_TextureShader = CreateRef<Shader>("Resources/shaders/TexturedShader.glsl");
+    m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
 
     Resources::PrintResourcesReferences();
 }

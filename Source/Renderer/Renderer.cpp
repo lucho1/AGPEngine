@@ -175,7 +175,7 @@ void Renderer::LoadDefaultTextures()
 	RendererPrimitives::DefaultTextures::BlackTexture = CreateUnique<Texture>(1, 1);
 	RendererPrimitives::DefaultTextures::MagentaTexture = CreateUnique<Texture>(1, 1);
 	RendererPrimitives::DefaultTextures::TempNormalTexture = CreateUnique<Texture>(1, 1);
-	RendererPrimitives::DefaultTextures::TempAlbedoTexture = CreateUnique<Texture>(new Texture("Resources/textures/dice.png"));
+	RendererPrimitives::DefaultTextures::TempAlbedoTexture = CreateUnique<Texture>(new Texture("Resources/Textures/dice.png"));
 	
 	RendererPrimitives::DefaultTextures::WhiteTexture->SetData(&white_data, sizeof(white_data)); // or sizeof(uint)
 	RendererPrimitives::DefaultTextures::BlackTexture->SetData(&black_data, sizeof(black_data));
