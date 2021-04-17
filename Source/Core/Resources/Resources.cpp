@@ -26,10 +26,30 @@ void Resources::PrintResourcesReferences()
 }
 
 
+void Resources::CleanUp()
+{
+	for (auto& mesh : m_Meshes)
+		mesh.second.reset();
+
+	for (uint i = 0; i < m_Textures.size(); ++i)
+		m_Textures[i].reset();
+
+	for (uint i = 0; i < m_Models.size(); ++i)
+		m_Models[i].reset();
+
+	for (auto& mat : m_Materials)
+		mat.second.reset();
+
+	m_Textures.clear();
+	m_Models.clear();
+	m_Meshes.clear();
+	m_Materials.clear();
+}
 
 // ------------------------------------------------------------------------------
 // --- Textures ---
 std::vector<Ref<Texture>> Resources::m_Textures = {};
+
 
 Ref<Texture> Resources::CreateTexture(const std::string& filepath)
 {

@@ -36,7 +36,6 @@ void Sandbox::Init()
     vao->Unbind(); vbo->Unbind(); ibo->Unbind();
 
     // -- Mesh Test --
-    const Ref<Material>& default_mat = *Resources::CreateMaterial("AGPDefaultMaterial");
     m_PatrickModel = Resources::CreateModel("Resources/Models/Patrick/Patrick.obj");
 
     // -- Shader Test --

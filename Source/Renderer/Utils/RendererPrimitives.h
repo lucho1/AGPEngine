@@ -27,6 +27,15 @@ namespace RendererPrimitives
 				default:	return nullptr;
 			}
 		}
+
+		static void CleanUp()
+		{
+			WhiteTexture.reset();
+			BlackTexture.reset();
+			MagentaTexture.reset();
+			TempAlbedoTexture.reset();
+			TempNormalTexture.reset();
+		}
 	};
 }
 

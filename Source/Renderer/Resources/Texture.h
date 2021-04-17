@@ -14,6 +14,7 @@ private:
 	Texture(const std::string& path);
 
 	// --- Class Private Methods ---
+	// Slot 0 should be left for internal stuff, 1 for white. Use from there.
 	void Bind(uint slot = 0) const;
 	void Unbind() const;
 	void SetData(void* data, uint size);
@@ -23,11 +24,6 @@ public:
 	// --- Des/Construction ---
 	Texture(uint width, uint height);
 	~Texture();
-
-	// --- Class Methods ---
-	// Slot 0 should be left for internal stuff, 1 for white. Use from there.
-	
-	
 
 	// --- Getters ---
 	uint GetWidth()		const { return m_Width; }

@@ -21,7 +21,7 @@ public:
 public:
 	
 	// --- Remove Resources References ---
-	static void CleanUp() { m_Textures.clear(); m_Models.clear(); m_Meshes.clear(); m_Materials.clear(); }
+	static void CleanUp();
 
 	// --- Create Resources ---
 	static Ref<Texture> CreateTexture(const std::string& filepath);
@@ -39,7 +39,7 @@ public:
 	static void PrintResourcesReferences();
 
 	// --- Getters ---
-	static const Ref<Material> GetMaterial(uint index) { if (m_Materials.find(index) != m_Materials.end()) return m_Materials[index]; return nullptr; }
+	static const Ref<Material> GetMaterial(uint index)		{ if (m_Materials.find(index) != m_Materials.end()) return m_Materials[index]; return nullptr; }
 
 private:
 

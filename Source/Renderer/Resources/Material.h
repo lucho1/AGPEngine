@@ -9,6 +9,7 @@
 class Material
 {
 	friend class Resources;
+	friend class Renderer;
 private:
 
 	// --- Constructor ---
@@ -29,12 +30,11 @@ public:
 	// --- Material Methods ---
 	void DeleteMaterial()
 	{
-		Albedo.reset();
-		Emissive.reset();
-		Specular.reset();
-		Normal.reset();
-		Bump.reset();
-		m_ID = -1;
+		if(Albedo)		Albedo.reset();
+		if(Emissive)	Emissive.reset();
+		if(Specular)	Specular.reset();
+		if(Normal)		Normal.reset();
+		if(Bump)		Bump.reset();
 	}
 
 private:

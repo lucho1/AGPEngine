@@ -18,6 +18,9 @@ out vec3 v_Bitangent;
 void main()
 {
 	v_TexCoord = a_TexCoord;
+	v_Normal = a_Normal;
+	v_Tangent = a_Tangent;
+	v_Bitangent = a_Bitangent;
 	gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
 }
 
@@ -29,6 +32,9 @@ void main()
 layout(location = 0) out vec4 color;
 
 in vec2 v_TexCoord;
+in vec3 v_Normal;
+in vec3 v_Tangent;
+in vec3 v_Bitangent;
 
 uniform sampler2D u_Texture;
 uniform vec4 u_Color = vec4(1.0);
@@ -36,4 +42,5 @@ uniform vec4 u_Color = vec4(1.0);
 void main()
 {
 	color = texture(u_Texture, v_TexCoord) * u_Color;
+	//color = vec4(v_Normal, 1.0);
 }

@@ -46,6 +46,7 @@ void Renderer::Init()
 
 void Renderer::Shutdown()
 {
+	RendererPrimitives::DefaultTextures::CleanUp();
 }
 
 void Renderer::OnWindowResized(uint width, uint height)
@@ -79,16 +80,15 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 		RenderMesh(shader, mesh->m_Submeshes[i].get(), transform);
 
 	// -- Material & Texture Retrieval --
-	const Ref<Texture>* albedo = nullptr;
+	Texture* albedo = nullptr;
 	Ref<Material> mesh_mat = Resources::GetMaterial(mesh->GetMaterialIndex());
 	Resources::TexturesIndex texture_binding = Resources::TexturesIndex::MAGENTA;
 
 	if (mesh_mat && mesh_mat->Albedo)
 	{
-		albedo = &mesh_mat->Albedo;
+		albedo = mesh_mat->Albedo.get();
 		texture_binding = Resources::TexturesIndex::ALBEDO;
 	}
-		
 
 	// -- Shader Bindings --
 	Renderer::BindTexture(texture_binding, albedo);
@@ -125,7 +125,7 @@ void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_
 
 
 // ------------------------------------------------------------------------------
-void Renderer::BindTexture(Resources::TexturesIndex texture_type, const Ref<Texture>* texture)
+void Renderer::BindTexture(Resources::TexturesIndex texture_type, Texture* texture)
 {
 	const uint index = (uint)texture_type;
 	uint materials_textures_pos = (uint)Resources::TexturesIndex::ALBEDO;
@@ -133,12 +133,12 @@ void Renderer::BindTexture(Resources::TexturesIndex texture_type, const Ref<Text
 	if (index < materials_textures_pos)
 		RendererPrimitives::DefaultTextures::GetTextureFromIndex(index)->Bind(index);
 	else if (index >= materials_textures_pos && texture)
-		(*texture)->Bind(index);
+		texture->Bind(index);
 	else
 		ENGINE_LOG("Tried to Bind a nullptr texture!");
 }
 
-void Renderer::UnbindTexture(Resources::TexturesIndex texture_type, const Ref<Texture>* texture)
+void Renderer::UnbindTexture(Resources::TexturesIndex texture_type, Texture* texture)
 {
 	const uint index = (uint)texture_type;
 	uint materials_textures_pos = (uint)Resources::TexturesIndex::ALBEDO;
@@ -146,7 +146,7 @@ void Renderer::UnbindTexture(Resources::TexturesIndex texture_type, const Ref<Te
 	if (index < materials_textures_pos)
 		RendererPrimitives::DefaultTextures::GetTextureFromIndex(index)->Unbind();
 	else if (index >= materials_textures_pos && texture)
-		(*texture)->Unbind();
+		texture->Unbind();
 	else
 		ENGINE_LOG("Tried to Unbind a nullptr texture!");
 }
