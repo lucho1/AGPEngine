@@ -18,7 +18,7 @@ private:
 
 	static Ref<Model> LoadModel(const std::string& filepath);
 
-	static void ProcessAssimpNode(const aiScene* ai_scene, aiNode* ai_node, Mesh* mesh);
+	static void ProcessAssimpNode(const aiScene* ai_scene, aiNode* ai_node, Mesh* mesh, const std::vector<uint> loaded_materials);
 	static Ref<Mesh>* ProcessAssimpMesh(const aiScene* ai_scene, aiMesh* ai_mesh);
 	static const Ref<Material>* ProcessAssimpMaterial(aiMaterial* ai_material, const std::string& directory);
 

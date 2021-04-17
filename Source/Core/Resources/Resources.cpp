@@ -12,7 +12,7 @@ void Resources::PrintResourcesReferences()
 
 	ENGINE_LOG("\t- Meshes (%i)", m_Meshes.size());
 	for (auto& mesh : m_Meshes)
-		ENGINE_LOG("\t\tMesh %i -> Refs: %i", mesh.first, mesh.second.use_count());
+		ENGINE_LOG("\t\tMesh %i (MatID: %i) '%s' -> Refs: %i", mesh.first, mesh.second->GetMaterialIndex(), mesh.second->GetName().c_str(), mesh.second.use_count());
 
 	ENGINE_LOG("\t- Models (%i)", m_Models.size());
 	for(auto& model : m_Models)
@@ -94,8 +94,7 @@ const Ref<Material>* Resources::CreateMaterial(const std::string& name)
 	if (name.find_last_of('.') != name.npos)
 		mat_name = name.substr((size_t)0, name.find_last_of('.'));
 
-	Ref<Material> mat = CreateRef<Material>(new Material(id, mat_name));
-	m_Materials.insert({ id, mat });
+	m_Materials.insert({ id, CreateRef<Material>(new Material(id, mat_name)) });
 	return &m_Materials[id];
 }
 

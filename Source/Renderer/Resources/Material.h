@@ -50,7 +50,7 @@ public:
 
 	glm::vec4 AlbedoColor = glm::vec4(1.0f);
 	glm::vec4 SpecularColor = glm::vec4(0.0f);
-	glm::vec4 EmissiveColor = glm::vec4(1.0f);
+	glm::vec4 EmissiveColor = glm::vec4(0.0f);
 
 	Ref<Texture> Albedo = nullptr;
 	Ref<Texture> Emissive = nullptr;

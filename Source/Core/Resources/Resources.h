@@ -38,6 +38,9 @@ public:
 	static void SetMeshMaterial(uint meshID, uint materialID);
 	static void PrintResourcesReferences();
 
+	// --- Getters ---
+	static const Ref<Material> GetMaterial(uint index) { if (m_Materials.find(index) != m_Materials.end()) return m_Materials[index]; return nullptr; }
+
 private:
 
 	// --- Resources ---

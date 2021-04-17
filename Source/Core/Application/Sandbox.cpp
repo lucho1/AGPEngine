@@ -36,10 +36,8 @@ void Sandbox::Init()
     vao->Unbind(); vbo->Unbind(); ibo->Unbind();
 
     // -- Mesh Test --
+    const Ref<Material>& default_mat = *Resources::CreateMaterial("AGPDefaultMaterial");
     m_PatrickModel = Resources::CreateModel("Resources/models/Patrick/Patrick.obj");
-
-    //const Ref<Material>& mat1 = *Resources::CreateMaterial("DefMat");
-    //Resources::SetMeshMaterial((*m_TestMesh)->GetID(), (*mat1).GetID());
 
     // -- Shader Test --
     m_TextureShader = CreateRef<Shader>("Resources/shaders/TexturedShader.glsl");
@@ -55,21 +53,9 @@ void Sandbox::OnUpdate(float dt)
     // -- Shader Hot Reload --
     m_TextureShader->CheckLastModification();
 
-    // -- Render Stuff --
-    // Texture Bind
-    Renderer::BindTexture(Resources::TexturesIndex::MAGENTA);
-    
-    // Shader Bind & Uniforms
-    m_TextureShader->Bind();
-    m_TextureShader->SetUniformInt("u_Texture", (int)Resources::TexturesIndex::MAGENTA);
-
     // Draw Call
-    glm::mat4 transform_mat = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+    glm::mat4 transform_mat = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.25f));
     Renderer::SubmitModel(m_TextureShader, m_PatrickModel, transform_mat);
-    
-    // Unbinds
-    Renderer::UnbindTexture(Resources::TexturesIndex::MAGENTA);
-    m_TextureShader->Unbind();
 }
 
 

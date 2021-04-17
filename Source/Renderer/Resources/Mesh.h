@@ -42,6 +42,7 @@ private:
 class Mesh
 {
 	friend class Resources;
+	friend class MeshImporter;
 	friend class Renderer;
 private:
 

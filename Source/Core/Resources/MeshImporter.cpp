@@ -11,8 +11,10 @@
 Ref<Model> MeshImporter::LoadModel(const std::string& filepath)
 {
     // -- Load Scene --
-    const aiScene* scene = aiImportFile(filepath.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs // TODO: Maybe this gives errors on texture load!!!!
+    const aiScene* scene = aiImportFile(filepath.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals //| aiProcess_FlipUVs // FlipUVs gives problem with UVs, I think because STB already flips them
         | aiProcess_JoinIdenticalVertices | aiProcess_PreTransformVertices | aiProcess_ImproveCacheLocality | aiProcess_OptimizeMeshes | aiProcess_SortByPType);
+
+    //const aiScene* scene = aiImportFile(filepath.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -27,23 +29,23 @@ Ref<Model> MeshImporter::LoadModel(const std::string& filepath)
     }
 
     // -- Load Materials --
-    std::string dir = FileUtils::GetDirectory(filepath);
-    std::vector<const Ref<Material>*> materials;
-
+    std::vector<uint> materials;
     for (uint i = 0; i < scene->mNumMaterials; ++i)
     {
-        const Ref<Material>* mat = ProcessAssimpMaterial(scene->mMaterials[i], dir);
+        const Ref<Material>* mat = ProcessAssimpMaterial(scene->mMaterials[i], FileUtils::GetDirectory(filepath));
         if (mat != nullptr)
-            materials.push_back(mat);
+            materials.push_back((*mat)->GetID());
     }
 
     // -- Load Meshes --
+    aiMesh* first_mesh = scene->mMeshes[0];
     Ref<Model> model = CreateRef<Model>(new Model(filepath));
-    model->m_RootMesh = ProcessAssimpMesh(scene, scene->mMeshes[0])->get();
-    ProcessAssimpNode(scene, scene->mRootNode, model->m_RootMesh);
 
-    if (scene->mMeshes[0]->mName.length > 0)
-        model->m_RootMesh->SetName(scene->mMeshes[0]->mName.C_Str());
+    model->m_RootMesh = ProcessAssimpMesh(scene, first_mesh)->get();
+    model->m_RootMesh->m_MaterialIndex = first_mesh->mMaterialIndex == 0 ? 0 : materials[first_mesh->mMaterialIndex - 1];
+    model->m_RootMesh->m_Name = first_mesh->mName.length > 0 ? first_mesh->mName.C_Str() : "unnamed";
+
+    ProcessAssimpNode(scene, scene->mRootNode, model->m_RootMesh, materials);
 
     // -- Release Assimp & Return --
     aiReleaseImport(scene);
@@ -51,30 +53,33 @@ Ref<Model> MeshImporter::LoadModel(const std::string& filepath)
 }
 
 
-void MeshImporter::ProcessAssimpNode(const aiScene* ai_scene, aiNode* ai_node, Mesh* mesh)
+void MeshImporter::ProcessAssimpNode(const aiScene* ai_scene, aiNode* ai_node, Mesh* mesh, const std::vector<uint> loaded_materials)
 {
     // -- Process Node Meshes --
     std::vector<Ref<Mesh>*> meshes;
-    for (uint i = 0; i < ai_node->mNumMeshes; i++)
+    for (uint i = 0; i < ai_node->mNumMeshes; ++i)
     {
-        if (ai_node->mMeshes[i] == 0)
-            continue;
+        if (ai_node->mMeshes[i] != 0)
+        {
+            aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
+            meshes.push_back(ProcessAssimpMesh(ai_scene, ai_mesh));
 
-        aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-        meshes.push_back(ProcessAssimpMesh(ai_scene, ai_mesh));
-        if (ai_mesh->mName.length > 0)
-            (*meshes[i])->SetName(ai_mesh->mName.C_Str());
+            if (ai_mesh->mName.length > 0)
+                (*meshes[i])->SetName(ai_mesh->mName.C_Str());
+
+            if (ai_mesh->mMaterialIndex != 0)
+                (*meshes[i])->m_MaterialIndex = loaded_materials[ai_mesh->mMaterialIndex - 1]; // -1 Because we are not loading assimp's default material
+        }
     }
 
+    // -- Fill Mesh' Submeshes --
     for (uint i = 0; i < meshes.size(); ++i)
-    {
         if (meshes[i] != nullptr)
             mesh->AddSubmesh(meshes[i]);
-    }
     
     // -- Process Node Children Meshes --
     for (uint i = 0; i < ai_node->mNumChildren; i++)
-        ProcessAssimpNode(ai_scene, ai_node->mChildren[i], mesh);
+        ProcessAssimpNode(ai_scene, ai_node->mChildren[i], mesh, loaded_materials);
 }
 
 
@@ -92,31 +97,43 @@ Ref<Mesh>* MeshImporter::ProcessAssimpMesh(const aiScene* ai_scene, aiMesh* ai_m
     for (uint i = 0; i < ai_mesh->mNumVertices; ++i)
     {
         // Positions & Normals
-        vertices.push_back(ai_mesh->mVertices[i].x);
-        vertices.push_back(ai_mesh->mVertices[i].y);
-        vertices.push_back(ai_mesh->mVertices[i].z);
-        vertices.push_back(ai_mesh->mNormals[i].x);
-        vertices.push_back(ai_mesh->mNormals[i].y);
-        vertices.push_back(ai_mesh->mNormals[i].z);
-
-        // Texture Coordinates
+        glm::vec3 positions = glm::vec3(0.0f), normals = glm::vec3(0.0f);
         glm::vec2 texture_coords = glm::vec2(0.0f);
-        glm::vec3 tangents = glm::vec3(0.0f), bitangents = glm::vec3(0.0f); // TODO: Ojo aqui q diu en jesús q estan flipped
+        
+        if (ai_mesh->HasPositions())
+            positions = { ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z };
 
         if (ai_mesh->mTextureCoords[0])
-            texture_coords = glm::vec2(ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y);
+            texture_coords = { ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y };
+        else
+            int a = 0;
+
+        if (ai_mesh->HasNormals())
+            normals = { ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z };
+
+        vertices.push_back(positions.x);
+        vertices.push_back(positions.y);
+        vertices.push_back(positions.z);
+        vertices.push_back(texture_coords.x);
+        vertices.push_back(texture_coords.y);
+        vertices.push_back(normals.x);
+        vertices.push_back(normals.y);
+        vertices.push_back(normals.z);
 
         // Tangents & Bitangents
+        glm::vec3 tangents = glm::vec3(0.0f), bitangents = glm::vec3(0.0f); // TODO: Ojo aqui q diu en jesús q estan flipped
         if (ai_mesh->HasTangentsAndBitangents())
         {
-            tangents = glm::vec3(ai_mesh->mTangents[i].x, ai_mesh->mTangents[i].y, ai_mesh->mTangents[i].z);
-            bitangents = glm::vec3(ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y, ai_mesh->mBitangents[i].z);
+            tangents = { ai_mesh->mTangents[i].x, ai_mesh->mTangents[i].y, ai_mesh->mTangents[i].z };
+            bitangents = { ai_mesh->mBitangents[i].x, ai_mesh->mBitangents[i].y, ai_mesh->mBitangents[i].z };
         }
-        
-        // Pushbacks
-        vertices.push_back(texture_coords.x);   vertices.push_back(texture_coords.y);
-        vertices.push_back(tangents.x);         vertices.push_back(tangents.y);         vertices.push_back(tangents.z);
-        vertices.push_back(bitangents.x);       vertices.push_back(bitangents.y);       vertices.push_back(bitangents.z);
+
+        vertices.push_back(tangents.x);
+        vertices.push_back(tangents.y);
+        vertices.push_back(tangents.z);
+        vertices.push_back(bitangents.x);
+        vertices.push_back(bitangents.y);
+        vertices.push_back(bitangents.z);
     }
 
     // -- Process Indices --

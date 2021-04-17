@@ -74,13 +74,34 @@ void Renderer::EndScene()
 
 void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm::mat4& transform)
 {
+	// -- Recursive Submeshes Draw --
 	for (uint i = 0; i < mesh->m_Submeshes.size(); ++i)
 		RenderMesh(shader, mesh->m_Submeshes[i].get(), transform);
 
+	// -- Material & Texture Retrieval --
+	const Ref<Texture>* albedo = nullptr;
+	Ref<Material> mesh_mat = Resources::GetMaterial(mesh->GetMaterialIndex());
+	Resources::TexturesIndex texture_binding = Resources::TexturesIndex::MAGENTA;
+
+	if (mesh_mat && mesh_mat->Albedo)
+	{
+		albedo = &mesh_mat->Albedo;
+		texture_binding = Resources::TexturesIndex::ALBEDO;
+	}
+		
+
+	// -- Shader Bindings --
+	Renderer::BindTexture(texture_binding, albedo);
+	shader->SetUniformInt("u_Texture", (int)texture_binding);
 	shader->SetUniformMat4("u_Model", transform);
+	//shader->SetUniformVec4("u_Color", mesh_mat->AlbedoColor);
+
+	// -- Draw Call & Unbinds --
 	mesh->m_VertexArray->Bind();
 	RenderCommand::DrawIndexed(mesh->m_VertexArray);
+
 	mesh->m_VertexArray->Unbind();
+	Renderer::UnbindTexture(texture_binding, albedo);
 }
 
 void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model, const glm::mat4& transform)
@@ -88,6 +109,7 @@ void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model, c
 	shader->Bind();
 	shader->SetUniformMat4("u_ViewProjection", m_ViewProjectionMatrix);
 	RenderMesh(shader, model->GetRootMesh(), transform);
+	shader->Unbind();
 }
 
 void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform)
