@@ -72,6 +72,24 @@ void Renderer::EndScene()
 {
 }
 
+void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm::mat4& transform)
+{
+	for (uint i = 0; i < mesh->m_Submeshes.size(); ++i)
+		RenderMesh(shader, mesh->m_Submeshes[i].get(), transform);
+
+	shader->SetUniformMat4("u_Model", transform);
+	mesh->m_VertexArray->Bind();
+	RenderCommand::DrawIndexed(mesh->m_VertexArray);
+	mesh->m_VertexArray->Unbind();
+}
+
+void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model, const glm::mat4& transform)
+{
+	shader->Bind();
+	shader->SetUniformMat4("u_ViewProjection", m_ViewProjectionMatrix);
+	RenderMesh(shader, model->GetRootMesh(), transform);
+}
+
 void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform)
 {
 	shader->Bind();

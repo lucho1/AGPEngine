@@ -9,6 +9,7 @@
 
 #include <imgui.h>
 #include "Renderer/Resources/Material.h"
+#include <glm/gtx/transform.hpp>
 
 
 
@@ -35,11 +36,10 @@ void Sandbox::Init()
     vao->Unbind(); vbo->Unbind(); ibo->Unbind();
 
     // -- Mesh Test --
-    m_TestMesh = Resources::CreateMesh(vao);
-    Ref<Model> pmodel2 = Resources::CreateModel("Resources/models/Patrick/Patrick.obj");
+    m_PatrickModel = Resources::CreateModel("Resources/models/Patrick/Patrick.obj");
 
-    const Ref<Material>& mat1 = *Resources::CreateMaterial("DefMat");
-    Resources::SetMeshMaterial((*m_TestMesh)->GetID(), (*mat1).GetID());
+    //const Ref<Material>& mat1 = *Resources::CreateMaterial("DefMat");
+    //Resources::SetMeshMaterial((*m_TestMesh)->GetID(), (*mat1).GetID());
 
     // -- Shader Test --
     m_TextureShader = CreateRef<Shader>("Resources/shaders/TexturedShader.glsl");
@@ -57,20 +57,19 @@ void Sandbox::OnUpdate(float dt)
 
     // -- Render Stuff --
     // Texture Bind
-    Renderer::BindTexture(Resources::TexturesIndex::TESTALBEDO);
+    Renderer::BindTexture(Resources::TexturesIndex::MAGENTA);
     
     // Shader Bind & Uniforms
     m_TextureShader->Bind();
-    m_TextureShader->SetUniformInt("u_Texture", (int)Resources::TexturesIndex::TESTALBEDO);
-    //m_TextureShader->SetUniformVec4("u_Color", { 0.6f, 0.2f, 0.2f, 1.0f });
+    m_TextureShader->SetUniformInt("u_Texture", (int)Resources::TexturesIndex::MAGENTA);
 
     // Draw Call
-    Renderer::Submit(m_TextureShader, (*m_TestMesh)->GetVertexArray());
+    glm::mat4 transform_mat = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+    Renderer::SubmitModel(m_TextureShader, m_PatrickModel, transform_mat);
     
     // Unbinds
-    Renderer::UnbindTexture(Resources::TexturesIndex::TESTALBEDO);
+    Renderer::UnbindTexture(Resources::TexturesIndex::MAGENTA);
     m_TextureShader->Unbind();
-    (*m_TestMesh)->GetVertexArray()->Unbind();
 }
 
 

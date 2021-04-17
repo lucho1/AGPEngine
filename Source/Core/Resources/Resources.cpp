@@ -62,9 +62,11 @@ Ref<Model> Resources::CreateModel(const std::string& filepath, Mesh* root_mesh)
 	}
 
 	// --- Create Resource ---
-	MeshImporter::LoadModel(filepath);
+	Ref<Model> model = MeshImporter::LoadModel(filepath);
+	if (model == nullptr)
+		return nullptr;
 
-	Ref<Model> model = CreateRef<Model>(new Model(filepath, root_mesh));
+	//Ref<Model> model = CreateRef<Model>(new Model(filepath, root_mesh));
 	m_Models.push_back(model);
 	return model;
 }
@@ -76,7 +78,7 @@ Ref<Model> Resources::CreateModel(const std::string& filepath, Mesh* root_mesh)
 std::unordered_map<int, Ref<Mesh>> Resources::m_Meshes = {};
 std::unordered_map<int, Ref<Material>> Resources::m_Materials = {};
 
-const Ref<Mesh>* Resources::CreateMesh(const Ref<VertexArray>& vertex_array, uint material_index, Mesh* parent)
+Ref<Mesh>* Resources::CreateMesh(const Ref<VertexArray>& vertex_array, uint material_index, Mesh* parent)
 {
 	int id = m_Meshes.size();
 	Ref<Mesh> mesh = CreateRef<Mesh>(new Mesh(vertex_array, id, material_index, parent));
@@ -93,7 +95,7 @@ const Ref<Material>* Resources::CreateMaterial(const std::string& name)
 		mat_name = name.substr((size_t)0, name.find_last_of('.'));
 
 	Ref<Material> mat = CreateRef<Material>(new Material(id, mat_name));
-	m_Materials.insert({ id, mat });	
+	m_Materials.insert({ id, mat });
 	return &m_Materials[id];
 }
 

@@ -11,6 +11,7 @@ class Mesh;
 class Model
 {
 	friend class Resources;
+	friend class MeshImporter;
 private:
 
 	// --- Des/Constructor ---
@@ -22,12 +23,10 @@ private:
 
 public:
 
-	~Model() = default;
+	~Model() { if (m_RootMesh) m_RootMesh = nullptr; }
 	
 	void SetName(const std::string& name)		{ m_Name = name; }
 	const std::string& GetName()		const	{ return m_Name; }
-
-	void SetRootMesh(Mesh* mesh)				{ m_RootMesh = mesh; }
 	const Mesh* GetRootMesh()			const	{ return m_RootMesh; }
 
 private:
@@ -43,6 +42,7 @@ private:
 class Mesh
 {
 	friend class Resources;
+	friend class Renderer;
 private:
 
 	// --- Constructor ---
@@ -54,15 +54,19 @@ public:
 	// --- Destructor ---
 	~Mesh() { DeleteMesh(); }
 
-	// --- Getters ---
+	// --- Getters/Setters ---
+	inline void SetName(const std::string& name)			{ m_Name = name; }
+	inline const std::string& GetName()				const	{ return m_Name; }
 	inline uint GetID()								const	{ return m_ID; }
-	inline const Ref<VertexArray>& GetVertexArray()	const	{ return m_VertexArray; }
+	
+	inline uint GetMaterialIndex()					const	{ return m_MaterialIndex; }
 	inline const Mesh* GetParent()					const	{ return m_ParentMesh; }
-	inline const Ref<Mesh>* GetSubmesh(uint index)			{ if (index < m_Submeshes.size()) return &m_Submeshes[index]; return nullptr; }
+	//inline const Ref<VertexArray>& GetVertexArray()	const	{ return m_VertexArray; }
 
-	uint GetMaterialIndex()							const	{ return m_MaterialIndex; }
+	//inline const Ref<Mesh>& GetSubmesh(uint index)	const	{ if (index < m_Submeshes.size()) return m_Submeshes[index]; return nullptr; }
+	//inline uint GetSubmeshesSize()					const	{ return m_Submeshes.size(); }
 
-	bool operator==(const Mesh& mesh)			const { return m_ID == mesh.m_ID; }
+	bool operator==(const Mesh& mesh)				const	{ return m_ID == mesh.m_ID; }
 
 
 	// --- Mesh Methods ---
@@ -93,7 +97,8 @@ private:
 
 	// --- Variables ---
 	int m_ID = -1;
-	uint m_MaterialIndex = 0;	// Index of res. material for this mesh
+	std::string m_Name = "unnamed";				// Debug
+	uint m_MaterialIndex = 0;					// Index of res. material for this mesh
 	std::vector<Ref<Mesh>> m_Submeshes;
 	
 	Ref<VertexArray> m_VertexArray = nullptr;

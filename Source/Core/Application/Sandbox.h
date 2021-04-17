@@ -29,7 +29,7 @@ private:
 
 private:
 
-	const Ref<Mesh>* m_TestMesh;
+	Ref<Model> m_PatrickModel;
 	Ref<Shader> m_TextureShader;
 	
 	uint m_MemoryAllocations[ALLOCATIONS_SAMPLES] = { 0 };

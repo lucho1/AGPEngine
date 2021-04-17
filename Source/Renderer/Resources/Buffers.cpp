@@ -8,7 +8,7 @@ VertexBuffer::VertexBuffer(float* vertices, uint size)
 {
 	glGenBuffers(1, &m_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_DYNAMIC_DRAW); // TODO: If I make a batch renderer, change this to static
+	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW); // TODO: If I make a batch renderer, change this to dynamic
 	//glBindBuffer(GL_ARRAY_BUFFER, 0); //TODO: Take a look at this unbind stuff! (all over the file!)
 }
 
@@ -16,7 +16,7 @@ VertexBuffer::VertexBuffer(uint size)
 {
 	glGenBuffers(1, &m_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -49,7 +49,7 @@ IndexBuffer::IndexBuffer(uint* vertices, uint count) : m_Count(count)
 {
 	glGenBuffers(1, &m_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-	glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint), vertices, GL_DYNAMIC_DRAW); // TODO: If I make a batch renderer, change this to static
+	glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint), vertices, GL_STATIC_DRAW); // TODO: If I make a batch renderer, change this to dynamic
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 

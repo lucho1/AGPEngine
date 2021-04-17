@@ -38,6 +38,7 @@ public:
 	static void BeginScene(glm::mat4 viewproj_mat);
 	static void EndScene();
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
+	static void SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model, const glm::mat4& transform = glm::mat4(1.0f));
 
 	// --- Resources Stuff ---
 	// If a default texture is to be bound, just pass its TexturesIndex and a nullptr, otherwise pass the desired index (albedo, specular...) and a pointer to the texture
@@ -53,6 +54,9 @@ public:
 	static const RendererStatistics& GetStatistics() { return m_RendererStatistics; }
 
 private:
+
+	// --- Private Rendering Stuff ---
+	static void RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm::mat4& transform = glm::mat4(1.0f));
 
 	// --- Private Class Methods ---
 	static void SetRendererStatistics(int ogl_major_version, int ogl_min_version);
