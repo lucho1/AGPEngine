@@ -183,6 +183,9 @@ void Sandbox::DrawEntitiesPanel()
 void Sandbox::DrawResourcesPanel()
 {
     //Resources::PrintResourcesReferences();
+    std::vector<std::string> text = Resources::GetResourcesReferences();
+    for (std::string str : text)
+        ImGui::Text(str.c_str());
 }
 
 

@@ -3,6 +3,43 @@
 
 
 // ------------------------------------------------------------------------------
+std::vector<std::string> Resources::GetResourcesReferences()
+{
+	std::vector<std::string> ret;
+	ret.push_back("----- RESOURCES REFERENCES -----");
+	ret.push_back("- Materials (" + std::to_string(m_Materials.size()) + ")");
+
+	for (auto& mat : m_Materials)
+	{
+		std::string m_str = "\tMat " + std::to_string(mat.first) + " '" + mat.second->m_Name + "' -> Refs: " + std::to_string(mat.second.use_count());
+		ret.push_back(m_str);
+	}
+
+	ret.push_back("- Meshes (" + std::to_string(m_Meshes.size()) + ")");
+	for (auto& mesh : m_Meshes)
+	{
+		std::string m_str = "\tMesh " + std::to_string(mesh.first) + " (MatID: " + std::to_string(mesh.second->GetMaterialIndex()) + ") '";
+		m_str += mesh.second->GetName() + "' -> Refs: " + std::to_string(mesh.second.use_count());
+		ret.push_back(m_str);
+	}
+
+	ret.push_back("- Models (" + std::to_string(m_Models.size()) + ")");
+	for (auto& model : m_Models)
+	{
+		std::string m_str = "\tModel '" + model->m_Name + "' -> Refs: " + std::to_string(model.use_count());
+		ret.push_back(m_str);
+	}
+
+	ret.push_back("- Textures (" + std::to_string(m_Textures.size()) + ")\n\tFirst 5 are Default ones");
+	for (auto& tex : m_Textures)
+	{
+		std::string t_str = "\tTexture " + std::to_string(tex->m_ID) + " -> Refs: " + std::to_string(tex.use_count()) + "\n";
+		ret.push_back(t_str);
+	}
+	
+	return ret;
+}
+
 void Resources::PrintResourcesReferences()
 {
 	ENGINE_LOG("\n\n----- RESOURCES REFERENCES -----");
@@ -26,6 +63,8 @@ void Resources::PrintResourcesReferences()
 }
 
 
+
+// ------------------------------------------------------------------------------
 void Resources::CleanUp()
 {
 	for (auto& mesh : m_Meshes)
@@ -45,6 +84,9 @@ void Resources::CleanUp()
 	m_Meshes.clear();
 	m_Materials.clear();
 }
+
+
+
 
 // ------------------------------------------------------------------------------
 // --- Textures ---

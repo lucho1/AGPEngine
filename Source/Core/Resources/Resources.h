@@ -38,6 +38,7 @@ public:
 	// --- Other Resources Stuff --
 	static void SetMeshMaterial(uint meshID, uint materialID);
 	static void PrintResourcesReferences();
+	static std::vector<std::string> GetResourcesReferences();
 
 	// --- Getters ---
 	static const Ref<Material> GetMaterial(uint index)		{ if (m_Materials.find(index) != m_Materials.end()) return m_Materials[index]; return nullptr; }
