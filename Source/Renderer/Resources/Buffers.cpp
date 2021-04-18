@@ -173,11 +173,11 @@ void VertexArray::SetMatrixAttribute(const BufferElement& element, uint index, u
 
 
 // ------------------------------------------------------------------------------
-UniformBuffer::UniformBuffer(uint size, uint binding)
+UniformBuffer::UniformBuffer(BufferLayout layout, uint binding) : m_Layout(layout)
 {
 	glGenBuffers(1, &m_ID);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_ID);
-	glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, layout.GetStride(), NULL, GL_STATIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_ID);
 }
 
@@ -196,7 +196,7 @@ void UniformBuffer::Unbind() const
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void UniformBuffer::SetData(const std::string& element_name, const void* data)
+void UniformBuffer::SetData(const std::string& element_name, const void* data) const
 {
 	for (const BufferElement& element : m_Layout.GetElements())
 	{

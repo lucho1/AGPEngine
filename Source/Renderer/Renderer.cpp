@@ -45,8 +45,7 @@ void Renderer::Init()
 
 	// -- Create the Uniform Buffer for the Camera --
 	BufferLayout camera_ubo_layout = { { SHADER_DATA::MAT4, "ViewProjection" }, { SHADER_DATA::FLOAT4, "Position" } }; //Vec3 "are like" Vec4 for GPU
-	m_CameraUniformBuffer = new UniformBuffer(camera_ubo_layout.GetStride(), 0);
-	m_CameraUniformBuffer->SetLayout(camera_ubo_layout);
+	m_CameraUniformBuffer = new UniformBuffer(camera_ubo_layout, 0);
 }
 
 void Renderer::Shutdown()

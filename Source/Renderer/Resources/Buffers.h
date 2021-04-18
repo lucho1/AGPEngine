@@ -164,18 +164,15 @@ class UniformBuffer
 public:
 
 	// --- Des/Construction ---
-	UniformBuffer(uint size, uint binding);
+	UniformBuffer(BufferLayout layout, uint binding);
 	~UniformBuffer();
 
 	// --- Class Methods ---
 	void Bind() const;
 	void Unbind() const;
+	void SetData(const std::string& element_name, const void* data) const;
 
-	// --- Getters/Setters ---
-	void SetLayout(const BufferLayout& layout)			{ m_Layout = layout; }
-	const BufferLayout& GetLayout()				const	{ return m_Layout; }
-	
-	void SetData(const std::string& element_name, const void* data);
+	const BufferLayout& GetLayout() const { return m_Layout; }
 
 private:
 
