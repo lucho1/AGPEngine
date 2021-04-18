@@ -169,3 +169,41 @@ void VertexArray::SetMatrixAttribute(const BufferElement& element, uint index, u
 		glVertexAttribDivisor(index, 1);
 	}
 }
+
+
+
+// ------------------------------------------------------------------------------
+UniformBuffer::UniformBuffer(uint size, uint binding)
+{
+	glGenBuffers(1, &m_ID);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_ID);
+	glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_ID);
+}
+
+UniformBuffer::~UniformBuffer()
+{
+	glDeleteBuffers(1, &m_ID);
+}
+
+void UniformBuffer::Bind() const
+{
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_Binding, m_ID);
+}
+
+void UniformBuffer::Unbind() const
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void UniformBuffer::SetData(const std::string& element_name, const void* data)
+{
+	for (const BufferElement& element : m_Layout.GetElements())
+	{
+		if (element.Name == element_name)
+		{
+			glBufferSubData(GL_UNIFORM_BUFFER, element.Offset, element.Size, data);
+			break;
+		}
+	}
+}

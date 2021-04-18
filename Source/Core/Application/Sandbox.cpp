@@ -78,7 +78,7 @@ void Sandbox::OnUpdate(float dt)
     // -- Render --
     glm::vec2 resolution = { Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight() };
     Renderer::ClearRenderer(resolution.x, resolution.y);
-    Renderer::BeginScene(m_EngineCamera.GetCamera().GetViewProjection());
+    Renderer::BeginScene(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
 
     // Draw Call
     for (auto& model : m_SceneModels)

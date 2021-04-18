@@ -35,7 +35,7 @@ public:
 	// --- Rendering Stuff ---
 	static void ClearRenderer(uint viewport_width, uint viewport_height);
 
-	static void BeginScene(glm::mat4 viewproj_mat);
+	static void BeginScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position);
 	static void EndScene();
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
 	static void SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model);
@@ -64,8 +64,8 @@ private:
 
 private:
 
-	static glm::mat4 m_ViewProjectionMatrix;
 	static RendererStatistics m_RendererStatistics;
+	static UniformBuffer* m_CameraUniformBuffer;
 };
 
 #endif //_RENDERER_H_

@@ -156,4 +156,33 @@ private:
 	uint m_ID = 0, m_VBufferIndex = 0;
 };
 
+
+
+// ---- Uniform Buffer ----
+class UniformBuffer
+{
+public:
+
+	// --- Des/Construction ---
+	UniformBuffer(uint size, uint binding);
+	~UniformBuffer();
+
+	// --- Class Methods ---
+	void Bind() const;
+	void Unbind() const;
+
+	// --- Getters/Setters ---
+	void SetLayout(const BufferLayout& layout)			{ m_Layout = layout; }
+	const BufferLayout& GetLayout()				const	{ return m_Layout; }
+	
+	void SetData(const std::string& element_name, const void* data);
+
+private:
+
+	// --- Variables ---
+	uint m_ID = 0, m_Binding = 0;
+	BufferLayout m_Layout;
+};
+
+
 #endif //_BUFFERS_H_

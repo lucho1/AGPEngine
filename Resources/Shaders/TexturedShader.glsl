@@ -10,18 +10,30 @@ layout(location = 4) in vec3 a_Bitangent;
 uniform mat4 u_ViewProjection = mat4(1.0);
 uniform mat4 u_Model = mat4(1.0);
 
-out vec2 v_TexCoord;
-out vec3 v_Normal;
-out vec3 v_Tangent;
-out vec3 v_Bitangent;
+layout(std140, binding = 0) uniform ub_CameraData
+{
+	mat4 ViewProjection;
+	vec3 Position;
+};
+
+out IBlock
+{
+	vec2 TexCoord;
+	vec3 Normal;
+	vec3 Tangent;
+	vec3 Bitangent;
+} v_VertexData;
+
+
 
 void main()
 {
-	v_TexCoord = a_TexCoord;
-	v_Normal = a_Normal;
-	v_Tangent = a_Tangent;
-	v_Bitangent = a_Bitangent;
-	gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
+	v_VertexData.TexCoord = a_TexCoord;
+	v_VertexData.Normal = a_Normal;
+	v_VertexData.Tangent = a_Tangent;
+	v_VertexData.Bitangent = a_Bitangent;
+	//gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
+	gl_Position = ViewProjection * u_Model * vec4(a_Position, 1.0);
 }
 
 
@@ -31,16 +43,19 @@ void main()
 
 layout(location = 0) out vec4 color;
 
-in vec2 v_TexCoord;
-in vec3 v_Normal;
-in vec3 v_Tangent;
-in vec3 v_Bitangent;
+in IBlock
+{
+	vec2 TexCoord;
+	vec3 Normal;
+	vec3 Tangent;
+	vec3 Bitangent;
+} v_VertexData;
 
 uniform sampler2D u_Texture;
 uniform vec4 u_Color = vec4(1.0);
 
 void main()
 {
-	color = texture(u_Texture, v_TexCoord) * u_Color;
-	//color = vec4(v_Normal, 1.0);
+	color = texture(u_Texture, v_VertexData.TexCoord) * u_Color;
+	//color = vec4(v_VertexData.Normal, 1.0);
 }

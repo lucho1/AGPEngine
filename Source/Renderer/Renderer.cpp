@@ -11,12 +11,12 @@
 
 //#include <glm/glm.hpp>
 //#include <glm/gtx/transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 // ------------------------------------------------------------------------------
-glm::mat4 Renderer::m_ViewProjectionMatrix = glm::mat4(1.0f);
 RendererStatistics Renderer::m_RendererStatistics = {};
+UniformBuffer* Renderer::m_CameraUniformBuffer = nullptr;
 
 void Renderer::Init()
 {
@@ -42,11 +42,17 @@ void Renderer::Init()
 
 	// -- Load Default Textures --
 	LoadDefaultTextures();
+
+	// -- Create the Uniform Buffer for the Camera --
+	BufferLayout camera_ubo_layout = { { SHADER_DATA::MAT4, "ViewProjection" }, { SHADER_DATA::FLOAT4, "Position" } }; //Vec3 "are like" Vec4 for GPU
+	m_CameraUniformBuffer = new UniformBuffer(camera_ubo_layout.GetStride(), 0);
+	m_CameraUniformBuffer->SetLayout(camera_ubo_layout);
 }
 
 void Renderer::Shutdown()
 {
 	RendererPrimitives::DefaultTextures::CleanUp();
+	delete m_CameraUniformBuffer;
 }
 
 void Renderer::OnWindowResized(uint width, uint height)
@@ -64,9 +70,12 @@ void Renderer::ClearRenderer(uint viewport_width, uint viewport_height)
 	RenderCommand::SetViewport(0, 0, viewport_width, viewport_height);
 }
 
-void Renderer::BeginScene(glm::mat4 viewproj_mat)
+void Renderer::BeginScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position)
 {
-	m_ViewProjectionMatrix = viewproj_mat;
+	m_CameraUniformBuffer->Bind();
+	m_CameraUniformBuffer->SetData("ViewProjection", glm::value_ptr(viewproj_mat));
+	m_CameraUniformBuffer->SetData("Position", glm::value_ptr(view_position));
+	m_CameraUniformBuffer->Unbind();
 }
 
 void Renderer::EndScene()
@@ -114,7 +123,6 @@ void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model)
 		return;
 
 	shader->Bind();
-	shader->SetUniformMat4("u_ViewProjection", m_ViewProjectionMatrix);
 	RenderMesh(shader, model->GetRootMesh(), model->GetTransformation().GetTransform());
 	shader->Unbind();
 }
@@ -123,7 +131,6 @@ void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model)
 void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform)
 {
 	shader->Bind();
-	shader->SetUniformMat4("u_ViewProjection", m_ViewProjectionMatrix);
 	shader->SetUniformMat4("u_Model", transform);
 
 	vertex_array->Bind();
