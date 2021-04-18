@@ -39,6 +39,7 @@ void Renderer::Init()
 	RenderCommand::SetBlending(true);
 	RenderCommand::SetBlendingFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	RenderCommand::SetDepthTest(true);
+	RenderCommand::SetScissorTest(true);
 
 	// -- Load Default Textures --
 	LoadDefaultTextures();

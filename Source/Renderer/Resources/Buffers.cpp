@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------------
 VertexBuffer::VertexBuffer(float* vertices, uint size)
 {
-	glGenBuffers(1, &m_ID);
+	glCreateBuffers(1, &m_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW); // TODO: If I make a batch renderer, change this to dynamic
 	//glBindBuffer(GL_ARRAY_BUFFER, 0); //TODO: Take a look at this unbind stuff! (all over the file!)
@@ -14,7 +14,7 @@ VertexBuffer::VertexBuffer(float* vertices, uint size)
 
 VertexBuffer::VertexBuffer(uint size)
 {
-	glGenBuffers(1, &m_ID);
+	glCreateBuffers(1, &m_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -47,10 +47,13 @@ void VertexBuffer::SetData(const void* data, uint size)
 // ------------------------------------------------------------------------------
 IndexBuffer::IndexBuffer(uint* vertices, uint count) : m_Count(count)
 {
-	glGenBuffers(1, &m_ID);
+	glCreateBuffers(1, &m_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 	glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint), vertices, GL_STATIC_DRAW); // TODO: If I make a batch renderer, change this to dynamic
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// GL_ELEMENT_ARRAY_BUFFER is not valid without an actively bound VAO
+	// Binding with GL_ARRAY_BUFFER allows the data to be loaded regardless of VAO state. 
 }
 
 IndexBuffer::~IndexBuffer()
@@ -73,7 +76,7 @@ void IndexBuffer::Unbind() const
 // ------------------------------------------------------------------------------
 VertexArray::VertexArray()
 {
-	glGenVertexArrays(1, &m_ID);
+	glCreateVertexArrays(1, &m_ID);
 }
 
 VertexArray::~VertexArray()
@@ -175,7 +178,7 @@ void VertexArray::SetMatrixAttribute(const BufferElement& element, uint index, u
 // ------------------------------------------------------------------------------
 UniformBuffer::UniformBuffer(BufferLayout layout, uint binding) : m_Layout(layout)
 {
-	glGenBuffers(1, &m_ID);
+	glCreateBuffers(1, &m_ID);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_ID);
 	glBufferData(GL_UNIFORM_BUFFER, layout.GetStride(), NULL, GL_STATIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_ID);

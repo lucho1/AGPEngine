@@ -69,10 +69,6 @@ public:
 	
 	inline uint GetMaterialIndex()					const	{ return m_MaterialIndex; }
 	inline const Mesh* GetParent()					const	{ return m_ParentMesh; }
-	//inline const Ref<VertexArray>& GetVertexArray()	const	{ return m_VertexArray; }
-
-	//inline const Ref<Mesh>& GetSubmesh(uint index)	const	{ if (index < m_Submeshes.size()) return m_Submeshes[index]; return nullptr; }
-	//inline uint GetSubmeshesSize()					const	{ return m_Submeshes.size(); }
 
 	bool operator==(const Mesh& mesh)				const	{ return m_ID == mesh.m_ID; }
 

@@ -13,23 +13,20 @@ Texture::Texture(uint width, uint height) : m_Width(width), m_Height(height)
 	m_DataFormat = GL_RGBA;
 
 	// -- Create Texture ---
-	glGenTextures(1, &m_ID);
-	glBindTexture(GL_TEXTURE_2D, m_ID);
-	glTexStorage2D(GL_TEXTURE_2D, 1, m_InternalFormat, m_Width, m_Height);
+	glCreateTextures(GL_TEXTURE_2D, 1, &m_ID);
+	//glBindTexture(GL_TEXTURE_2D, m_ID);
+	glTextureStorage2D(m_ID, 1, GL_RGBA8, m_Width, m_Height);
 	
 	// -- Set Texture Parameters --
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // this gives error: GL_LINEAR_MIPMAP_LINEAR
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(m_ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // this gives error: GL_LINEAR_MIPMAP_LINEAR
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// -- Mipmap & Unbind --
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// -- Add Texture to Resources --
-	
 }
 
 Texture::Texture(const std::string& path)
@@ -64,18 +61,19 @@ Texture::Texture(const std::string& path)
 	ASSERT(m_InternalFormat & m_DataFormat, "Image Format not Supported!"); // False (0) if either is 0
 	
 	// -- Set Texture Parameters --
-	glGenTextures(1, &m_ID);
-	glBindTexture(GL_TEXTURE_2D, m_ID);
-	glTexStorage2D(GL_TEXTURE_2D, 1, m_InternalFormat, m_Width, m_Height);
+	glCreateTextures(GL_TEXTURE_2D, 1, &m_ID);
+	//glBindTexture(GL_TEXTURE_2D, m_ID);
+	//glTexStorage2D(GL_TEXTURE_2D, 1, m_InternalFormat, m_Width, m_Height);
+	glTextureStorage2D(m_ID, 1, m_InternalFormat, m_Width, m_Height);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // this gives error: GL_LINEAR_MIPMAP_LINEAR
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(m_ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // this gives error: GL_LINEAR_MIPMAP_LINEAR
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// -- Set Subimage, Mipmap & Unbind --
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, texture_data);
+	glTextureSubImage2D(m_ID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, texture_data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -97,7 +95,8 @@ void Texture::SetData(void* data, uint size)
 	ASSERT(size == m_Width * m_Height * bpp, "Data passed must be the same size than the entire texture size");
 
 	Bind();
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	glTextureSubImage2D(m_ID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 }
 
 

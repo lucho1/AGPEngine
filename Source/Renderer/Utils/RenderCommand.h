@@ -27,6 +27,9 @@ public:
 	inline static void SetDepthTest(bool enable)					{ m_DepthTestEnabled = enable;  enable ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST); }
 	inline static bool IsDepthTestEnabled()							{ return m_DepthTestEnabled; }
 
+	inline static void SetScissorTest(bool enable)					{ m_ScissorTestEnabled = enable;  enable ? glEnable(GL_SCISSOR_TEST) : glDisable(GL_SCISSOR_TEST); }
+	inline static bool IsScissorTestEnabled()						{ return m_ScissorTestEnabled; }
+
 	// --- Viewport ---
 	inline static void SetViewport(uint x, uint y, uint w, uint h)	{ glViewport(x, y, w, h); }
 
@@ -40,7 +43,7 @@ public:
 
 private:
 
-	static bool m_BlendEnabled, m_DepthTestEnabled;
+	static bool m_BlendEnabled, m_DepthTestEnabled, m_ScissorTestEnabled;
 };
 
 
