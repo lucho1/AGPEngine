@@ -24,6 +24,7 @@
     <ClCompile Include="Source\Renderer\Entities\CameraController.cpp" />
     <ClCompile Include="Source\Renderer\Resources\Buffers.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
+    <ClCompile Include="Source\Renderer\Resources\Framebuffer.cpp" />
     <ClCompile Include="Source\Renderer\Resources\Shader.cpp" />
     <ClCompile Include="Source\Renderer\Resources\Texture.cpp" />
     <ClCompile Include="Source\Renderer\Utils\RenderCommand.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="Source\Renderer\Entities\CameraController.h" />
     <ClInclude Include="Source\Renderer\Entities\TransformComponent.h" />
     <ClInclude Include="Source\Renderer\Resources\Buffers.h" />
+    <ClInclude Include="Source\Renderer\Resources\Framebuffer.h" />
     <ClInclude Include="Source\Renderer\Resources\Material.h" />
     <ClInclude Include="Source\Renderer\Resources\Mesh.h" />
     <ClInclude Include="Source\Renderer\Utils\RenderCommand.h" />

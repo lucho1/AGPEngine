@@ -15,8 +15,11 @@ CameraController::CameraController(Camera& camera)
 	m_Camera.CalculateProjectionMatrix();
 }
 
-void CameraController::OnMouseScroll(float scroll)
+void CameraController::OnMouseScroll(float scroll, bool viewport_focused)
 {
+	if (!viewport_focused)
+		return;
+
 	if (Input::IsMouseButtonPressed(MOUSE::RIGHT))
 	{
 		float scroll_pow = scroll * m_SpeedMultiplier / 8.0f;
@@ -26,8 +29,15 @@ void CameraController::OnMouseScroll(float scroll)
 		ZoomCamera(scroll * 0.1f);
 }
 
-void CameraController::OnUpdate(float dt)
+void CameraController::OnUpdate(float dt, bool viewport_focused)
 {
+	const glm::vec2& mouse_pos = Input::GetMousePos();
+	if (!viewport_focused)
+	{
+		m_InitialMousePosition = mouse_pos;
+		return;
+	}
+
 	// -- Focus --
 	if (Input::IsKeyPressed(KEY::F))
 	{
@@ -37,9 +47,7 @@ void CameraController::OnUpdate(float dt)
 	}
 
 	// -- Mouse Movement Calc --
-	const glm::vec2& mouse_pos = Input::GetMousePos();
 	glm::vec2 delta = (mouse_pos - m_InitialMousePosition) * 0.003f;
-
 
 	// -- Mid Mouse Button --
 	if (Input::IsMouseButtonPressed(MOUSE::MIDDLE))

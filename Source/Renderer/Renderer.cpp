@@ -62,11 +62,10 @@ void Renderer::OnWindowResized(uint width, uint height)
 
 
 // ------------------------------------------------------------------------------
-void Renderer::ClearRenderer(uint viewport_width, uint viewport_height)
+void Renderer::ClearRenderer()
 {
 	RenderCommand::SetClearColor(glm::vec3(0.15f));
 	RenderCommand::Clear();
-	RenderCommand::SetViewport(0, 0, viewport_width, viewport_height);
 }
 
 void Renderer::BeginScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position)

@@ -33,7 +33,7 @@ public:
 
 
 	// --- Rendering Stuff ---
-	static void ClearRenderer(uint viewport_width, uint viewport_height);
+	static void ClearRenderer();
 
 	static void BeginScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position);
 	static void EndScene();

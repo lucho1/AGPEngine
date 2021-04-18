@@ -17,8 +17,8 @@ public:
 	CameraController(Camera& camera);
 	~CameraController() = default;
 
-	void OnUpdate(float dt);
-	void OnMouseScroll(float scroll);
+	void OnUpdate(float dt, bool viewport_focused);
+	void OnMouseScroll(float scroll, bool viewport_focused);
 
 public:
 

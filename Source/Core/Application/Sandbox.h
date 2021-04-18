@@ -6,6 +6,7 @@
 
 #include "Renderer/Entities/CameraController.h"
 
+#include "Renderer/Resources/Framebuffer.h"
 #include "Renderer/Resources/Buffers.h"
 #include "Renderer/Resources/Texture.h"
 #include "Renderer/Resources/Shader.h"
@@ -43,14 +44,21 @@ private:
 
 private:
 
+	// Scene
+	CameraController m_EngineCamera = {};
+
 	std::vector<Ref<Model>> m_SceneModels;
 	Ref<Shader> m_TextureShader;
+
+	// Viewport
+	Ref<Framebuffer> m_EditorFramebuffer;
+	glm::vec2 m_ViewportSize = glm::vec2(0.0f);
+	bool m_ViewportFocused = false, m_ViewportHovered = false;
 	
+	// Performance Panel
 	uint m_MemoryAllocations[ALLOCATIONS_SAMPLES] = { 0 };
 	uint m_AllocationsIndex = 0;
 	MemoryMetrics m_MemoryMetrics = {};
-
-	CameraController m_EngineCamera = {};
 };
 
 #endif //_SANDBOX_H_

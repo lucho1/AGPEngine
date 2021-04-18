@@ -49,6 +49,10 @@ void Sandbox::Init()
     // -- Shader --
     m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
 
+    // -- Framebuffer --
+    m_EditorFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT,
+                                                    { RendererUtils::FBO_TEXTURE_FORMAT::RGBA8, RendererUtils::FBO_TEXTURE_FORMAT::DEPTH }));
+
     // -- Resources Print --
     Resources::PrintResourcesReferences();
 }
@@ -56,7 +60,7 @@ void Sandbox::Init()
 
 void Sandbox::OnMouseScrollEvent(float scroll)
 {
-    m_EngineCamera.OnMouseScroll(scroll);
+    m_EngineCamera.OnMouseScroll(scroll, (m_ViewportFocused || m_ViewportHovered));
 }
 
 void Sandbox::OnWindowResizeEvent(uint width, uint height)
@@ -69,22 +73,33 @@ void Sandbox::OnWindowResizeEvent(uint width, uint height)
 // ------------------------------------------------------------------------------
 void Sandbox::OnUpdate(float dt)
 {
+    // -- Viewport Resize --
+    if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f)
+    {
+        if (m_EditorFramebuffer->GetWidth() != (uint)m_ViewportSize.x || m_EditorFramebuffer->GetHeight() != (uint)m_ViewportSize.y)
+        {
+            m_EditorFramebuffer->Resize((uint)m_ViewportSize.x, (uint)m_ViewportSize.y);
+            m_EngineCamera.SetCameraViewport(m_ViewportSize.x, m_ViewportSize.y);
+        }
+    }
+
     // -- Camera Update --
-    m_EngineCamera.OnUpdate(dt);
+    m_EngineCamera.OnUpdate(dt, (m_ViewportFocused || m_ViewportHovered));
 
     // -- Shader Hot Reload --
     m_TextureShader->CheckLastModification();
 
     // -- Render --
-    glm::vec2 resolution = { Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight() };
-    Renderer::ClearRenderer(resolution.x, resolution.y);
+    m_EditorFramebuffer->Bind();
+
+    Renderer::ClearRenderer();
     Renderer::BeginScene(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
 
     // Draw Call
     for (auto& model : m_SceneModels)
         Renderer::SubmitModel(m_TextureShader, model);
 
-
+    m_EditorFramebuffer->Unbind();
     Renderer::EndScene();
 }
 
@@ -93,6 +108,64 @@ void Sandbox::OnUpdate(float dt)
 // ------------------------------------------------------------------------------
 void Sandbox::OnUIRender(float dt)
 {
+    // -- Docking Space --
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNav;
+
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+        window_flags |= ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("Dockspace", (bool*)true, window_flags);
+    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(2);
+
+    // -- Set Dockspace & its minimum size --
+    ImGuiIO& io = ImGui::GetIO();
+    ImGuiStyle& style = ImGui::GetStyle();
+    float original_min_size = style.WindowMinSize.x;
+    style.WindowMinSize.x = 370.0f;
+
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+    {
+        ImGuiID dock_id = ImGui::GetID("MyDockspace");
+        ImGui::DockSpace(dock_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+    }
+
+    style.WindowMinSize.x = original_min_size;
+    ImGui::End();
+
+    // --- Scene Framebuffer ---
+    ImGui::Begin("Scene", (bool*)true, ImGuiWindowFlags_NoScrollbar);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+
+    if (ImGui::IsWindowHovered() && (ImGui::IsMouseClicked(ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Middle)))
+    {
+        ImGui::SetWindowFocus();
+    }
+
+    m_ViewportFocused = ImGui::IsWindowFocused();
+    m_ViewportHovered = ImGui::IsWindowHovered();
+
+
+    // Get viewport size & draw fbo texture
+    ImVec2 viewportpanel_size = ImGui::GetContentRegionAvail();
+    m_ViewportSize = glm::vec2(viewportpanel_size.x, viewportpanel_size.y);
+    ImGui::Image(reinterpret_cast<void*>(m_EditorFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+
+    ImGui::PopStyleVar();
+    ImGui::End();
+
     // --- Performance Info Display ---
     ImGui::Begin("Info");
     ImGui::Text("FPS: %.0f", 1.0f / dt);

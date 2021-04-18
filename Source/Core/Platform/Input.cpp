@@ -15,19 +15,19 @@ STATE::BUTTON_STATE Input::m_Keys[KEY::KEY_COUNT] = {};
 // ------------------------------------------------------------------------------
 void Input::ResetInput()
 {
-    ImGuiLayer* ui_layer = Application::Get().GetImGuiLayer();
-
-    if (ui_layer->CapturingKeyboard())
-    {
-        for (uint i = 0; i < KEY::KEY_COUNT; ++i)
-            m_Keys[i] = STATE::IDLE;
-    }
-
-    if (ui_layer->CapturingMouse())
-    {
-        for (uint i = 0; i < MOUSE::MOUSE_BUTTON_COUNT; ++i)
-            m_MouseButtons[i] = STATE::IDLE;
-    }
+    //ImGuiLayer* ui_layer = Application::Get().GetImGuiLayer();
+    //
+    //if (ui_layer->CapturingKeyboard())
+    //{
+    //    for (uint i = 0; i < KEY::KEY_COUNT; ++i)
+    //        m_Keys[i] = STATE::IDLE;
+    //}
+    //
+    //if (ui_layer->CapturingMouse())
+    //{
+    //    for (uint i = 0; i < MOUSE::MOUSE_BUTTON_COUNT; ++i)
+    //        m_MouseButtons[i] = STATE::IDLE;
+    //}
 }
 
 

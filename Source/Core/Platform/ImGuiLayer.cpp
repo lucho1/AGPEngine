@@ -25,7 +25,7 @@ void ImGuiLayer::Init()
     ImGui::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
     //io.ConfigViewportsNoAutoMerge = true;
@@ -48,7 +48,7 @@ void ImGuiLayer::Init()
         return;
     }
 
-    if (!ImGui_ImplOpenGL3_Init())
+    if (!ImGui_ImplOpenGL3_Init("#version 460"))
     {
         ENGINE_LOG("Failed to initialize ImGui OpenGL wrapper\n");
         return;

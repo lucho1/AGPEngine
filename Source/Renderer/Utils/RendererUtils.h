@@ -133,6 +133,43 @@ namespace RendererUtils
 		ASSERT(false, "ShaderData passed Unknown or Incorrect!");
 		return (GLenum)0;
 	}
+
+
+	// ------------------------------------------------------------------------------
+	// ----- Framebuffer Stuff -----
+	static const uint s_MaxFBOSize = 8192; // Hardcoded because we don't have a Renderer-Capabilities system
+
+	enum class FBO_TEXTURE_FORMAT
+	{
+		NONE = 0,
+		RGBA8,				// Color
+		DEPTH24STENCIL8,	// Depth & Stencil
+
+		// Defaults
+		DEPTH = DEPTH24STENCIL8
+	};
+
+	static GLenum GLTextureFormat(FBO_TEXTURE_FORMAT format)
+	{
+		switch (format)
+		{
+			case FBO_TEXTURE_FORMAT::DEPTH24STENCIL8:	return GL_DEPTH24_STENCIL8;
+			case FBO_TEXTURE_FORMAT::RGBA8:				return GL_RGBA8;
+		}
+
+		ASSERT(false, "Invalid Format Passed to GLTextureFormat!");
+		return GL_NONE;
+	}
+
+	static bool IsDepthFormatTexture(FBO_TEXTURE_FORMAT format)
+	{
+		switch (format)
+		{
+			case FBO_TEXTURE_FORMAT::DEPTH24STENCIL8: return true;
+		}
+
+		return false;
+	}
 }
 
 #endif //_RENDERERUTILS_H_
