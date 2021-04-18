@@ -2,6 +2,7 @@
 #define _MESH_H_
 
 #include "Core/Globals.h"
+#include "Renderer/Entities/TransformComponent.h"
 #include <filesystem>
 
 
@@ -21,6 +22,8 @@ private:
 		m_Name = path.stem().string();
 	}
 
+	Model(const Model&) = default;
+
 public:
 
 	~Model() { if (m_RootMesh) m_RootMesh = nullptr; }
@@ -29,11 +32,15 @@ public:
 	const std::string& GetName()		const	{ return m_Name; }
 	const Mesh* GetRootMesh()			const	{ return m_RootMesh; }
 
+	TransformComponent& GetTransformation() { return m_Transform; }
+
 private:
 
 	std::string m_Path = "unpathed";
 	std::string m_Name = "unnamed";
 	Mesh* m_RootMesh = nullptr;
+
+	TransformComponent m_Transform = {};
 };
 
 

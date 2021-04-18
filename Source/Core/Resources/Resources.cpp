@@ -86,9 +86,20 @@ Ref<Model> Resources::CreateModel(const std::string& filepath, Mesh* root_mesh)
 	if (model == nullptr)
 		return nullptr;
 
-	//Ref<Model> model = CreateRef<Model>(new Model(filepath, root_mesh));
 	m_Models.push_back(model);
 	return model;
+}
+
+Ref<Model> Resources::CreateModel(const Ref<Model>& model, const std::string& new_name)
+{
+	// --- Create New Resource from an Existing one ---
+	Ref<Model> new_model = CreateRef<Model>(new Model(*model.get()));
+	if (new_model == nullptr)
+		return nullptr;
+
+	model->m_Name = new_name;
+	m_Models.push_back(new_model);
+	return new_model;
 }
 
 

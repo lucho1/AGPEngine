@@ -73,6 +73,9 @@ void Renderer::EndScene()
 {
 }
 
+
+
+// ------------------------------------------------------------------------------
 void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm::mat4& transform)
 {
 	// -- Recursive Submeshes Draw --
@@ -104,13 +107,18 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 	Renderer::UnbindTexture(texture_binding, albedo);
 }
 
-void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model, const glm::mat4& transform)
+
+void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model)
 {
+	if (!model->GetTransformation().EntityActive)
+		return;
+
 	shader->Bind();
 	shader->SetUniformMat4("u_ViewProjection", m_ViewProjectionMatrix);
-	RenderMesh(shader, model->GetRootMesh(), transform);
+	RenderMesh(shader, model->GetRootMesh(), model->GetTransformation().GetTransform());
 	shader->Unbind();
 }
+
 
 void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform)
 {

@@ -8,8 +8,8 @@
 #include "Renderer/Utils/RendererPrimitives.h"
 
 #include <imgui.h>
-#include "Renderer/Resources/Material.h"
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 
@@ -35,12 +35,22 @@ void Sandbox::Init()
     vao->SetIndexBuffer(ibo);
     vao->Unbind(); vbo->Unbind(); ibo->Unbind();
 
-    // -- Mesh Test --
-    m_PatrickModel = Resources::CreateModel("Resources/Models/Patrick/Patrick.obj");
+    // -- Models Setup --
+    Ref<Model> patrick_model = Resources::CreateModel("Resources/Models/Patrick/Patrick.obj");
+    patrick_model->GetTransformation().Scale = glm::vec3(0.25f);
+    patrick_model->GetTransformation().Rotation = glm::vec3(0.0f, 180.0f, 0.0f);
+    
+    Ref<Model> patrick_model2 = Resources::CreateModel(patrick_model, "Patrick2");
+    patrick_model2->GetTransformation().Translation = glm::vec3(1.0f, 0.0f, 0.0f);
 
-    // -- Shader Test --
+    m_SceneModels.push_back(patrick_model);
+    m_SceneModels.push_back(patrick_model2);
+
+
+    // -- Shader --
     m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
 
+    // -- Resources Print --
     Resources::PrintResourcesReferences();
 }
 
@@ -53,8 +63,8 @@ void Sandbox::OnUpdate(float dt)
     m_TextureShader->CheckLastModification();
 
     // Draw Call
-    glm::mat4 transform_mat = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.25f));
-    Renderer::SubmitModel(m_TextureShader, m_PatrickModel, transform_mat);
+    for(auto& model : m_SceneModels)
+        Renderer::SubmitModel(m_TextureShader, model);
 }
 
 
@@ -65,13 +75,131 @@ void Sandbox::OnUIRender(float dt)
     // --- Performance Info Display ---
     ImGui::Begin("Info");
     ImGui::Text("FPS: %.0f", 1.0f / dt);
-    
-    if (Input::IsKeyPressed(KEY::A))
-    {
-        for(int i = 0; i < 512; ++i)
-        float* a = new float(2.0f);
-    }
+    DrawPerformancePanel();
+    ImGui::End();
 
+    // --- Resources Info Display ---
+    ImGui::Begin("Resources");
+    DrawResourcesPanel();
+    ImGui::End();
+
+    // --- Entities Display ---
+    ImGui::Begin("Entities");
+    DrawEntitiesPanel();
+    ImGui::End();
+
+
+    // --- Renderer Statistics Display ---
+    ImGui::Begin("Renderer Statistics");
+    RendererStatistics stats = Renderer::GetStatistics();
+
+    ImGui::PushTextWrapPos(ImGui::GetContentRegionAvailWidth());
+    ImGui::Text("- Graphics by %s -", stats.GLVendor.c_str()); ImGui::NewLine();
+    ImGui::Text("Graphics Card:     %s", stats.GraphicsCard.c_str()); ImGui::NewLine();
+    ImGui::Text("OpenGL Version:    %i.%i (%s)", stats.OGL_MajorVersion, stats.OGL_MinorVersion, stats.GLVersion.c_str()); ImGui::NewLine();
+    ImGui::Text("Shading Version:   GLSL %s", stats.GLShadingVersion.c_str()); ImGui::NewLine();
+    ImGui::PopTextWrapPos();
+    ImGui::End();
+}
+
+
+
+// ------------------------------------------------------------------------------
+void Sandbox::SetItemWidth(float width)
+{
+    if (!glm::epsilonEqual(width, 0.0f, glm::epsilon<float>()))
+        ImGui::SetNextItemWidth(width);
+}
+
+void Sandbox::SetItemSpacing(float width, float indent, bool set_indent)
+{
+    if(set_indent)
+        ImGui::NewLine(); ImGui::SameLine(indent);
+
+    SetItemWidth(width);
+}
+
+void Sandbox::DrawVec3Control(const char* name, const char* label, float indent, glm::vec3& value, glm::vec3 reset_val)
+{
+    ImVec4 im_active_color = ImVec4(0.8f, 0.1f, 0.15f, 1.0f);
+    ImVec4 im_hover_color = ImVec4(0.9f, 0.2f, 0.25f, 1.0f);
+    ImGui::PushStyleColor(ImGuiCol_Button, im_active_color);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, im_active_color);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, im_hover_color);
+
+    ImGui::NewLine(); ImGui::SameLine(indent);
+    ImGui::Text(name); ImGui::SameLine();
+    if (ImGui::Button(label, { 17.5f, 17.5f }))
+        value = reset_val;
+
+    ImGui::SameLine();
+    float width = ImGui::GetContentRegionAvailWidth() - 5.0f;
+
+    SetItemSpacing(width);
+    ImGui::DragFloat3(label, glm::value_ptr(value), 0.05f, 0.0f, 0.0f, "%.1f");
+    ImGui::PopStyleColor(3);
+}
+
+void Sandbox::DrawEntitiesPanel()
+{
+    uint i = 0;
+    for (auto& entity : m_SceneModels)
+    {
+        // -- New ImGui ID --
+        static char popup_id[64];
+        sprintf_s(popup_id, 64, "EntityTag_%i", i);
+        ImGui::PushID(popup_id);
+
+        // -- Entity Active --
+        ImGui::Checkbox("##EntActive", &entity->GetTransformation().EntityActive);
+        
+        // -- Entity Name --
+        ImGui::SameLine();
+        SetItemWidth(ImGui::GetContentRegionAvailWidth() / 1.5f);
+
+        char buffer[256];
+        memset(buffer, 0, sizeof(buffer));
+        std::strncpy(buffer, entity->GetName().c_str(), sizeof(buffer));
+
+        if (ImGui::InputText("##EntName", buffer, sizeof(buffer), ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CharsNoBlank))
+            entity->SetName(std::string(buffer));
+
+
+        // -- Entity Transform --
+        float indent = ImGui::GetContentRegionAvailWidth() / 5.0f - 10.0f;
+        DrawVec3Control("Pos", "##Translation", indent, entity->GetTransformation().Translation);
+        DrawVec3Control("Rot", "##Rotation", indent, entity->GetTransformation().Rotation, glm::vec3(0.0f, 180.0f, 0.0f));
+        DrawVec3Control("Sca", "##Scale", indent, entity->GetTransformation().Scale, glm::vec3(0.25f));
+
+
+        // -- Pop & Spacing --
+        ImGui::PopID();
+        ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
+        ++i;
+    }
+}
+
+
+void Sandbox::DrawResourcesPanel()
+{
+    //Resources::PrintResourcesReferences();
+}
+
+
+void Sandbox::SetMemoryMetrics()
+{
+    m_MemoryMetrics = Application::Get().GetMemoryMetrics();
+
+    if (m_AllocationsIndex == ALLOCATIONS_SAMPLES)
+        m_AllocationsIndex = 0;
+
+    m_MemoryAllocations[m_AllocationsIndex] = m_MemoryMetrics.GetCurrentMemoryUsage();
+    ++m_AllocationsIndex;
+}
+
+
+void Sandbox::DrawPerformancePanel()
+{
     // --- Memory Metrics Gathering ---
     float float_mem_allocs[ALLOCATIONS_SAMPLES];
     for (uint i = 0; i < ALLOCATIONS_SAMPLES; ++i)
@@ -120,29 +248,4 @@ void Sandbox::OnUIRender(float dt)
 
     ImGui::Text("Deallocations"); ImGui::SameLine(text_separation);
     ImGui::Text("%.0f KB", BYTETOKB(m_MemoryMetrics.GetDeallocations()));
-
-    ImGui::End();
-
-
-
-    // --- Renderer Statistics Display ---
-    ImGui::Begin("Renderer Statistics");
-    RendererStatistics stats = Renderer::GetStatistics();
-    ImGui::Text("- Graphics by %s -", stats.GLVendor.c_str());
-    ImGui::Text("Graphics Card:     %s", stats.GraphicsCard.c_str());
-    ImGui::Text("OpenGL Version:    %i.%i (%s)", stats.OGL_MajorVersion, stats.OGL_MinorVersion, stats.GLVersion.c_str());
-    ImGui::Text("Shading Version:   GLSL %s", stats.GLShadingVersion.c_str());
-    ImGui::End();
-}
-
-
-void Sandbox::SetMemoryMetrics()
-{
-    m_MemoryMetrics = Application::Get().GetMemoryMetrics();
-
-    if (m_AllocationsIndex == ALLOCATIONS_SAMPLES)
-        m_AllocationsIndex = 0;
-
-    m_MemoryAllocations[m_AllocationsIndex] = m_MemoryMetrics.GetCurrentMemoryUsage();
-    ++m_AllocationsIndex;
 }

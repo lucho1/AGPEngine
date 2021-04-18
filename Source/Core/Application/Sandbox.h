@@ -25,11 +25,18 @@ public:
 
 private:
 
+	void SetItemWidth(float width);
+	void SetItemSpacing(float width, float indent = 0.0f, bool set_indent = false);
+	void DrawVec3Control(const char* name, const char* label, float indent, glm::vec3& value, glm::vec3 reset_val = glm::vec3(0.0f));
+
 	void SetMemoryMetrics();
+	void DrawEntitiesPanel();
+	void DrawResourcesPanel();
+	void DrawPerformancePanel();
 
 private:
 
-	Ref<Model> m_PatrickModel;
+	std::vector<Ref<Model>> m_SceneModels;
 	Ref<Shader> m_TextureShader;
 	
 	uint m_MemoryAllocations[ALLOCATIONS_SAMPLES] = { 0 };

@@ -26,6 +26,7 @@ public:
 	// --- Create Resources ---
 	static Ref<Texture> CreateTexture(const std::string& filepath);
 	static Ref<Model> CreateModel(const std::string& filepath, Mesh* root_mesh = nullptr);
+	static Ref<Model> CreateModel(const Ref<Model>& model, const std::string& new_name);
 	
 	static Ref<Mesh>* CreateMesh(const Ref<VertexArray>& vertex_array, uint material_index = 0, Mesh* parent = nullptr);
 	const static Ref<Material>* CreateMaterial(const std::string& name = "unnamed");
