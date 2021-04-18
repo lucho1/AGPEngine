@@ -72,6 +72,12 @@ void Application::OnWindowResize(uint width, uint height)
         return;
 
     Renderer::OnWindowResized(width, height);
+    s_Sandbox->OnWindowResizeEvent(width, height);
+}
+
+void Application::OnMouseScroll(float y_offset)
+{
+    s_Sandbox->OnMouseScrollEvent(y_offset);
 }
 
 
@@ -89,12 +95,8 @@ void Application::Update()
         // -- Clear Input State --
         Input::ResetInput();
 
-
-        // -- Render --
-        Renderer::ClearRenderer(m_AppWindow->GetWidth(), m_AppWindow->GetHeight());
-        Renderer::BeginScene(glm::mat4(1.0f));
+        // -- Scene Update (Render) --
         s_Sandbox->OnUpdate(m_DeltaTime);
-        Renderer::EndScene();
 
         // -- UI Rendering --
         m_ImGuiLayer->Begin();

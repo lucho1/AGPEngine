@@ -44,6 +44,7 @@ public:
 	// --- Class Methods ---
 	void CloseApplication() { m_Running = false; }
 	void OnWindowResize(uint width, uint height);
+	void OnMouseScroll(float y_offset);
 
 	// --- Getters ---
 	inline Window& GetWindow()			const	{ return *m_AppWindow; }

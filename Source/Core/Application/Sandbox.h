@@ -4,6 +4,8 @@
 #include "Core/Globals.h"
 #include "Application.h"
 
+#include "Renderer/Entities/CameraController.h"
+
 #include "Renderer/Resources/Buffers.h"
 #include "Renderer/Resources/Texture.h"
 #include "Renderer/Resources/Shader.h"
@@ -22,6 +24,9 @@ public:
 	void Init();
 	void OnUpdate(float dt);
 	void OnUIRender(float dt);
+
+	void OnMouseScrollEvent(float scroll);
+	void OnWindowResizeEvent(uint width, uint height);
 
 private:
 
@@ -42,6 +47,8 @@ private:
 	uint m_MemoryAllocations[ALLOCATIONS_SAMPLES] = { 0 };
 	uint m_AllocationsIndex = 0;
 	MemoryMetrics m_MemoryMetrics = {};
+
+	CameraController m_EngineCamera = {};
 };
 
 #endif //_SANDBOX_H_

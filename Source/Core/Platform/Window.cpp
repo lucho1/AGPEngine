@@ -116,7 +116,6 @@ void Window::SetGLFWEventCallbacks() const
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
         {
             ((Window*)glfwGetWindowUserPointer(window))->CloseWindow();
-            //((App*)glfwGetWindowUserPointer(window))->isRunning = false;
         });
 
     // Mouse Events

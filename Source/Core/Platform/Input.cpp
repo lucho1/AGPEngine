@@ -84,10 +84,7 @@ void Input::SetCursorCallback(double xpos, double ypos)
 
 void Input::SetScrollCallback(double xoff, double yoff)
 {
-    // TODO: Zoom
-    //WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-    //MouseScrolledEvent event((float)xOff, (float)yOff);
-    //data.EventCallback(event);
+    Application::Get().OnMouseScroll(yoff);
 }
 
 void Input::SetMouseCallback(int button, int action)
@@ -110,6 +107,16 @@ void Input::SetMouseCallback(int button, int action)
             else if (action == GLFW_RELEASE)
                 m_MouseButtons[MOUSE::LEFT] = STATE::RELEASE;
     
+            break;
+        }
+
+        case GLFW_MOUSE_BUTTON_MIDDLE:
+        {
+            if (action == GLFW_PRESS)
+                m_MouseButtons[MOUSE::MIDDLE] = STATE::PRESS;
+            else if (action == GLFW_RELEASE)
+                m_MouseButtons[MOUSE::MIDDLE] = STATE::RELEASE;
+
             break;
         }
     }
@@ -155,45 +162,47 @@ KEY::KEY_CODE Input::ConvertGLFWKeyCode(int glfw_key)
 {
     switch (glfw_key)
     {
-        case GLFW_KEY_ESCAPE:   return KEY::ESCAPE;
-        case GLFW_KEY_SPACE:    return KEY::SPACE;
-        case GLFW_KEY_ENTER:    return KEY::ENTER;
-        case GLFW_KEY_A:        return KEY::A;
-        case GLFW_KEY_B:        return KEY::B;
-        case GLFW_KEY_C:        return KEY::C;
-        case GLFW_KEY_D:        return KEY::D;
-        case GLFW_KEY_E:        return KEY::E;
-        case GLFW_KEY_F:        return KEY::F;
-        case GLFW_KEY_G:        return KEY::G;
-        case GLFW_KEY_H:        return KEY::H;
-        case GLFW_KEY_I:        return KEY::I;
-        case GLFW_KEY_J:        return KEY::J;
-        case GLFW_KEY_K:        return KEY::K;
-        case GLFW_KEY_L:        return KEY::L;
-        case GLFW_KEY_M:        return KEY::M;
-        case GLFW_KEY_N:        return KEY::N;
-        case GLFW_KEY_O:        return KEY::O;
-        case GLFW_KEY_P:        return KEY::P;
-        case GLFW_KEY_Q:        return KEY::Q;
-        case GLFW_KEY_R:        return KEY::R;
-        case GLFW_KEY_S:        return KEY::S;
-        case GLFW_KEY_T:        return KEY::T;
-        case GLFW_KEY_U:        return KEY::U;
-        case GLFW_KEY_V:        return KEY::V;
-        case GLFW_KEY_W:        return KEY::W;
-        case GLFW_KEY_X:        return KEY::X;
-        case GLFW_KEY_Y:        return KEY::Y;
-        case GLFW_KEY_Z:        return KEY::Z;
-        case GLFW_KEY_0:        return KEY::K0;
-        case GLFW_KEY_1:        return KEY::K1;
-        case GLFW_KEY_2:        return KEY::K2;
-        case GLFW_KEY_3:        return KEY::K3;
-        case GLFW_KEY_4:        return KEY::K4;
-        case GLFW_KEY_5:        return KEY::K5;
-        case GLFW_KEY_6:        return KEY::K6;
-        case GLFW_KEY_7:        return KEY::K7;
-        case GLFW_KEY_8:        return KEY::K8;
-        case GLFW_KEY_9:        return KEY::K9;
+        case GLFW_KEY_ESCAPE:       return KEY::ESCAPE;
+        case GLFW_KEY_SPACE:        return KEY::SPACE;
+        case GLFW_KEY_ENTER:        return KEY::ENTER;
+        case GLFW_KEY_LEFT_ALT:     return KEY::ALT;
+        case GLFW_KEY_LEFT_SHIFT:   return KEY::SHIFT;
+        case GLFW_KEY_A:            return KEY::A;
+        case GLFW_KEY_B:            return KEY::B;
+        case GLFW_KEY_C:            return KEY::C;
+        case GLFW_KEY_D:            return KEY::D;
+        case GLFW_KEY_E:            return KEY::E;
+        case GLFW_KEY_F:            return KEY::F;
+        case GLFW_KEY_G:            return KEY::G;
+        case GLFW_KEY_H:            return KEY::H;
+        case GLFW_KEY_I:            return KEY::I;
+        case GLFW_KEY_J:            return KEY::J;
+        case GLFW_KEY_K:            return KEY::K;
+        case GLFW_KEY_L:            return KEY::L;
+        case GLFW_KEY_M:            return KEY::M;
+        case GLFW_KEY_N:            return KEY::N;
+        case GLFW_KEY_O:            return KEY::O;
+        case GLFW_KEY_P:            return KEY::P;
+        case GLFW_KEY_Q:            return KEY::Q;
+        case GLFW_KEY_R:            return KEY::R;
+        case GLFW_KEY_S:            return KEY::S;
+        case GLFW_KEY_T:            return KEY::T;
+        case GLFW_KEY_U:            return KEY::U;
+        case GLFW_KEY_V:            return KEY::V;
+        case GLFW_KEY_W:            return KEY::W;
+        case GLFW_KEY_X:            return KEY::X;
+        case GLFW_KEY_Y:            return KEY::Y;
+        case GLFW_KEY_Z:            return KEY::Z;
+        case GLFW_KEY_0:            return KEY::K0;
+        case GLFW_KEY_1:            return KEY::K1;
+        case GLFW_KEY_2:            return KEY::K2;
+        case GLFW_KEY_3:            return KEY::K3;
+        case GLFW_KEY_4:            return KEY::K4;
+        case GLFW_KEY_5:            return KEY::K5;
+        case GLFW_KEY_6:            return KEY::K6;
+        case GLFW_KEY_7:            return KEY::K7;
+        case GLFW_KEY_8:            return KEY::K8;
+        case GLFW_KEY_9:            return KEY::K9;
     }
 
     return KEY::NONE;

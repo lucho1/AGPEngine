@@ -55,16 +55,38 @@ void Sandbox::Init()
 }
 
 
+void Sandbox::OnMouseScrollEvent(float scroll)
+{
+    m_EngineCamera.OnMouseScroll(scroll);
+}
+
+void Sandbox::OnWindowResizeEvent(uint width, uint height)
+{
+    m_EngineCamera.SetCameraViewport(width, height);
+}
+
+
 
 // ------------------------------------------------------------------------------
 void Sandbox::OnUpdate(float dt)
 {
+    // -- Camera Update --
+    m_EngineCamera.OnUpdate(dt);
+
     // -- Shader Hot Reload --
     m_TextureShader->CheckLastModification();
 
+    // -- Render --
+    glm::vec2 resolution = { Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight() };
+    Renderer::ClearRenderer(resolution.x, resolution.y);
+    Renderer::BeginScene(m_EngineCamera.GetCamera().GetViewProjection());
+
     // Draw Call
-    for(auto& model : m_SceneModels)
+    for (auto& model : m_SceneModels)
         Renderer::SubmitModel(m_TextureShader, model);
+
+
+    Renderer::EndScene();
 }
 
 
@@ -90,7 +112,7 @@ void Sandbox::OnUIRender(float dt)
 
 
     // --- Renderer Statistics Display ---
-    ImGui::Begin("Renderer Statistics");
+    ImGui::Begin("Renderer");
     RendererStatistics stats = Renderer::GetStatistics();
 
     ImGui::PushTextWrapPos(ImGui::GetContentRegionAvailWidth());
