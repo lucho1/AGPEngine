@@ -31,6 +31,7 @@ public:
 
 	// --- Uniforms Methods ---
 	void SetUniformInt(const std::string& uniform_name, int value);
+	void SetUniformFloat(const std::string& uniform_name, float value);
 	void SetUniformVec4(const std::string& uniform_name, const glm::vec4& color);
 	void SetUniformMat4(const std::string& uniform_name, const glm::mat4& matrix);
 

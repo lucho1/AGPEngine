@@ -44,7 +44,7 @@ private:
 	CameraController m_EngineCamera = {};
 
 	std::vector<Ref<Model>> m_SceneModels;
-	Ref<Shader> m_TextureShader;
+	Ref<Shader> m_TextureShader, m_LightingShader;
 
 	// Viewport
 	Ref<Framebuffer> m_EditorFramebuffer;

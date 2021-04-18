@@ -52,6 +52,7 @@
     <ClInclude Include="Source\Core\Platform\Window.h" />
     <ClInclude Include="Source\Renderer\Entities\Camera.h" />
     <ClInclude Include="Source\Renderer\Entities\CameraController.h" />
+    <ClInclude Include="Source\Renderer\Entities\Lights.h" />
     <ClInclude Include="Source\Renderer\Entities\TransformComponent.h" />
     <ClInclude Include="Source\Renderer\Resources\Buffers.h" />
     <ClInclude Include="Source\Renderer\Resources\Framebuffer.h" />

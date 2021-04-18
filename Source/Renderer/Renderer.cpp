@@ -73,7 +73,7 @@ void Renderer::BeginScene(const glm::mat4& viewproj_mat, const glm::vec3& view_p
 {
 	m_CameraUniformBuffer->Bind();
 	m_CameraUniformBuffer->SetData("ViewProjection", glm::value_ptr(viewproj_mat));
-	m_CameraUniformBuffer->SetData("Position", glm::value_ptr(view_position));
+	m_CameraUniformBuffer->SetData("Position", glm::value_ptr(glm::vec4(view_position, 0.0f)));
 	m_CameraUniformBuffer->Unbind();
 }
 

@@ -13,9 +13,12 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Renderer/Entities/Lights.h"
+
 
 
 // ------------------------------------------------------------------------------
+PointLight light;
 void Sandbox::Init()
 {
     // -- Buffers Test --
@@ -49,6 +52,9 @@ void Sandbox::Init()
 
     // -- Shader --
     m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
+    m_LightingShader = CreateRef<Shader>("Resources/Shaders/LightingShader.glsl");
+
+    light = PointLight();
 
     // -- Framebuffer --
     m_EditorFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT,
@@ -74,6 +80,9 @@ void Sandbox::OnWindowResizeEvent(uint width, uint height)
 // ------------------------------------------------------------------------------
 void Sandbox::OnUpdate(float dt)
 {
+    // -- Shader Hot Reload --
+    m_LightingShader->CheckLastModification();
+
     // -- Viewport Resize --
     if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f)
     {
@@ -87,8 +96,8 @@ void Sandbox::OnUpdate(float dt)
     // -- Camera Update --
     m_EngineCamera.OnUpdate(dt, (m_ViewportFocused || m_ViewportHovered));
 
-    // -- Shader Hot Reload --
-    m_TextureShader->CheckLastModification();
+    // -- Lights Update --
+
 
     // -- Render --
     m_EditorFramebuffer->Bind();
@@ -96,9 +105,17 @@ void Sandbox::OnUpdate(float dt)
     Renderer::ClearRenderer();
     Renderer::BeginScene(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
 
+    m_LightingShader->Bind();
+    m_LightingShader->SetUniformVec4("p_light.Pos", glm::vec4(light.Position, 0.0f));
+    m_LightingShader->SetUniformVec4("p_light.Color", glm::vec4(light.Color, 1.0f));
+    m_LightingShader->SetUniformFloat("p_light.Intensity", light.Intensity);
+    m_LightingShader->SetUniformFloat("p_light.AttK", light.AttenuationK);
+    m_LightingShader->SetUniformFloat("p_light.AttL", light.AttenuationL);
+    m_LightingShader->SetUniformFloat("p_light.AttQ", light.AttenuationQ);
+
     // Draw Call
     for (auto& model : m_SceneModels)
-        Renderer::SubmitModel(m_TextureShader, model);
+        Renderer::SubmitModel(m_LightingShader, model);
 
     m_EditorFramebuffer->Unbind();
     Renderer::EndScene();
