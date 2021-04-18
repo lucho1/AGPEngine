@@ -32,10 +32,6 @@ public:
 private:
 
 	void SetMemoryMetrics();
-	void SetItemWidth(float width);
-	void SetItemSpacing(float width, float indent = 0.0f, bool set_indent = false);
-	void DrawVec3Control(const char* name, const char* label, float indent, glm::vec3& value, glm::vec3 reset_val = glm::vec3(0.0f));
-	bool DrawSlider(const char* text, const char* label, float* value, float text_indent, float slider_indent, float min = 0.0f, float max = 0.0f);
 
 	void DrawResourcesPanel();
 	void DrawCameraPanel();

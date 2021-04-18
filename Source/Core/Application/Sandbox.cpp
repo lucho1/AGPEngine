@@ -7,6 +7,8 @@
 #include "Renderer/Utils/RenderCommand.h"
 #include "Renderer/Utils/RendererPrimitives.h"
 
+#include "EditorUI.h"
+
 #include <imgui.h>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -17,23 +19,23 @@
 void Sandbox::Init()
 {
     // -- Buffers Test --
-    uint indices[6] = { 0, 1, 2, 2, 3, 0 };
-    float vertices[5 * 4] = {
-        -0.5f,	-0.5f,	0.0f, 0.0f, 0.0f,		// For negative X positions, UV should be 0, for positive, 1
-         0.5f,	-0.5f,	0.0f, 1.0f, 0.0f,		// If you render, on a square, the texCoords (as color = vec4(tC, 0, 1)), the colors of the square in its corners are
-         0.5f,	 0.5f,	0.0f, 1.0f, 1.0f,		// (0,0,0,1) - Black, (1,0,0,1) - Red, (1,1,0,0) - Yellow, (0,1,0,1) - Green
-        -0.5f,	 0.5f,	0.0f, 0.0f, 1.0f
-    };
-
-    BufferLayout layout = { { SHADER_DATA::FLOAT3, "a_Position" }, { SHADER_DATA::FLOAT2, "a_TexCoord" } };
-    Ref<VertexBuffer> vbo = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
-    Ref<IndexBuffer> ibo = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
-    Ref<VertexArray> vao = CreateRef<VertexArray>();
-
-    vbo->SetLayout(layout);
-    vao->AddVertexBuffer(vbo);
-    vao->SetIndexBuffer(ibo);
-    vao->Unbind(); vbo->Unbind(); ibo->Unbind();
+    //uint indices[6] = { 0, 1, 2, 2, 3, 0 };
+    //float vertices[5 * 4] = {
+    //    -0.5f,	-0.5f,	0.0f, 0.0f, 0.0f,		// For negative X positions, UV should be 0, for positive, 1
+    //     0.5f,	-0.5f,	0.0f, 1.0f, 0.0f,		// If you render, on a square, the texCoords (as color = vec4(tC, 0, 1)), the colors of the square in its corners are
+    //     0.5f,	 0.5f,	0.0f, 1.0f, 1.0f,		// (0,0,0,1) - Black, (1,0,0,1) - Red, (1,1,0,0) - Yellow, (0,1,0,1) - Green
+    //    -0.5f,	 0.5f,	0.0f, 0.0f, 1.0f
+    //};
+    //
+    //BufferLayout layout = { { SHADER_DATA::FLOAT3, "a_Position" }, { SHADER_DATA::FLOAT2, "a_TexCoord" } };
+    //Ref<VertexBuffer> vbo = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
+    //Ref<IndexBuffer> ibo = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
+    //Ref<VertexArray> vao = CreateRef<VertexArray>();
+    //
+    //vbo->SetLayout(layout);
+    //vao->AddVertexBuffer(vbo);
+    //vao->SetIndexBuffer(ibo);
+    //vao->Unbind(); vbo->Unbind(); ibo->Unbind();
 
     // -- Models Setup --
     Ref<Model> patrick_model = Resources::CreateModel("Resources/Models/Patrick/Patrick.obj");
@@ -44,7 +46,6 @@ void Sandbox::Init()
 
     m_SceneModels.push_back(patrick_model);
     m_SceneModels.push_back(patrick_model2);
-
 
     // -- Shader --
     m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
@@ -109,54 +110,17 @@ void Sandbox::OnUpdate(float dt)
 void Sandbox::OnUIRender(float dt)
 {
     // -- Docking Space --
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->Pos);
-    ImGui::SetNextWindowSize(viewport->Size);
-    ImGui::SetNextWindowViewport(viewport->ID);
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNav;
-
-    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-        window_flags |= ImGuiWindowFlags_NoBackground;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("Dockspace", (bool*)true, window_flags);
-    ImGui::PopStyleVar();
-    ImGui::PopStyleVar(2);
-
-    // -- Set Dockspace & its minimum size --
-    ImGuiIO& io = ImGui::GetIO();
-    ImGuiStyle& style = ImGui::GetStyle();
-    float original_min_size = style.WindowMinSize.x;
-    style.WindowMinSize.x = 370.0f;
-
-    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-    {
-        ImGuiID dock_id = ImGui::GetID("MyDockspace");
-        ImGui::DockSpace(dock_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-    }
-
-    style.WindowMinSize.x = original_min_size;
-    ImGui::End();
+    EditorUI::SetDocking();    
 
     // --- Scene Framebuffer ---
     ImGui::Begin("Scene", (bool*)true, ImGuiWindowFlags_NoScrollbar);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
 
     if (ImGui::IsWindowHovered() && (ImGui::IsMouseClicked(ImGuiMouseButton_Right) || ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Middle)))
-    {
         ImGui::SetWindowFocus();
-    }
 
     m_ViewportFocused = ImGui::IsWindowFocused();
     m_ViewportHovered = ImGui::IsWindowHovered();
-
 
     // Get viewport size & draw fbo texture
     ImVec2 viewportpanel_size = ImGui::GetContentRegionAvail();
@@ -216,51 +180,6 @@ void Sandbox::SetMemoryMetrics()
 }
 
 
-void Sandbox::SetItemWidth(float width)
-{
-    if (!glm::epsilonEqual(width, 0.0f, glm::epsilon<float>()))
-        ImGui::SetNextItemWidth(width);
-}
-
-void Sandbox::SetItemSpacing(float width, float indent, bool set_indent)
-{
-    if(set_indent)
-        ImGui::NewLine(); ImGui::SameLine(indent);
-
-    SetItemWidth(width);
-}
-
-void Sandbox::DrawVec3Control(const char* name, const char* label, float indent, glm::vec3& value, glm::vec3 reset_val)
-{
-    ImVec4 im_active_color = ImVec4(0.8f, 0.1f, 0.15f, 1.0f);
-    ImVec4 im_hover_color = ImVec4(0.9f, 0.2f, 0.25f, 1.0f);
-    ImGui::PushStyleColor(ImGuiCol_Button, im_active_color);
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, im_active_color);
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, im_hover_color);
-
-    ImGui::NewLine(); ImGui::SameLine(indent);
-    ImGui::Text(name); ImGui::SameLine();
-    if (ImGui::Button(label, { 17.5f, 17.5f }))
-        value = reset_val;
-
-    ImGui::SameLine();
-    float width = ImGui::GetContentRegionAvailWidth() - 5.0f;
-
-    SetItemSpacing(width);
-    ImGui::DragFloat3(label, glm::value_ptr(value), 0.05f, 0.0f, 0.0f, "%.1f");
-    ImGui::PopStyleColor(3);
-}
-
-bool Sandbox::DrawSlider(const char* text, const char* label, float* value, float text_indent, float slider_indent, float min, float max)
-{
-    ImGui::NewLine(); ImGui::SameLine(text_indent);
-    ImGui::Text(text); ImGui::SameLine(slider_indent);
-    float width = ImGui::GetContentRegionAvailWidth() / 1.3f;
-    SetItemWidth(width);
-    return ImGui::SliderFloat(label, value, min, max, "%.1f", 1.0f);
-}
-
-
 
 // ------------------------------------------------------------------------------
 void Sandbox::DrawCameraPanel()
@@ -270,10 +189,10 @@ void Sandbox::DrawCameraPanel()
     float slider_indent = ImGui::GetContentRegionAvailWidth() / 3.0f;
     float indent = ImGui::GetContentRegionAvailWidth() / 10.0f;
     
-    DrawSlider("Mov.", "##EdcamMovSp", &m_EngineCamera.MoveSpeed, indent, slider_indent, 1.0f, 10.0f);
-    DrawSlider("Rot.", "##EdcamRotSp", &m_EngineCamera.RotationSpeed, indent, slider_indent, 0.1f, 5.0f);
-    DrawSlider("Pan", "##EdcamPanSp", &m_EngineCamera.PanSpeed, indent, slider_indent, 1.0f, 20.0f);
-    DrawSlider("Max Zoom", "##EdcamZoomSp", &m_EngineCamera.MaxZoomSpeed, indent, slider_indent, 1.0f, 300.0f);
+    EditorUI::DrawSlider("Mov.", "##EdcamMovSp", &m_EngineCamera.MoveSpeed, indent, slider_indent, 1.0f, 10.0f);
+    EditorUI::DrawSlider("Rot.", "##EdcamRotSp", &m_EngineCamera.RotationSpeed, indent, slider_indent, 0.1f, 5.0f);
+    EditorUI::DrawSlider("Pan", "##EdcamPanSp", &m_EngineCamera.PanSpeed, indent, slider_indent, 1.0f, 20.0f);
+    EditorUI::DrawSlider("Max Zoom", "##EdcamZoomSp", &m_EngineCamera.MaxZoomSpeed, indent, slider_indent, 1.0f, 300.0f);
 
     ImGui::NewLine(); ImGui::SameLine(indent);
     ImGui::Text("Zoom: %.1f", m_EngineCamera.ZoomLevel);
@@ -289,7 +208,7 @@ void Sandbox::DrawCameraPanel()
     float fplane = m_EngineCamera.GetCamera().GetFarPlane();
     
     // FOV
-    if (DrawSlider("FOV", "##EdcamFOV", &fov, indent, slider_indent, 15.0f, 180.0f))
+    if (EditorUI::DrawSlider("FOV", "##EdcamFOV", &fov, indent, slider_indent, 15.0f, 180.0f))
         m_EngineCamera.GetCamera().SetFOV(fov);
     
     // Cam Planes
@@ -297,11 +216,11 @@ void Sandbox::DrawCameraPanel()
     ImGui::Text("Planes"); ImGui::SameLine(slider_indent);
     float width = ImGui::GetContentRegionAvailWidth() / 1.3f;
 
-    SetItemWidth(width/2.1f);
+    EditorUI::SetItemWidth(width/2.1f);
     if (ImGui::DragFloat("##EdcamNPl", &nplane, 0.01f, 0.01f, fplane - 0.01f, "%.3f"))
         m_EngineCamera.GetCamera().SetNearPlane(nplane);
 
-    ImGui::SameLine(); SetItemWidth(width/2.1f);
+    ImGui::SameLine(); EditorUI::SetItemWidth(width/2.1f);
     if (ImGui::DragFloat("##EdcamFPl", &fplane, 1.0f, nplane + 0.1f, INFINITY, "%.3f"))
         m_EngineCamera.GetCamera().SetFarPlane(fplane);
 
@@ -314,19 +233,20 @@ void Sandbox::DrawCameraPanel()
     // Pos & Rot
     glm::vec2 rot = { m_EngineCamera.GetPitch(), m_EngineCamera.GetYaw() };
     glm::vec3 pos = m_EngineCamera.GetPosition();
+
     ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
     ImGui::Text("PLACEMENT");
 
     ImGui::NewLine(); ImGui::SameLine(indent);
     ImGui::Text("Rot"); ImGui::SameLine(slider_indent);
 
-    SetItemWidth(width);
+    EditorUI::SetItemWidth(width);
     if (ImGui::DragFloat2("###EdcamRot", &rot[0], 0.01f))
         m_EngineCamera.SetOrientation(rot.x, rot.y);
 
     ImGui::NewLine(); ImGui::SameLine(indent);
     ImGui::Text("Pos"); ImGui::SameLine(slider_indent);
-    SetItemWidth(width);
+    EditorUI::SetItemWidth(width);
     if (ImGui::DragFloat3("###EdcamPos", &pos[0], 0.05f))
         m_EngineCamera.SetPosition(pos);
 }
@@ -334,7 +254,6 @@ void Sandbox::DrawCameraPanel()
 
 void Sandbox::DrawResourcesPanel()
 {
-    //Resources::PrintResourcesReferences();
     std::vector<std::string> text = Resources::GetResourcesReferences();
     for (std::string str : text)
         ImGui::Text(str.c_str());
@@ -356,7 +275,7 @@ void Sandbox::DrawEntitiesPanel()
         
         // -- Entity Name --
         ImGui::SameLine();
-        SetItemWidth(ImGui::GetContentRegionAvailWidth() / 1.5f);
+        EditorUI::SetItemWidth(ImGui::GetContentRegionAvailWidth() / 1.5f);
 
         char buffer[256];
         memset(buffer, 0, sizeof(buffer));
@@ -365,13 +284,11 @@ void Sandbox::DrawEntitiesPanel()
         if (ImGui::InputText("##EntName", buffer, sizeof(buffer), ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CharsNoBlank))
             entity->SetName(std::string(buffer));
 
-
         // -- Entity Transform --
         float indent = ImGui::GetContentRegionAvailWidth() / 5.0f - 10.0f;
-        DrawVec3Control("Pos", "##Translation", indent, entity->GetTransformation().Translation);
-        DrawVec3Control("Rot", "##Rotation", indent, entity->GetTransformation().Rotation, glm::vec3(0.0f, 180.0f, 0.0f));
-        DrawVec3Control("Sca", "##Scale", indent, entity->GetTransformation().Scale, glm::vec3(0.25f));
-
+        EditorUI::DrawVec3Control("Pos", "##Translation", indent, entity->GetTransformation().Translation);
+        EditorUI::DrawVec3Control("Rot", "##Rotation", indent, entity->GetTransformation().Rotation, glm::vec3(0.0f, 180.0f, 0.0f));
+        EditorUI::DrawVec3Control("Sca", "##Scale", indent, entity->GetTransformation().Scale, glm::vec3(0.25f));
 
         // -- Pop & Spacing --
         ImGui::PopID();
@@ -411,10 +328,7 @@ void Sandbox::DrawPerformancePanel()
         plot_scale = 10240.0f;
 
     // Print Plot
-    char overlay[50];
-    sprintf(overlay, "Memory Used: %.0f %s", current_usage, unit);
-    float plots_width = ImGui::GetContentRegionAvailWidth();
-    ImGui::PlotLines("###MemoryUsage", float_mem_allocs, IM_ARRAYSIZE(float_mem_allocs), 0, overlay, 0.0f, plot_scale, ImVec2(plots_width, 100.0f));
+    EditorUI::DrawPlot(float_mem_allocs, plot_scale, true, "Memory Used: %.0f %s", current_usage, unit);
 
     // Stop Memory Metrics Gathering
     static bool stop = false;
