@@ -60,8 +60,8 @@ static void LogString(const char* str)
 
 // --- Application Definitions ---
 #define APPLICATION_NAME "AGPEngine by Lucho Suaya"
-#define WINDOW_WIDTH 960
-#define WINDOW_HEIGHT 540
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 720
 #define FRAMERATE 60.0f
 
 
