@@ -23,10 +23,12 @@ public:
 public:
 
 	// --- Getters ---
-	inline const Camera& GetCamera()	const { return m_Camera; }
+	inline Camera& GetCamera()	{ return m_Camera; }
 
 	inline glm::vec3 GetPosition()		const { return m_Position; }
 	inline glm::quat GetOrientation()	const { return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f)); }
+	inline float GetPitch()				const { return m_Pitch; }
+	inline float GetYaw()				const { return m_Yaw; }
 
 	glm::vec3 GetUpVector()				const { return glm::rotate(GetOrientation(), glm::vec3(0.0f, 1.0f, 0.0f)); }
 	glm::vec3 GetRightVector()			const { return glm::rotate(GetOrientation(), glm::vec3(1.0f, 0.0f, 0.0f)); }
@@ -36,10 +38,7 @@ public:
 	void SetOrientation(float x_angle, float y_angle);
 	void SetPosition(const glm::vec3& position);
 
-	inline void SetZoomLevel(float zoom_level)				{ m_ZoomLevel = zoom_level; }
-	inline void SetMoveSpeed(float speed)					{ m_MoveSpeed = speed; }
-	inline void SetRotationSpeed(float speed)				{ m_RotationSpeed = speed; }
-	inline void SetCameraViewport(uint width, uint height)	{ m_Camera.SetViewport(width, height); }
+	inline void SetCameraViewport(uint width, uint height)		{ m_Camera.SetViewport(width, height); }
 
 private:
 
@@ -51,6 +50,11 @@ private:
 	void ZoomCamera(float zoom);
 
 	void RecalculateView();
+
+public:
+
+	float MoveSpeed = 2.0f, RotationSpeed = 0.8f;
+	float PanSpeed = 2.4f, ZoomLevel = 5.0f, MaxZoomSpeed = 100.0f;
 
 private:
 
@@ -64,7 +68,7 @@ private:
 	glm::vec3 m_FocalPoint = glm::vec3(0.0f);
 	glm::vec2 m_InitialMousePosition = glm::vec2(0.0f);
 
-	float m_ZoomLevel = 5.0f, m_MoveSpeed = 2.0f, m_SpeedMultiplier = 1.0f, m_RotationSpeed = 0.8f, m_PanSpeed = 2.4f;
+	float m_SpeedMultiplier = 1.0f;
 };
 
 

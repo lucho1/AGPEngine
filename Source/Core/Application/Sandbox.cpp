@@ -38,7 +38,6 @@ void Sandbox::Init()
     // -- Models Setup --
     Ref<Model> patrick_model = Resources::CreateModel("Resources/Models/Patrick/Patrick.obj");
     patrick_model->GetTransformation().Scale = glm::vec3(0.25f);
-    patrick_model->GetTransformation().Rotation = glm::vec3(0.0f, 180.0f, 0.0f);
     
     Ref<Model> patrick_model2 = Resources::CreateModel(patrick_model, "Patrick2");
     patrick_model2->GetTransformation().Translation = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -110,6 +109,11 @@ void Sandbox::OnUIRender(float dt)
     DrawEntitiesPanel();
     ImGui::End();
 
+    // --- Camera Settings ---
+    ImGui::Begin("Camera");
+    DrawCameraPanel();
+    ImGui::End();
+
 
     // --- Renderer Statistics Display ---
     ImGui::Begin("Renderer");
@@ -127,6 +131,18 @@ void Sandbox::OnUIRender(float dt)
 
 
 // ------------------------------------------------------------------------------
+void Sandbox::SetMemoryMetrics()
+{
+    m_MemoryMetrics = Application::Get().GetMemoryMetrics();
+
+    if (m_AllocationsIndex == ALLOCATIONS_SAMPLES)
+        m_AllocationsIndex = 0;
+
+    m_MemoryAllocations[m_AllocationsIndex] = m_MemoryMetrics.GetCurrentMemoryUsage();
+    ++m_AllocationsIndex;
+}
+
+
 void Sandbox::SetItemWidth(float width)
 {
     if (!glm::epsilonEqual(width, 0.0f, glm::epsilon<float>()))
@@ -161,6 +177,96 @@ void Sandbox::DrawVec3Control(const char* name, const char* label, float indent,
     ImGui::DragFloat3(label, glm::value_ptr(value), 0.05f, 0.0f, 0.0f, "%.1f");
     ImGui::PopStyleColor(3);
 }
+
+bool Sandbox::DrawSlider(const char* text, const char* label, float* value, float text_indent, float slider_indent, float min, float max)
+{
+    ImGui::NewLine(); ImGui::SameLine(text_indent);
+    ImGui::Text(text); ImGui::SameLine(slider_indent);
+    float width = ImGui::GetContentRegionAvailWidth() / 1.3f;
+    SetItemWidth(width);
+    return ImGui::SliderFloat(label, value, min, max, "%.1f", 1.0f);
+}
+
+
+
+// ------------------------------------------------------------------------------
+void Sandbox::DrawCameraPanel()
+{
+    // -- Transform Values --
+    ImGui::Text("SPEED");
+    float slider_indent = ImGui::GetContentRegionAvailWidth() / 3.0f;
+    float indent = ImGui::GetContentRegionAvailWidth() / 10.0f;
+    
+    DrawSlider("Mov.", "##EdcamMovSp", &m_EngineCamera.MoveSpeed, indent, slider_indent, 1.0f, 10.0f);
+    DrawSlider("Rot.", "##EdcamRotSp", &m_EngineCamera.RotationSpeed, indent, slider_indent, 0.1f, 5.0f);
+    DrawSlider("Pan", "##EdcamPanSp", &m_EngineCamera.PanSpeed, indent, slider_indent, 1.0f, 20.0f);
+    DrawSlider("Max Zoom", "##EdcamZoomSp", &m_EngineCamera.MaxZoomSpeed, indent, slider_indent, 1.0f, 300.0f);
+
+    ImGui::NewLine(); ImGui::SameLine(indent);
+    ImGui::Text("Zoom: %.1f", m_EngineCamera.ZoomLevel);
+
+    // -- Camera --
+    ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
+
+    // -- Transform Values --
+    ImGui::Text("CAMERA");
+
+    float fov = m_EngineCamera.GetCamera().GetFOV();
+    float nplane = m_EngineCamera.GetCamera().GetNearPlane();
+    float fplane = m_EngineCamera.GetCamera().GetFarPlane();
+    
+    // FOV
+    if (DrawSlider("FOV", "##EdcamFOV", &fov, indent, slider_indent, 15.0f, 180.0f))
+        m_EngineCamera.GetCamera().SetFOV(fov);
+    
+    // Cam Planes
+    ImGui::NewLine(); ImGui::SameLine(indent);
+    ImGui::Text("Planes"); ImGui::SameLine(slider_indent);
+    float width = ImGui::GetContentRegionAvailWidth() / 1.3f;
+
+    SetItemWidth(width/2.1f);
+    if (ImGui::DragFloat("##EdcamNPl", &nplane, 0.01f, 0.01f, fplane - 0.01f, "%.3f"))
+        m_EngineCamera.GetCamera().SetNearPlane(nplane);
+
+    ImGui::SameLine(); SetItemWidth(width/2.1f);
+    if (ImGui::DragFloat("##EdcamFPl", &fplane, 1.0f, nplane + 0.1f, INFINITY, "%.3f"))
+        m_EngineCamera.GetCamera().SetFarPlane(fplane);
+
+    // Resolution/Viewport
+    glm::ivec2 view_size = m_EngineCamera.GetCamera().GetViewportSize();
+    ImGui::NewLine(); ImGui::SameLine(indent);
+    ImGui::Text("Viewport"); ImGui::SameLine(slider_indent);
+    ImGui::Text("%ix%i (AR: %.2f)", view_size.x, view_size.y, m_EngineCamera.GetCamera().GetAspectRato());
+
+    // Pos & Rot
+    glm::vec2 rot = { m_EngineCamera.GetPitch(), m_EngineCamera.GetYaw() };
+    glm::vec3 pos = m_EngineCamera.GetPosition();
+    ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
+    ImGui::Text("PLACEMENT");
+
+    ImGui::NewLine(); ImGui::SameLine(indent);
+    ImGui::Text("Rot"); ImGui::SameLine(slider_indent);
+
+    SetItemWidth(width);
+    if (ImGui::DragFloat2("###EdcamRot", &rot[0], 0.01f))
+        m_EngineCamera.SetOrientation(rot.x, rot.y);
+
+    ImGui::NewLine(); ImGui::SameLine(indent);
+    ImGui::Text("Pos"); ImGui::SameLine(slider_indent);
+    SetItemWidth(width);
+    if (ImGui::DragFloat3("###EdcamPos", &pos[0], 0.05f))
+        m_EngineCamera.SetPosition(pos);
+}
+
+
+void Sandbox::DrawResourcesPanel()
+{
+    //Resources::PrintResourcesReferences();
+    std::vector<std::string> text = Resources::GetResourcesReferences();
+    for (std::string str : text)
+        ImGui::Text(str.c_str());
+}
+
 
 void Sandbox::DrawEntitiesPanel()
 {
@@ -199,27 +305,6 @@ void Sandbox::DrawEntitiesPanel()
         ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
         ++i;
     }
-}
-
-
-void Sandbox::DrawResourcesPanel()
-{
-    //Resources::PrintResourcesReferences();
-    std::vector<std::string> text = Resources::GetResourcesReferences();
-    for (std::string str : text)
-        ImGui::Text(str.c_str());
-}
-
-
-void Sandbox::SetMemoryMetrics()
-{
-    m_MemoryMetrics = Application::Get().GetMemoryMetrics();
-
-    if (m_AllocationsIndex == ALLOCATIONS_SAMPLES)
-        m_AllocationsIndex = 0;
-
-    m_MemoryAllocations[m_AllocationsIndex] = m_MemoryMetrics.GetCurrentMemoryUsage();
-    ++m_AllocationsIndex;
 }
 
 
