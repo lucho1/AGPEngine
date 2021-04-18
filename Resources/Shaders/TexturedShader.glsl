@@ -32,7 +32,6 @@ void main()
 	v_VertexData.Normal = a_Normal;
 	v_VertexData.Tangent = a_Tangent;
 	v_VertexData.Bitangent = a_Bitangent;
-	//gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
 	gl_Position = ViewProjection * u_Model * vec4(a_Position, 1.0);
 }
 
