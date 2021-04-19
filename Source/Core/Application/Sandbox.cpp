@@ -298,8 +298,8 @@ void Sandbox::DrawLightsPanel()
         ImGui::SameLine(avail_width);
         
         // -- Light Remove --
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.2f, 0.2f, 1.0f));
         
         if (ImGui::Button("X", { btn_width , 20.0f }))
             Renderer::RemoveLight(light.GetID());
