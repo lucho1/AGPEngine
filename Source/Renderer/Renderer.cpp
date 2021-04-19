@@ -59,15 +59,13 @@ void Renderer::Init()
 	for (uint i = 0; i < RendererUtils::s_MaxLights; ++i)
 	{
 		std::string uniform_name = "PLightsVec[" + std::to_string(i) + "].";
-		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT4, uniform_name + "Pos" });
-		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT4, uniform_name + "Color" });
-		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT, uniform_name + "Intensity" });
-		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT, uniform_name + "AttK" });
-		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT, uniform_name + "AttL" });
-		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT, uniform_name + "AttQ" });
+
+		lights_ssbo_layout.AddElements({{ SHADER_DATA::FLOAT4, uniform_name + "Pos" },		{ SHADER_DATA::FLOAT4, uniform_name + "Color" },
+										{ SHADER_DATA::FLOAT, uniform_name + "Intensity" },	{ SHADER_DATA::FLOAT, uniform_name + "AttK" },
+										{ SHADER_DATA::FLOAT, uniform_name + "AttL" },		{ SHADER_DATA::FLOAT, uniform_name + "AttQ" }
+									});
 	}
 
-	lights_ssbo_layout.Recalculate();
 	m_LightsSSBuffer = new ShaderStorageBuffer(lights_ssbo_layout, 0);
 }
 

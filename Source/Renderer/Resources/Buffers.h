@@ -44,9 +44,12 @@ public:
 	std::vector<BufferElement>::const_iterator end()		const { return m_Elements.end(); }
 
 	// USE ONLY ON BUFFER INITIALIZATION!
-	void AddElement(BufferElement element)	{ m_Elements.push_back(element); }
-	// USE ONLY ON BUFFER INITIALIZATION!
-	void Recalculate()						{ CalculateOffsetAndStride(); }
+	void AddElements(std::initializer_list<BufferElement> elements)
+	{
+		std::vector<BufferElement>::const_iterator pos = m_Elements.end();
+		m_Elements.insert(pos, elements.begin(), elements.end());
+		CalculateOffsetAndStride();
+	}
 
 private:
 
