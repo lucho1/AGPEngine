@@ -43,6 +43,11 @@ public:
 	std::vector<BufferElement>::const_iterator begin()		const { return m_Elements.begin(); }
 	std::vector<BufferElement>::const_iterator end()		const { return m_Elements.end(); }
 
+	// USE ONLY ON BUFFER INITIALIZATION!
+	void AddElement(BufferElement element)	{ m_Elements.push_back(element); }
+	// USE ONLY ON BUFFER INITIALIZATION!
+	void Recalculate()						{ CalculateOffsetAndStride(); }
+
 private:
 
 	// --- Private Methods ---
@@ -177,7 +182,31 @@ public:
 private:
 
 	// --- Variables ---
-	uint m_ID = 0, m_Binding = 0;
+	uint m_ID = 0, m_Binding = 0, m_Size = 0; // Size is for debug
+	BufferLayout m_Layout;
+};
+
+
+
+class ShaderStorageBuffer
+{
+public:
+
+	// --- Des/Construction ---
+	ShaderStorageBuffer(BufferLayout layout, uint binding);
+	~ShaderStorageBuffer();
+
+	// --- Class Methods ---
+	void Bind() const;
+	void Unbind() const;
+	void SetData(const std::string& element_name, const void* data) const;
+
+	const BufferLayout& GetLayout() const { return m_Layout; }
+
+private:
+
+	// --- Variables ---
+	uint m_ID = 0, m_Binding = 0, m_Size = 0; // Size is for debug
 	BufferLayout m_Layout;
 };
 

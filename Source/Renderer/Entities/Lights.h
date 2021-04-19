@@ -2,7 +2,9 @@
 #define _LIGHT_H_
 
 #include "Core/Globals.h"
+#include "Renderer/Resources/Buffers.h"
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class PointLight
 {
@@ -18,16 +20,14 @@ public:
 	inline uint GetID()		const { return m_ID; }
 	inline operator uint()	const { return m_ID; }
 
-	void SetLightData(const Ref<Shader>& shader, const std::string& lightstruct_uniform_name)
+	void SetLightData(ShaderStorageBuffer* ssbo, const std::string& lightunif_name)
 	{
-		std::string unif_name = lightstruct_uniform_name + ".";
-
-		shader->SetUniformVec4(unif_name + "Pos", glm::vec4(Position, 0.0f));
-		shader->SetUniformVec4(unif_name + "Color", glm::vec4(Color, 1.0f));
-		shader->SetUniformFloat(unif_name + "Intensity", Intensity);
-		shader->SetUniformFloat(unif_name + "AttK", AttenuationK);
-		shader->SetUniformFloat(unif_name + "AttL", AttenuationL);
-		shader->SetUniformFloat(unif_name + "AttQ", AttenuationQ);
+		ssbo->SetData(lightunif_name + "Pos", glm::value_ptr(glm::vec4(Position, 0.0f)));
+		ssbo->SetData(lightunif_name + "Color", glm::value_ptr(glm::vec4(Color, 1.0f)));
+		ssbo->SetData(lightunif_name + "Intensity", &Intensity);
+		ssbo->SetData(lightunif_name + "AttK", &AttenuationK);
+		ssbo->SetData(lightunif_name + "AttL", &AttenuationL);
+		ssbo->SetData(lightunif_name + "AttQ", &AttenuationQ);
 	}
 
 public:

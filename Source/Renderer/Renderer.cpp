@@ -17,6 +17,7 @@
 // ------------------------------------------------------------------------------
 RendererStatistics Renderer::m_RendererStatistics = {};
 UniformBuffer* Renderer::m_CameraUniformBuffer = nullptr;
+ShaderStorageBuffer* Renderer::m_LightsSSBuffer = nullptr;
 std::vector<PointLight> Renderer::m_Lights = {};
 uint Renderer::m_LightsIndex = 0;
 // ------------------------------------------------------------------------------
@@ -51,12 +52,30 @@ void Renderer::Init()
 	// -- Create the Uniform Buffer for the Camera --
 	BufferLayout camera_ubo_layout = { { SHADER_DATA::MAT4, "ViewProjection" }, { SHADER_DATA::FLOAT4, "Position" } }; //Vec3 "are like" Vec4 for GPU
 	m_CameraUniformBuffer = new UniformBuffer(camera_ubo_layout, 0);
+
+	// -- Create the Shader Storage Buffer for Lights --
+	// First, add the int (it's a int4 due to gpu mem alignment), then the lights
+	BufferLayout lights_ssbo_layout = { { SHADER_DATA::INT4, "CurrentLights" } };
+	for (uint i = 0; i < RendererUtils::s_MaxLights; ++i)
+	{
+		std::string uniform_name = "PLightsVec[" + std::to_string(i) + "].";
+		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT4, uniform_name + "Pos" });
+		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT4, uniform_name + "Color" });
+		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT, uniform_name + "Intensity" });
+		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT, uniform_name + "AttK" });
+		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT, uniform_name + "AttL" });
+		lights_ssbo_layout.AddElement({ SHADER_DATA::FLOAT, uniform_name + "AttQ" });
+	}
+
+	lights_ssbo_layout.Recalculate();
+	m_LightsSSBuffer = new ShaderStorageBuffer(lights_ssbo_layout, 0);
 }
 
 void Renderer::Shutdown()
 {
 	RendererPrimitives::DefaultTextures::CleanUp();
 	delete m_CameraUniformBuffer;
+	delete m_LightsSSBuffer;
 	m_Lights.clear();
 }
 
@@ -108,6 +127,22 @@ void Renderer::BeginScene(const glm::mat4& viewproj_mat, const glm::vec3& view_p
 	m_CameraUniformBuffer->SetData("ViewProjection", glm::value_ptr(viewproj_mat));
 	m_CameraUniformBuffer->SetData("CamPosition", glm::value_ptr(glm::vec4(view_position, 0.0f)));	
 	m_CameraUniformBuffer->Unbind();
+
+	int curr_lights = 0;
+	m_LightsSSBuffer->Bind();
+	for (uint i = 0; i < m_Lights.size(); ++i) // TODO: move this from here (should be on Begin())
+	{
+		if (m_Lights[i].Active)
+		{
+			char uniform_name[16];
+			sprintf_s(uniform_name, 16, "PLightsVec[%i].", i);
+			m_Lights[i].SetLightData(m_LightsSSBuffer, uniform_name);
+			++curr_lights;
+		}
+	}
+
+	m_LightsSSBuffer->SetData("CurrentLights", glm::value_ptr(glm::ivec4(curr_lights, 0, 0, 0)));
+	m_LightsSSBuffer->Unbind();
 }
 
 void Renderer::EndScene()
@@ -155,13 +190,6 @@ void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model)
 		return;
 
 	shader->Bind();
-
-	for (PointLight& light : m_Lights) // TODO: move this from here (should be on Begin())
-	{
-		if (light.Active)
-			light.SetLightData(shader, "p_light");
-	}
-
 	RenderMesh(shader, model->GetRootMesh(), model->GetTransformation().GetTransform());
 	shader->Unbind();
 }

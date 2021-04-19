@@ -7,15 +7,7 @@ layout(location = 2) in vec3 a_Normal;
 layout(location = 3) in vec3 a_Tangent;
 layout(location = 4) in vec3 a_Bitangent;
 
-uniform mat4 u_ViewProjection = mat4(1.0);
-uniform mat4 u_Model = mat4(1.0);
-
-layout(std140, binding = 0) uniform ub_CameraData
-{
-	mat4 ViewProjection;
-	vec3 CamPosition;
-};
-
+// --- Interface Block ---
 out IBlock
 {
 	vec2 TexCoord;
@@ -25,7 +17,19 @@ out IBlock
 } v_VertexData;
 
 
+// --- Camera UBO ---
+layout(std140, binding = 0) uniform ub_CameraData
+{
+	mat4 ViewProjection;
+	vec3 CamPosition;
+};
 
+
+// --- Uniforms ---
+uniform mat4 u_ViewProjection = mat4(1.0);
+uniform mat4 u_Model = mat4(1.0);
+
+// --- MAIN ---
 void main()
 {
 	v_VertexData.TexCoord = a_TexCoord;
@@ -37,12 +41,14 @@ void main()
 }
 
 
-
+// ------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
 #type FRAGMENT_SHADER
 #version 460 core
 
 layout(location = 0) out vec4 color;
 
+// --- Interface Block ---
 in IBlock
 {
 	vec2 TexCoord;
@@ -51,36 +57,59 @@ in IBlock
 	vec3 CamPos;
 } v_VertexData;
 
-uniform sampler2D u_Texture;
-uniform vec4 u_Color = vec4(1.0);
 
+// --- Light Struct ---
 struct PointLight
 {
 	vec4 Pos, Color;
 	float Intensity, AttK, AttL, AttQ; // Attenuation: K constant, L linear, Q quadratic
 };
 
-uniform PointLight p_light;
+
+// --- Light SSBO ---
+layout(std430, binding = 0) buffer ssb_Lights
+{
+	int CurrentLights;
+	PointLight PLightsVec[];
+};
+
+// --- Uniforms ---
+uniform sampler2D u_Texture;
+uniform vec4 u_Color = vec4(1.0);
+
+// ------------------------------------------ LIGHT CALCULATION ------------------------------------------
+vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
+{
+	// Direction & Distance
+	vec3 pos_to_frag = light.Pos.xyz - v_VertexData.FragPos;
+	float dist = length(pos_to_frag);
+	vec3 dir = normalize(pos_to_frag);
+	vec3 halfway_dir = normalize(dir + view);
+
+	// Diffuse & Specular
+	float diff_impact = max(dot(normal, dir), 0.0);
+	float spec_impact = pow(max(dot(normal, halfway_dir), 0.0), 32.0); //MATERIAL SHININESS!
+
+	// Final Impact
+	float light_att = 1.0/(light.AttK + light.AttL * dist + light.AttQ * dist * dist);
+	vec4 light_impact = light.Color * light.Intensity * light_att * (diff_impact + spec_impact);
+	
+	return vec4(light_impact.rgb, 1.0);
+}
 
 
+// ------------------------------------------------ MAIN -------------------------------------------------
 void main()
 {
 	vec3 normal_vec = normalize(v_VertexData.Normal);
 	vec3 view_dir = normalize(v_VertexData.CamPos - v_VertexData.FragPos);
 
-	// - Point Light Calc -
-	vec3 dir = normalize(p_light.Pos.xyz - v_VertexData.FragPos);
-	vec3 halfway_dir = normalize(dir + view_dir);
-	
-	float dist = length(p_light.Pos.xyz - v_VertexData.FragPos);
-	float light_att = 1.0/(p_light.AttK + p_light.AttL * dist + p_light.AttQ * dist * dist);
+	vec4 light_impact = vec4(0.0);
+	for(int i = 0; i < CurrentLights; ++i)
+	{
+		light_impact += CalculateLighting(PLightsVec[i], normal_vec, view_dir);
+	}
 
-	float diff_impact = max(dot(normal_vec, dir), 0.0);
-	float spec_impact = pow(max(dot(normal_vec, halfway_dir), 0.0), 32.0); //MATERIAL SHININESS!
-
-	vec4 light_impact = p_light.Color * (diff_impact + spec_impact) * p_light.Intensity * light_att;
-	light_impact.a = 1.0;
-
-	color = texture(u_Texture, v_VertexData.TexCoord) * u_Color * light_impact;
+	color = texture(u_Texture, v_VertexData.TexCoord) * u_Color + light_impact;
 	//color = vec4(v_VertexData.Normal, 1.0);
 }

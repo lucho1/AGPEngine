@@ -74,6 +74,7 @@ private:
 
 	static RendererStatistics m_RendererStatistics;
 	static UniformBuffer* m_CameraUniformBuffer;
+	static ShaderStorageBuffer* m_LightsSSBuffer;
 	static std::vector<PointLight> m_Lights;
 	static uint m_LightsIndex;
 };

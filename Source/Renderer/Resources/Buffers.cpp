@@ -176,11 +176,11 @@ void VertexArray::SetMatrixAttribute(const BufferElement& element, uint index, u
 
 
 // ------------------------------------------------------------------------------
-UniformBuffer::UniformBuffer(BufferLayout layout, uint binding) : m_Layout(layout)
+UniformBuffer::UniformBuffer(BufferLayout layout, uint binding) : m_Layout(layout), m_Size(layout.GetStride())
 {
 	glCreateBuffers(1, &m_ID);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_ID);
-	glBufferData(GL_UNIFORM_BUFFER, layout.GetStride(), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, m_Size, NULL, GL_STATIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_ID);
 }
 
@@ -206,6 +206,44 @@ void UniformBuffer::SetData(const std::string& element_name, const void* data) c
 		if (element.Name == element_name)
 		{
 			glBufferSubData(GL_UNIFORM_BUFFER, element.Offset, element.Size, data);
+			break;
+		}
+	}
+}
+
+
+
+// ------------------------------------------------------------------------------
+ShaderStorageBuffer::ShaderStorageBuffer(BufferLayout layout, uint binding) : m_Layout(layout), m_Size(layout.GetStride())
+{
+	glCreateBuffers(1, &m_ID);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ID);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, m_Size, NULL, GL_DYNAMIC_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, m_ID);
+}
+
+ShaderStorageBuffer::~ShaderStorageBuffer()
+{
+	glDeleteBuffers(1, &m_ID);
+}
+
+void ShaderStorageBuffer::Bind() const
+{
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ID);
+}
+
+void ShaderStorageBuffer::Unbind() const
+{
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+void ShaderStorageBuffer::SetData(const std::string& element_name, const void* data) const
+{
+	for (const BufferElement& element : m_Layout.GetElements())
+	{
+		if (element.Name == element_name)
+		{
+			glBufferSubData(GL_SHADER_STORAGE_BUFFER, element.Offset, element.Size, data);
 			break;
 		}
 	}
