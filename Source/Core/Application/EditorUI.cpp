@@ -44,7 +44,7 @@ void EditorUI::SetDocking()
 
 
 // ------------------------------------------------------------------------------
-void EditorUI::DrawVec3Control(const char* name, const char* label, float indent, glm::vec3& value, glm::vec3 reset_val)
+void EditorUI::DrawVec3Control(const char* name, const char* label, float indent, glm::vec3& value, glm::vec3 reset_val, float vec_indent, float slider_width)
 {
     ImVec4 im_active_color = ImVec4(0.8f, 0.1f, 0.15f, 1.0f);
     ImVec4 im_hover_color = ImVec4(0.9f, 0.2f, 0.25f, 1.0f);
@@ -53,12 +53,18 @@ void EditorUI::DrawVec3Control(const char* name, const char* label, float indent
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, im_hover_color);
 
     ImGui::NewLine(); ImGui::SameLine(indent);
-    ImGui::Text(name); ImGui::SameLine();
+    ImGui::Text(name);
+    
+    if (!glm::epsilonEqual(vec_indent, 0.0f, glm::epsilon<float>()))
+        ImGui::SameLine(vec_indent);
+    else
+        ImGui::SameLine();
+    
     if (ImGui::Button(label, { 17.5f, 17.5f }))
         value = reset_val;
 
     ImGui::SameLine();
-    float width = ImGui::GetContentRegionAvailWidth() - 5.0f;
+    float width = ImGui::GetContentRegionAvailWidth() - slider_width;
 
     SetItemSpacing(width);
     ImGui::DragFloat3(label, glm::value_ptr(value), 0.05f, 0.0f, 0.0f, "%.1f");

@@ -6,6 +6,7 @@
 
 #include "Resources/Buffers.h"
 #include "Resources/Shader.h"
+#include "Entities/Lights.h"
 
 #include <glm/glm.hpp>
 
@@ -32,6 +33,12 @@ public:
 	static void Shutdown();
 
 
+	// --- Lighting Stuff ---
+	static void AddLight();
+	static void RemoveLight(uint light_id);
+	static std::vector<PointLight>& GetLights() { return m_Lights; }
+
+
 	// --- Rendering Stuff ---
 	static void ClearRenderer();
 
@@ -39,6 +46,7 @@ public:
 	static void EndScene();
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
 	static void SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model);
+
 
 	// --- Resources Stuff ---
 	// If a default texture is to be bound, just pass its TexturesIndex and a nullptr, otherwise pass the desired index (albedo, specular...) and a pointer to the texture
@@ -66,6 +74,8 @@ private:
 
 	static RendererStatistics m_RendererStatistics;
 	static UniformBuffer* m_CameraUniformBuffer;
+	static std::vector<PointLight> m_Lights;
+	static uint m_LightsIndex;
 };
 
 #endif //_RENDERER_H_

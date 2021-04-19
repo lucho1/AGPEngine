@@ -6,11 +6,29 @@
 
 class PointLight
 {
-public:
+	friend class Renderer;
+private:
 
-	// --- Des/Constructor ---
-	PointLight() = default;
+	PointLight(int id) : m_ID(id) {}
+
+public:
+	
 	~PointLight() = default;
+
+	inline uint GetID()		const { return m_ID; }
+	inline operator uint()	const { return m_ID; }
+
+	void SetLightData(const Ref<Shader>& shader, const std::string& lightstruct_uniform_name)
+	{
+		std::string unif_name = lightstruct_uniform_name + ".";
+
+		shader->SetUniformVec4(unif_name + "Pos", glm::vec4(Position, 0.0f));
+		shader->SetUniformVec4(unif_name + "Color", glm::vec4(Color, 1.0f));
+		shader->SetUniformFloat(unif_name + "Intensity", Intensity);
+		shader->SetUniformFloat(unif_name + "AttK", AttenuationK);
+		shader->SetUniformFloat(unif_name + "AttL", AttenuationL);
+		shader->SetUniformFloat(unif_name + "AttQ", AttenuationQ);
+	}
 
 public:
 
@@ -19,6 +37,12 @@ public:
 
 	float Intensity = 1.0f;
 	float AttenuationK = 1.0f, AttenuationL = 0.09f, AttenuationQ = 0.032f;
+
+	bool Active = true;
+
+private:
+
+	int m_ID = -1;
 };
 
 #endif //_LIGHT_H_

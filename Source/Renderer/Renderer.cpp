@@ -17,6 +17,10 @@
 // ------------------------------------------------------------------------------
 RendererStatistics Renderer::m_RendererStatistics = {};
 UniformBuffer* Renderer::m_CameraUniformBuffer = nullptr;
+std::vector<PointLight> Renderer::m_Lights = {};
+uint Renderer::m_LightsIndex = 0;
+// ------------------------------------------------------------------------------
+
 
 void Renderer::Init()
 {
@@ -53,11 +57,40 @@ void Renderer::Shutdown()
 {
 	RendererPrimitives::DefaultTextures::CleanUp();
 	delete m_CameraUniformBuffer;
+	m_Lights.clear();
 }
 
 void Renderer::OnWindowResized(uint width, uint height)
 {
 	RenderCommand::SetViewport(0, 0, width, height);
+}
+
+
+
+// ------------------------------------------------------------------------------
+void Renderer::AddLight()
+{
+	if (m_Lights.size() < RendererUtils::s_MaxLights)
+	{
+		int id = m_LightsIndex;
+		++m_LightsIndex;
+		m_Lights.push_back(PointLight(id));
+	}
+	else
+		ENGINE_LOG("Cannot add more lights! Max Lights (%i) reached!", RendererUtils::s_MaxLights);
+}
+
+void Renderer::RemoveLight(uint light_id)
+{
+	std::vector<PointLight>::iterator it = m_Lights.begin();
+	for (; it != m_Lights.end(); ++it)
+	{
+		if ((*it) == light_id)
+		{
+			m_Lights.erase(it);
+			return;
+		}
+	}
 }
 
 
@@ -73,7 +106,7 @@ void Renderer::BeginScene(const glm::mat4& viewproj_mat, const glm::vec3& view_p
 {
 	m_CameraUniformBuffer->Bind();
 	m_CameraUniformBuffer->SetData("ViewProjection", glm::value_ptr(viewproj_mat));
-	m_CameraUniformBuffer->SetData("Position", glm::value_ptr(glm::vec4(view_position, 0.0f)));
+	m_CameraUniformBuffer->SetData("CamPosition", glm::value_ptr(glm::vec4(view_position, 0.0f)));	
 	m_CameraUniformBuffer->Unbind();
 }
 
@@ -122,6 +155,13 @@ void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model)
 		return;
 
 	shader->Bind();
+
+	for (PointLight& light : m_Lights) // TODO: move this from here (should be on Begin())
+	{
+		if (light.Active)
+			light.SetLightData(shader, "p_light");
+	}
+
 	RenderMesh(shader, model->GetRootMesh(), model->GetTransformation().GetTransform());
 	shader->Unbind();
 }

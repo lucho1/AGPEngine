@@ -13,7 +13,7 @@ uniform mat4 u_Model = mat4(1.0);
 layout(std140, binding = 0) uniform ub_CameraData
 {
 	mat4 ViewProjection;
-	vec3 Position;
+	vec3 CamPosition;
 };
 
 out IBlock

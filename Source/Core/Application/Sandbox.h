@@ -33,7 +33,7 @@ private:
 
 	void SetMemoryMetrics();
 
-	void DrawResourcesPanel();
+	void DrawLightsPanel();
 	void DrawCameraPanel();
 	void DrawEntitiesPanel();
 	void DrawPerformancePanel();

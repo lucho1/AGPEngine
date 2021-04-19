@@ -11,7 +11,7 @@
 namespace EditorUI
 {
 	void SetDocking();
-	void DrawVec3Control(const char* name, const char* label, float indent, glm::vec3& value, glm::vec3 reset_val = glm::vec3(0.0f));
+	void DrawVec3Control(const char* name, const char* label, float indent, glm::vec3& value, glm::vec3 reset_val = glm::vec3(0.0f), float vec_indent = 0.0f, float slider_width = 5.0f);
 
 
 	// --- Header Defined ---

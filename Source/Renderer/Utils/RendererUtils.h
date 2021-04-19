@@ -87,6 +87,8 @@ namespace RendererUtils
 
 	// ------------------------------------------------------------------------------
 	// ----- Shader Type Stuff -----
+	static const uint s_MaxLights = 10;
+
 	static GLenum ShaderTypeFromString(const std::string& shader_type_str)
 	{
 		if (shader_type_str == "VERTEX_SHADER")

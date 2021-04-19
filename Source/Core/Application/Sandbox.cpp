@@ -18,7 +18,6 @@
 
 
 // ------------------------------------------------------------------------------
-PointLight light;
 void Sandbox::Init()
 {
     // -- Buffers Test --
@@ -52,9 +51,7 @@ void Sandbox::Init()
 
     // -- Shader --
     m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
-    m_LightingShader = CreateRef<Shader>("Resources/Shaders/LightingShader.glsl");
-
-    light = PointLight();
+    m_LightingShader = CreateRef<Shader>("Resources/Shaders/LightingShader.glsl");    
 
     // -- Framebuffer --
     m_EditorFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT,
@@ -96,22 +93,11 @@ void Sandbox::OnUpdate(float dt)
     // -- Camera Update --
     m_EngineCamera.OnUpdate(dt, (m_ViewportFocused || m_ViewportHovered));
 
-    // -- Lights Update --
-
-
     // -- Render --
     m_EditorFramebuffer->Bind();
 
     Renderer::ClearRenderer();
     Renderer::BeginScene(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
-
-    m_LightingShader->Bind();
-    m_LightingShader->SetUniformVec4("p_light.Pos", glm::vec4(light.Position, 0.0f));
-    m_LightingShader->SetUniformVec4("p_light.Color", glm::vec4(light.Color, 1.0f));
-    m_LightingShader->SetUniformFloat("p_light.Intensity", light.Intensity);
-    m_LightingShader->SetUniformFloat("p_light.AttK", light.AttenuationK);
-    m_LightingShader->SetUniformFloat("p_light.AttL", light.AttenuationL);
-    m_LightingShader->SetUniformFloat("p_light.AttQ", light.AttenuationQ);
 
     // Draw Call
     for (auto& model : m_SceneModels)
@@ -155,7 +141,9 @@ void Sandbox::OnUIRender(float dt)
 
     // --- Resources Info Display ---
     ImGui::Begin("Resources");
-    DrawResourcesPanel();
+    std::vector<std::string> text = Resources::GetResourcesReferences();
+    for (std::string str : text)
+        ImGui::Text(str.c_str());
     ImGui::End();
 
     // --- Entities Display ---
@@ -166,6 +154,10 @@ void Sandbox::OnUIRender(float dt)
     // --- Camera Settings ---
     ImGui::Begin("Camera");
     DrawCameraPanel();
+    ImGui::End();
+
+    ImGui::Begin("Lights");
+    DrawLightsPanel();
     ImGui::End();
 
 
@@ -269,11 +261,79 @@ void Sandbox::DrawCameraPanel()
 }
 
 
-void Sandbox::DrawResourcesPanel()
+void Sandbox::DrawLightsPanel()
 {
-    std::vector<std::string> text = Resources::GetResourcesReferences();
-    for (std::string str : text)
-        ImGui::Text(str.c_str());
+    // -- Lighting Info --
+    ImGui::NewLine();
+    float btn_width = 88.5f;
+    float half_avail_width = ImGui::GetContentRegionAvailWidth() / 2.0f;
+    float text_size = ImGui::GetFontSize() * 14.0f/2.0f;
+
+    ImGui::SameLine(half_avail_width - btn_width / 2.0f);
+    if (ImGui::Button("Add Light", { btn_width, 20.0f }))
+        Renderer::AddLight();
+
+    ImGui::NewLine();
+    ImGui::SameLine(half_avail_width - text_size + (text_size / 2.0f));
+    ImGui::Text("Max Lights: %i", RendererUtils::s_MaxLights);
+    ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
+
+    // -- Lights --
+    uint i = 0;
+    for (PointLight& light : Renderer::GetLights())
+    {
+        static char popup_id[16];
+        sprintf_s(popup_id, 16, "LightTag_%i", i);
+        ImGui::PushID(popup_id);
+
+        // -- Light Num., Active & Color --
+        ImGui::Text("%i.  ", i); ImGui::SameLine();
+        ImGui::Checkbox("##LightActive", &light.Active);
+                
+        ImGui::SameLine(100.0f); ImGui::Text("Color"); ImGui::SameLine();
+        ImGui::ColorEdit3("##LightColor", &light.Color[0], ImGuiColorEditFlags_NoInputs);
+
+        float btn_width = 44.5f;
+        float avail_width = ImGui::GetContentRegionAvailWidth() - 2.0f * btn_width;
+        ImGui::SameLine(avail_width);
+        
+        // -- Light Remove --
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
+        
+        if (ImGui::Button("X", { btn_width , 20.0f }))
+            Renderer::RemoveLight(light.GetID());
+
+        ImGui::PopStyleColor(2);
+        
+
+        // -- Light Position --
+        float indent = 52.0f, slider_indent = ImGui::GetContentRegionAvailWidth() / 3.0f;
+        ImGui::NewLine();
+        EditorUI::DrawVec3Control("Pos", "##LightPos", indent, light.Position, glm::vec3(0.0f, 1.0f, 2.0f), slider_indent, 56.0f);
+
+        // -- Light Values --
+        slider_indent = ImGui::GetContentRegionAvailWidth() / 3.0f;
+        EditorUI::DrawSlider("Int.", "##LightInts", &light.Intensity, indent, slider_indent, 0.1f, 5.0f);
+                
+        ImGui::NewLine(); ImGui::SameLine(indent);
+        ImGui::Text("Att. KLQ"); ImGui::SameLine(slider_indent);
+
+        float width = (ImGui::GetContentRegionAvailWidth() / 1.3f) / 3.25f;
+        EditorUI::SetItemWidth(width);
+        ImGui::DragFloat("##LightAttK", &light.AttenuationK, 0.01f, 0.01f, 10.0f, "%.2f");
+
+        ImGui::SameLine(); EditorUI::SetItemWidth(width);
+        ImGui::DragFloat("##LightAttQ", &light.AttenuationQ, 0.001f, 0.001f, 4.0f, "%.3f");
+        
+        ImGui::SameLine(); EditorUI::SetItemWidth(width);
+        ImGui::DragFloat("##LightAttL", &light.AttenuationL, 0.0001f, 0.001f, 4.0f, "%.3f");
+
+        // -- Pop & Spacing --
+        ImGui::PopID();
+        ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
+        ++i;
+    }
 }
 
 
@@ -283,8 +343,8 @@ void Sandbox::DrawEntitiesPanel()
     for (auto& entity : m_SceneModels)
     {
         // -- New ImGui ID --
-        static char popup_id[64];
-        sprintf_s(popup_id, 64, "EntityTag_%i", i);
+        static char popup_id[16];
+        sprintf_s(popup_id, 16, "EntityTag_%i", i);
         ImGui::PushID(popup_id);
 
         // -- Entity Active --

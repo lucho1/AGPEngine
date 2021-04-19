@@ -13,7 +13,7 @@ uniform mat4 u_Model = mat4(1.0);
 layout(std140, binding = 0) uniform ub_CameraData
 {
 	mat4 ViewProjection;
-	vec3 Position;
+	vec3 CamPosition;
 };
 
 out IBlock
@@ -29,7 +29,7 @@ out IBlock
 void main()
 {
 	v_VertexData.TexCoord = a_TexCoord;
-	v_VertexData.CamPos = Position;
+	v_VertexData.CamPos = CamPosition;
 	v_VertexData.Normal = mat3(transpose(inverse(u_Model))) * a_Normal;
 	v_VertexData.FragPos = vec3(u_Model * vec4(a_Position, 1.0));
 	
