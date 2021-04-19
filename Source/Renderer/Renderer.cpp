@@ -169,9 +169,10 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 
 	// -- Shader Bindings --
 	Renderer::BindTexture(texture_binding, albedo);
-	shader->SetUniformInt("u_Texture", (int)texture_binding);
 	shader->SetUniformMat4("u_Model", transform);
-	//shader->SetUniformVec4("u_Color", mesh_mat->AlbedoColor);
+	shader->SetUniformInt("u_Albedo", (int)texture_binding);
+	//shader->SetUniformVec4("u_Material.AlbedoColor", mesh_mat->AlbedoColor);
+	shader->SetUniformFloat("u_Material.Smoothness", mesh_mat->Smoothness);
 
 	// -- Draw Call & Unbinds --
 	mesh->m_VertexArray->Bind();

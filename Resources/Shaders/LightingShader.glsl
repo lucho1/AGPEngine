@@ -73,9 +73,17 @@ layout(std430, binding = 0) buffer ssb_Lights
 	PointLight PLightsVec[];
 };
 
-// --- Uniforms ---
-uniform sampler2D u_Texture;
-uniform vec4 u_Color = vec4(1.0);
+// --- Material Struct & Uniform ---
+struct Material
+{
+	float Smoothness;
+	vec4 AlbedoColor;
+};
+
+uniform Material u_Material = Material(1.0, vec4(1.0));
+uniform sampler2D u_Albedo;
+
+
 
 // ------------------------------------------ LIGHT CALCULATION ------------------------------------------
 vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
@@ -88,7 +96,7 @@ vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
 
 	// Diffuse & Specular
 	float diff_impact = max(dot(normal, dir), 0.0);
-	float spec_impact = pow(max(dot(normal, halfway_dir), 0.0), 32.0); //MATERIAL SHININESS!
+	float spec_impact = pow(max(dot(normal, halfway_dir), 0.0), u_Material.Smoothness * 256.0); //MATERIAL SHININESS!
 
 	// Final Impact
 	float light_att = 1.0/(light.AttK + light.AttL * dist + light.AttQ * dist * dist);
@@ -110,6 +118,6 @@ void main()
 		light_impact += CalculateLighting(PLightsVec[i], normal_vec, view_dir);
 	}
 
-	color = texture(u_Texture, v_VertexData.TexCoord) * u_Color + light_impact;
+	color = texture(u_Albedo, v_VertexData.TexCoord) * u_Material.AlbedoColor + light_impact;
 	//color = vec4(v_VertexData.Normal, 1.0);
 }

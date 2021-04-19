@@ -14,8 +14,6 @@ Ref<Model> MeshImporter::LoadModel(const std::string& filepath)
     const aiScene* scene = aiImportFile(filepath.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals //| aiProcess_FlipUVs // FlipUVs gives problem with UVs, I think because STB already flips them
         | aiProcess_JoinIdenticalVertices | aiProcess_PreTransformVertices | aiProcess_ImproveCacheLocality | aiProcess_OptimizeMeshes | aiProcess_SortByPType);
 
-    //const aiScene* scene = aiImportFile(filepath.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
-
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         ENGINE_LOG("Error Opening Assimp Scene from '%s'\nAssimp Error: %s", filepath.c_str(), aiGetErrorString());
@@ -169,7 +167,7 @@ const Ref<Material>* MeshImporter::ProcessAssimpMaterial(aiMaterial* ai_material
         return nullptr;
 
     // -- Load Material Variables --
-    ai_real shininess = 0.0f, opacity = 1.0f;
+    ai_real shininess = 0.1f, opacity = 1.0f;
     ai_int two_sided = 0;
     aiColor3D diffuse, emissive, specular;
 
@@ -199,6 +197,9 @@ const Ref<Material>* MeshImporter::ProcessAssimpMaterial(aiMaterial* ai_material
     mat->AlbedoColor = glm::vec4(diffuse.r, diffuse.g, diffuse.b, opacity);
     mat->EmissiveColor= glm::vec4(emissive.r, emissive.g, emissive.b, 1.0f);
     mat->Smoothness = shininess / 256.0f;
+
+    if (glm::epsilonEqual(mat->Smoothness, 0.0f, glm::epsilon<float>()))
+        mat->Smoothness = 0.01f;
 
     mat->IsTwoSided = (!two_sided && opacity < 1.0f) ? true : two_sided;
     mat->IsEmissive = emissive.IsBlack() ? false : true;
