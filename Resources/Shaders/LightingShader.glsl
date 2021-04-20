@@ -59,7 +59,7 @@ in IBlock
 
 
 // --- Light Struct ---
-struct PointLight
+struct PointLight // Pos & Color are vec4 to remember that they are aligned!
 {
 	vec4 Pos, Color;
 	float Intensity, AttK, AttL, AttQ; // Attenuation: K constant, L linear, Q quadratic

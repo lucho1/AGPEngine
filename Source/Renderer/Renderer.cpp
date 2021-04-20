@@ -60,6 +60,9 @@ void Renderer::Init()
 	{
 		std::string uniform_name = "PLightsVec[" + std::to_string(i) + "].";
 
+		// A possible improvement in terms of memory, would be to pass "Pos" and "Color" as 3 floats each. That would save up 2 float to be passed per light (8bxLight)
+		// But in addition, would save the 12 bytes that the ssbo integer takes due to alignment. With 10 lights that would mean 8x10+12 = 92b.
+		// We are not doing it because it's more comfortable to do it like this, but is a possible memory improvement
 		lights_ssbo_layout.AddElements({{ SHADER_DATA::FLOAT4, uniform_name + "Pos" },		{ SHADER_DATA::FLOAT4, uniform_name + "Color" },
 										{ SHADER_DATA::FLOAT, uniform_name + "Intensity" },	{ SHADER_DATA::FLOAT, uniform_name + "AttK" },
 										{ SHADER_DATA::FLOAT, uniform_name + "AttL" },		{ SHADER_DATA::FLOAT, uniform_name + "AttQ" }
