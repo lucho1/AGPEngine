@@ -199,7 +199,7 @@ const Ref<Material>* MeshImporter::ProcessAssimpMaterial(aiMaterial* ai_material
     mat->Smoothness = shininess / 256.0f;
 
     if (glm::epsilonEqual(mat->Smoothness, 0.0f, glm::epsilon<float>()))
-        mat->Smoothness = 0.01f;
+        mat->Smoothness = 0.1f;
 
     mat->IsTwoSided = (!two_sided && opacity < 1.0f) ? true : two_sided;
     mat->IsEmissive = emissive.IsBlack() ? false : true;

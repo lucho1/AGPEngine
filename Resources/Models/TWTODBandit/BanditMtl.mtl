@@ -1,0 +1,11 @@
+# Blender3D MTL File: 
+# Material Count: 1
+newmtl Bandit1_AlbedoMap.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Bandit1_AlbedoMap.png

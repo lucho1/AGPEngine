@@ -14,6 +14,7 @@ out IBlock
 	vec3 Normal;
 	vec3 FragPos;
 	vec3 CamPos;
+	mat3 TBN;
 } v_VertexData;
 
 
@@ -36,6 +37,18 @@ void main()
 	v_VertexData.CamPos = CamPosition;
 	v_VertexData.Normal = mat3(transpose(inverse(u_Model))) * a_Normal;
 	v_VertexData.FragPos = vec3(u_Model * vec4(a_Position, 1.0));
+
+	vec3 T = normalize(vec3(u_Model * vec4(a_Tangent, 0.0)));
+	vec3 N = normalize(vec3(u_Model * vec4(a_Normal, 0.0)));
+
+	//T = normalize(T - dot(T, N)*N); // Re-orthogonalize
+	//vec3 B = cross(N, T);
+	
+	
+	vec3 B = normalize(vec3(u_Model * vec4(a_Bitangent, 0.0)));
+
+	mat3 TBN = mat3(T, B, N);
+	v_VertexData.TBN = TBN;
 	
 	gl_Position = ViewProjection * u_Model * vec4(a_Position, 1.0);
 }
@@ -55,6 +68,7 @@ in IBlock
 	vec3 Normal;
 	vec3 FragPos;
 	vec3 CamPos;
+	mat3 TBN;
 } v_VertexData;
 
 
@@ -82,6 +96,7 @@ struct Material
 
 uniform Material u_Material = Material(1.0, vec4(1.0));
 uniform sampler2D u_Albedo;
+uniform sampler2D u_Normal;
 
 
 
@@ -109,8 +124,12 @@ vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
 // ------------------------------------------------ MAIN -------------------------------------------------
 void main()
 {
-	vec3 normal_vec = normalize(v_VertexData.Normal);
+	//vec3 normal_vec = normalize(v_VertexData.Normal);
 	vec3 view_dir = normalize(v_VertexData.CamPos - v_VertexData.FragPos);
+
+	vec3 normal_vec = texture(u_Normal, v_VertexData.TexCoord).rgb;
+	normal_vec = normal_vec * 2.0 - 1.0;
+	normal_vec = normalize(v_VertexData.TBN * normal_vec);
 
 	vec4 light_impact = vec4(0.0);
 	for(int i = 0; i < CurrentLights; ++i)
@@ -119,5 +138,5 @@ void main()
 	}
 
 	color = texture(u_Albedo, v_VertexData.TexCoord) * u_Material.AlbedoColor + light_impact;
-	//color = vec4(v_VertexData.Normal, 1.0);
+	//color = vec4(normal_vec, 1.0);
 }

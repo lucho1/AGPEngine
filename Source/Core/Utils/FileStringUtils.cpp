@@ -1,4 +1,5 @@
 #include "FileStringUtils.h"
+#include "Core/Application/Application.h"
 
 // --- To get usage of windows file dialogs ---
 #include <commdlg.h>
@@ -54,7 +55,7 @@ namespace FileUtils
 
 
     // ----- Files Dialogues Functions -----
-    std::string FileDialogs::OpenFile(const char* filter, GLFWwindow* window)
+    std::string FileDialogs::OpenFile(const char* filter)
     {
         // -- Initialize OPENFILENAME to 0 (Common Dialog Box Structure) --
         OPENFILENAMEA open_file_name;
@@ -62,7 +63,7 @@ namespace FileUtils
 
         // -- Set OPENFILENAME --
         open_file_name.lStructSize = sizeof(OPENFILENAME); // Size
-        open_file_name.hwndOwner = glfwGetWin32Window(window); // Owner of dialog window to engine's window
+        open_file_name.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow()); // Owner of dialog window to engine's window
 
         // -- Buffer File --
         CHAR file[260] = { 0 };
@@ -84,7 +85,7 @@ namespace FileUtils
         return std::string();
     }
 
-    std::string FileDialogs::SaveFile(const char* filter, const char* filename, GLFWwindow* window)
+    std::string FileDialogs::SaveFile(const char* filter, const char* filename)
     {
         // -- Initialize OPENFILENAME to 0 (Common Dialog Box Structure) --
         OPENFILENAMEA open_file_name;
@@ -92,7 +93,7 @@ namespace FileUtils
 
         // -- Set OPENFILENAME --
         open_file_name.lStructSize = sizeof(OPENFILENAME); // Size
-        open_file_name.hwndOwner = glfwGetWin32Window(window); // Owner of dialog window to engine's window		
+        open_file_name.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow()); // Owner of dialog window to engine's window		
 
         // -- Buffer File --
         CHAR file[260] = { 0 };

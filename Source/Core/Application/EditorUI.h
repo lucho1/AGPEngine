@@ -2,6 +2,8 @@
 #define _EDITORUI_H_
 
 #include "Core/Globals.h"
+#include "Core/Utils/FileStringUtils.h"
+#include "Core/Resources/Resources.h"
 
 #include <imgui.h>
 #include <glm/glm.hpp>
@@ -47,6 +49,42 @@ namespace EditorUI
 		std::string label = "###" + std::string(overlay_label);
 		ImGui::PlotLines(label.c_str(), values, IM_ARRAYSIZE(values), 0, overlay, 0.0f, plot_scale, ImVec2(ImGui::GetContentRegionAvailWidth(), 100.0f));
 	}
+
+
+	static void DrawTextureButton(Ref<Texture>& texture, const char* texture_name, ImVec2 btn_size, uint meshindex_uitexturebtn, uint texturebtn_number)
+	{
+		std::string label = "###texture_" + std::string(texture_name) + "_btn";		
+		uint id = texture == nullptr ? 0 : texture->GetTextureID();
+		bool set_mat_texture = false;
+
+		char btnid[24];
+		sprintf_s(btnid, 24, "MatTextureBtn_%i%i", meshindex_uitexturebtn, texturebtn_number);
+		ImGui::PushID(btnid);
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20.0f);
+		ImGui::Text(texture_name); ImGui::SameLine();
+		
+		if (id == 0)
+			set_mat_texture = ImGui::Button(label.c_str(), btn_size);
+		else
+			set_mat_texture = ImGui::ImageButton((ImTextureID)id, btn_size, { 0.0f, 1.0f }, { 1.0f, 0.0f }, 0, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+		if (set_mat_texture)
+		{
+			std::string texture_file = FileUtils::FileDialogs::OpenFile("Texture (*.png)\0*.png\0");
+			if (!texture_file.empty())
+				texture = Resources::CreateTexture(texture_file);
+		}
+		
+		ImGui::SameLine();
+		if (ImGui::Button("X", btn_size))
+			texture = nullptr;
+
+		ImGui::PopID();
+	}
+	
+
 }
 
 #endif //_EDITORUI_H_

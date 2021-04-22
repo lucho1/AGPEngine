@@ -2,7 +2,6 @@
 #define _FILESTRINGUTILS_H_
 
 #include "../Globals.h"
-#include <GLFW/glfw3.h>
 
 namespace FileUtils
 {
@@ -20,10 +19,10 @@ namespace FileUtils
 	public:
 
 		// If cancelled, returns empty string
-		static std::string OpenFile(const char* filter, GLFWwindow* window);
+		static std::string OpenFile(const char* filter);
 
 		// If cancelled, returns empty string
-		static std::string SaveFile(const char* filter, const char* filename, GLFWwindow* window);
+		static std::string SaveFile(const char* filter, const char* filename);
 	};
 }
 

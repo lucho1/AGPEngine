@@ -2,6 +2,7 @@
 
 #include "Core/Platform/Input.h"
 #include "Core/Resources/Resources.h"
+#include "Core/Utils/FileStringUtils.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/Utils/RenderCommand.h"
@@ -39,13 +40,24 @@ void Sandbox::Init()
     //vao->SetIndexBuffer(ibo);
     //vao->Unbind(); vbo->Unbind(); ibo->Unbind();
 
+    // -- Engine Camera Startup --glm::vec3(14.0f, 15.5f, 18.8f)
+    m_EngineCamera.ZoomLevel = 30.0f;
+    m_EngineCamera.SetPosition(glm::vec3(10.0f, 12.0f, -5.0f) - m_EngineCamera.GetForwardVector() * m_EngineCamera.ZoomLevel);
+    m_EngineCamera.SetOrientation(0.24f, -0.41f);
+
+
     // -- Models Setup --
+    Ref<Model> bandit_model = Resources::CreateModel("Resources/Models/TWTODBandit/Bandit_ToTest.obj");
+    bandit_model->GetTransformation().Scale = glm::vec3(0.1f);
+
     Ref<Model> patrick_model = Resources::CreateModel("Resources/Models/Patrick/Patrick.obj");
-    patrick_model->GetTransformation().Scale = glm::vec3(0.25f);
+    patrick_model->GetTransformation().Translation = glm::vec3(-3.5f, 3.5f, 3.5f);
+    patrick_model->GetTransformation().Scale = glm::vec3(1.0f);
     
     Ref<Model> patrick_model2 = Resources::CreateModel(patrick_model, "Patrick2");
-    patrick_model2->GetTransformation().Translation = glm::vec3(1.0f, 0.0f, 0.0f);
+    patrick_model2->GetTransformation().Translation = glm::vec3(3.5f);
 
+    m_SceneModels.push_back(bandit_model);
     m_SceneModels.push_back(patrick_model);
     m_SceneModels.push_back(patrick_model2);
 
@@ -337,6 +349,36 @@ void Sandbox::DrawLightsPanel()
 }
 
 
+void Sandbox::DrawMeshMaterials(const Mesh* mesh, std::vector<uint>& materials_shown, uint meshindex_uitexturebtn)
+{
+    for (uint i = 0; i < mesh->GetSubmeshes()->size(); ++i)
+        DrawMeshMaterials(mesh->GetSubmeshes()->at(i).get(), materials_shown, meshindex_uitexturebtn + i + 1);
+
+    std::vector<uint>::iterator it = std::find(materials_shown.begin(), materials_shown.end(), mesh->GetMaterialIndex());
+    if (it == materials_shown.end())
+    {
+        // -- Material Name --
+        materials_shown.push_back(mesh->GetMaterialIndex());
+        Ref<Material> mat = Resources::GetMaterial(mesh->GetMaterialIndex());
+        ImGui::NewLine(); ImGui::Text("MATERIAL %i: '%s'", mat->GetID(), mat->GetName().c_str());
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20.0f);
+
+        // -- Albedo Color --
+        ImGui::Text("Color"); ImGui::SameLine();
+        ImGui::ColorEdit4("##MatAlbColor", glm::value_ptr(mat->AlbedoColor), ImGuiColorEditFlags_NoInputs);
+
+        // -- Albedo Texture --
+        ImVec2 btn_size = ImVec2(20.0f, 20.0f);
+        EditorUI::DrawTextureButton(mat->Albedo, "Albedo", btn_size, meshindex_uitexturebtn, 0);
+        EditorUI::DrawTextureButton(mat->Normal, "Normal", btn_size, meshindex_uitexturebtn, 1);
+
+        // -- Smoothness Slider --
+        std::string sm_str = std::string("###smoothness" + std::to_string(meshindex_uitexturebtn));
+        EditorUI::DrawSlider("Smoothness", sm_str.c_str(), &mat->Smoothness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
+    }
+}
+
+
 void Sandbox::DrawEntitiesPanel()
 {
     uint i = 0;
@@ -367,9 +409,13 @@ void Sandbox::DrawEntitiesPanel()
         EditorUI::DrawVec3Control("Rot", "##Rotation", indent, entity->GetTransformation().Rotation, glm::vec3(0.0f, 180.0f, 0.0f));
         EditorUI::DrawVec3Control("Sca", "##Scale", indent, entity->GetTransformation().Scale, glm::vec3(0.25f));
 
+        // -- Entity Materials --
+        std::vector<uint> mats_shown_vec;
+        DrawMeshMaterials(entity->GetRootMesh(), mats_shown_vec, i);
+
         // -- Pop & Spacing --
         ImGui::PopID();
-        ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
+        ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine(); ImGui::Separator(); ImGui::NewLine();
         ++i;
     }
 }

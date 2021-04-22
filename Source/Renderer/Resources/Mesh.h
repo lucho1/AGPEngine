@@ -69,8 +69,10 @@ public:
 	
 	inline uint GetMaterialIndex()					const	{ return m_MaterialIndex; }
 	inline const Mesh* GetParent()					const	{ return m_ParentMesh; }
-
+	
 	bool operator==(const Mesh& mesh)				const	{ return m_ID == mesh.m_ID; }
+
+	inline const std::vector<Ref<Mesh>>* GetSubmeshes()	const { return &m_Submeshes; }
 
 
 	// --- Mesh Methods ---

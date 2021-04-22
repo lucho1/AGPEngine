@@ -35,6 +35,7 @@ private:
 
 	void DrawLightsPanel();
 	void DrawCameraPanel();
+	void DrawMeshMaterials(const Mesh* mesh, std::vector<uint>& materials_shown, uint meshindex_uitexturebtn);
 	void DrawEntitiesPanel();
 	void DrawPerformancePanel();
 

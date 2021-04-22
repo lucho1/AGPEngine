@@ -36,7 +36,7 @@ Texture::Texture(const std::string& path)
 	stbi_uc* texture_data = stbi_load(path.c_str(), &w, &h, &channels, 0);
 
 	// -- Check for Failure --
-	ASSERT(texture_data, "Failed to load texture data from path: %s", path.c_str());
+	//ASSERT(texture_data, "Failed to load texture data from path: %s", path.c_str());
 	if (!texture_data)
 	{
 		ENGINE_LOG("Failed to load texture data from path: %s\nAborting...", path.c_str());

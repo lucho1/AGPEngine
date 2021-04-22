@@ -23,6 +23,7 @@ uint Renderer::m_LightsIndex = 0;
 // ------------------------------------------------------------------------------
 
 
+
 void Renderer::Init()
 {
 	// -- Check OGL Version --
@@ -160,21 +161,34 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 		RenderMesh(shader, mesh->m_Submeshes[i].get(), transform);
 
 	// -- Material & Texture Retrieval --
-	Texture* albedo = nullptr;
 	Ref<Material> mesh_mat = Resources::GetMaterial(mesh->GetMaterialIndex());
-	Resources::TexturesIndex texture_binding = Resources::TexturesIndex::MAGENTA;
+	Resources::TexturesIndex alb_binding = Resources::TexturesIndex::MAGENTA, norm_binding = Resources::TexturesIndex::TESTNORMAL;
+	
+	Texture* albedo = nullptr;
+	Texture* normal = nullptr;
 
-	if (mesh_mat && mesh_mat->Albedo)
+	if (mesh_mat)
 	{
-		albedo = mesh_mat->Albedo.get();
-		texture_binding = Resources::TexturesIndex::ALBEDO;
+		if (mesh_mat->Albedo)
+		{
+			albedo = mesh_mat->Albedo.get();
+			alb_binding = Resources::TexturesIndex::ALBEDO;
+		}
+		if (mesh_mat->Normal)
+		{
+			normal = mesh_mat->Normal.get();
+			norm_binding = Resources::TexturesIndex::NORMAL;
+		}
 	}
 
 	// -- Shader Bindings --
-	Renderer::BindTexture(texture_binding, albedo);
+	Renderer::BindTexture(alb_binding, albedo);
+	Renderer::BindTexture(norm_binding, normal);
+
 	shader->SetUniformMat4("u_Model", transform);
-	shader->SetUniformInt("u_Albedo", (int)texture_binding);
-	//shader->SetUniformVec4("u_Material.AlbedoColor", mesh_mat->AlbedoColor);
+	shader->SetUniformInt("u_Albedo", (int)alb_binding);
+	shader->SetUniformInt("u_Normal", (int)norm_binding);
+	shader->SetUniformVec4("u_Material.AlbedoColor", mesh_mat->AlbedoColor);
 	shader->SetUniformFloat("u_Material.Smoothness", mesh_mat->Smoothness);
 
 	// -- Draw Call & Unbinds --
@@ -182,7 +196,8 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 	RenderCommand::DrawIndexed(mesh->m_VertexArray);
 
 	mesh->m_VertexArray->Unbind();
-	Renderer::UnbindTexture(texture_binding, albedo);
+	Renderer::UnbindTexture(alb_binding, albedo);
+	Renderer::UnbindTexture(norm_binding, normal);
 }
 
 
