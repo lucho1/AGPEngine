@@ -36,7 +36,8 @@ public:
 	// --- Lighting Stuff ---
 	static void AddLight();
 	static void RemoveLight(uint light_id);
-	static std::vector<PointLight>& GetLights() { return m_Lights; }
+	static std::vector<PointLight>& GetLights()	{ return m_Lights; }
+	static Light& GetDirectionalLight()			{ return m_DirectionalLight; }
 
 
 	// --- Rendering Stuff ---
@@ -72,8 +73,12 @@ private:
 
 private:
 
+	// --- Renderer Variables ---
 	static RendererStatistics m_RendererStatistics;
 	static UniformBuffer* m_CameraUniformBuffer;
+	
+	// --- Lighting Variables ---
+	static Light m_DirectionalLight;
 	static ShaderStorageBuffer* m_LightsSSBuffer;
 	static std::vector<PointLight> m_Lights;
 	static uint m_LightsIndex;

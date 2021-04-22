@@ -275,6 +275,18 @@ void Sandbox::DrawCameraPanel()
 
 void Sandbox::DrawLightsPanel()
 {
+    // -- Directional Light --
+    Light& dir_light = Renderer::GetDirectionalLight();
+    ImGui::NewLine();
+    ImGui::Text("Directional Light");
+    ImGui::SameLine(150.0f);
+
+    ImGui::ColorEdit3("##LightColor", glm::value_ptr(dir_light.Color), ImGuiColorEditFlags_NoInputs);
+    EditorUI::DrawSlider("Int.", "##DirLightInts", &dir_light.Intensity, 52.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 5.0f);
+    EditorUI::DrawVec3Control("Dir.", "##DLightPos", 52.0f, dir_light.Direction, glm::vec3(1.0f), ImGui::GetContentRegionAvailWidth() / 3.0f, 56.0f);
+
+    ImGui::NewLine(); ImGui::NewLine(); ImGui::Separator(); ImGui::Separator();
+
     // -- Lighting Info --
     ImGui::NewLine();
     float btn_width = 88.5f;
@@ -303,7 +315,7 @@ void Sandbox::DrawLightsPanel()
         ImGui::Checkbox("##LightActive", &light.Active);
                 
         ImGui::SameLine(100.0f); ImGui::Text("Color"); ImGui::SameLine();
-        ImGui::ColorEdit3("##LightColor", &light.Color[0], ImGuiColorEditFlags_NoInputs);
+        ImGui::ColorEdit3("##LightColor", glm::value_ptr(light.Color), ImGuiColorEditFlags_NoInputs);
 
         float btn_width = 44.5f;
         float avail_width = ImGui::GetContentRegionAvailWidth() - 2.0f * btn_width;

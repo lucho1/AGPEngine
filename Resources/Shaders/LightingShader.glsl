@@ -41,11 +41,11 @@ void main()
 	vec3 T = normalize(vec3(u_Model * vec4(a_Tangent, 0.0)));
 	vec3 N = normalize(vec3(u_Model * vec4(a_Normal, 0.0)));
 
-	//T = normalize(T - dot(T, N)*N); // Re-orthogonalize
-	//vec3 B = cross(N, T);
+	T = normalize(T - dot(T, N)*N); // Re-orthogonalize
+	vec3 B = cross(N, T);
 	
 	
-	vec3 B = normalize(vec3(u_Model * vec4(a_Bitangent, 0.0)));
+	//vec3 B = normalize(vec3(u_Model * vec4(a_Bitangent, 0.0)));
 
 	mat3 TBN = mat3(T, B, N);
 	v_VertexData.TBN = TBN;
@@ -72,20 +72,29 @@ in IBlock
 } v_VertexData;
 
 
-// --- Light Struct ---
+// --- Light Structs ---
+struct DirectionalLight
+{
+	vec3 Color, Direction;
+	float Intensity;	
+};
+
 struct PointLight // Pos & Color are vec4 to remember that they are aligned!
 {
-	vec4 Pos, Color;
-	float Intensity, AttK, AttL, AttQ; // Attenuation: K constant, L linear, Q quadratic
+	vec4 Pos, Color;					// Pos & Color are vec4 due to alignment (to keep it in mind!)
+	float Intensity, AttK, AttL, AttQ;	// Attenuation: K constant, L linear, Q quadratic
 };
 
 
-// --- Light SSBO ---
-layout(std430, binding = 0) buffer ssb_Lights
+// --- Lights Uniforms ---
+uniform DirectionalLight u_DirLight = DirectionalLight(vec3(1.0), vec3(1.0), 1.0);
+
+layout(std430, binding = 0) buffer ssb_Lights // PLights SSBO
 {
 	int CurrentLights;
 	PointLight PLightsVec[];
 };
+
 
 // --- Material Struct & Uniform ---
 struct Material
@@ -101,6 +110,22 @@ uniform sampler2D u_Normal;
 
 
 // ------------------------------------------ LIGHT CALCULATION ------------------------------------------
+vec4 CalculateDirectionalLight(vec3 normal, vec3 view)
+{
+	// Direction & Distance
+	vec3 dir = normalize(u_DirLight.Direction);
+	vec3 halfway_dir = normalize(dir + view);
+
+	// Diffuse & Specular
+	float diff_impact = max(dot(normal, dir), 0.0);
+	float spec_impact = pow(max(dot(normal, halfway_dir), 0.0), u_Material.Smoothness * 256.0);
+
+	// Final Impact
+	vec3 light_impact = u_DirLight.Color * u_DirLight.Intensity * (diff_impact + spec_impact);
+	return vec4(light_impact, 1.0);
+}
+
+
 vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
 {
 	// Direction & Distance
@@ -131,7 +156,8 @@ void main()
 	normal_vec = normal_vec * 2.0 - 1.0;
 	normal_vec = normalize(v_VertexData.TBN * normal_vec);
 
-	vec4 light_impact = vec4(0.0);
+	vec4 light_impact = CalculateDirectionalLight(normal_vec, view_dir);
+	//vec4 light_impact = vec4(0.0);
 	for(int i = 0; i < CurrentLights; ++i)
 	{
 		light_impact += CalculateLighting(PLightsVec[i], normal_vec, view_dir);

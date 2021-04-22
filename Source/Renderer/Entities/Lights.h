@@ -6,7 +6,21 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class PointLight
+// --- Base Light ---
+class Light
+{
+public:
+
+	Light() = default;
+
+	glm::vec3 Direction = glm::vec3(1.0f);
+	glm::vec3 Color = glm::vec3(0.8f);
+	float Intensity = 1.0f;
+};
+
+
+// --- Point Light ---
+class PointLight : public Light
 {
 	friend class Renderer;
 private:
@@ -33,11 +47,7 @@ public:
 public:
 
 	glm::vec3 Position = glm::vec3(0.0f, 1.0f, 2.0f);
-	glm::vec3 Color = glm::vec3(0.8f);
-
-	float Intensity = 1.0f;
 	float AttenuationK = 1.0f, AttenuationL = 0.09f, AttenuationQ = 0.032f;
-
 	bool Active = true;
 
 private:

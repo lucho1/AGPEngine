@@ -17,6 +17,8 @@
 // ------------------------------------------------------------------------------
 RendererStatistics Renderer::m_RendererStatistics = {};
 UniformBuffer* Renderer::m_CameraUniformBuffer = nullptr;
+
+Light Renderer::m_DirectionalLight = {};
 ShaderStorageBuffer* Renderer::m_LightsSSBuffer = nullptr;
 std::vector<PointLight> Renderer::m_Lights = {};
 uint Renderer::m_LightsIndex = 0;
@@ -51,7 +53,7 @@ void Renderer::Init()
 	LoadDefaultTextures();
 
 	// -- Create the Uniform Buffer for the Camera --
-	BufferLayout camera_ubo_layout = { { SHADER_DATA::MAT4, "ViewProjection" }, { SHADER_DATA::FLOAT4, "Position" } }; //Vec3 "are like" Vec4 for GPU
+	BufferLayout camera_ubo_layout = { { SHADER_DATA::MAT4, "ViewProjection" }, { SHADER_DATA::FLOAT4, "Position" } }; //Vec3 "are like" Vec4 in this case for GPU alignment
 	m_CameraUniformBuffer = new UniformBuffer(camera_ubo_layout, 0);
 
 	// -- Create the Shader Storage Buffer for Lights --
@@ -125,11 +127,13 @@ void Renderer::ClearRenderer()
 
 void Renderer::BeginScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position)
 {
+	// -- Set Camera UBO --
 	m_CameraUniformBuffer->Bind();
 	m_CameraUniformBuffer->SetData("ViewProjection", glm::value_ptr(viewproj_mat));
 	m_CameraUniformBuffer->SetData("CamPosition", glm::value_ptr(glm::vec4(view_position, 0.0f)));	
 	m_CameraUniformBuffer->Unbind();
 
+	// -- Set PLighs SSBO --
 	int curr_lights = 0;
 	m_LightsSSBuffer->Bind();
 	for (uint i = 0; i < m_Lights.size(); ++i) // TODO: move this from here (should be on Begin())
@@ -207,6 +211,10 @@ void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model)
 		return;
 
 	shader->Bind();
+	shader->SetUniformVec3("u_DirLight.Direction", m_DirectionalLight.Direction);
+	shader->SetUniformVec3("u_DirLight.Color", m_DirectionalLight.Color);
+	shader->SetUniformFloat("u_DirLight.Intensity", m_DirectionalLight.Intensity);
+
 	RenderMesh(shader, model->GetRootMesh(), model->GetTransformation().GetTransform());
 	shader->Unbind();
 }
