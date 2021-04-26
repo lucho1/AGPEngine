@@ -57,6 +57,10 @@ void Sandbox::Init()
     Ref<Model> patrick_model2 = Resources::CreateModel(patrick_model, "Patrick2");
     patrick_model2->GetTransformation().Translation = glm::vec3(3.5f);
 
+    Ref<Model> plane_model = Resources::CreateModel("Resources/Models/Plane/Plane_Ground.obj");
+    plane_model->GetTransformation().Scale = glm::vec3(0.1f);
+
+    m_SceneModels.push_back(plane_model);
     m_SceneModels.push_back(bandit_model);
     m_SceneModels.push_back(patrick_model);
     m_SceneModels.push_back(patrick_model2);
@@ -376,17 +380,22 @@ void Sandbox::DrawMeshMaterials(const Mesh* mesh, std::vector<uint>& materials_s
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20.0f);
 
         // -- Albedo Color --
+        ImGui::PushID(meshindex_uitexturebtn);
         ImGui::Text("Color"); ImGui::SameLine();
         ImGui::ColorEdit4("##MatAlbColor", glm::value_ptr(mat->AlbedoColor), ImGuiColorEditFlags_NoInputs);
 
         // -- Albedo Texture --
         ImVec2 btn_size = ImVec2(20.0f, 20.0f);
-        EditorUI::DrawTextureButton(mat->Albedo, "Albedo", btn_size, meshindex_uitexturebtn, 0);
+        EditorUI::DrawTextureButton(mat->Albedo, "Albedo", btn_size, meshindex_uitexturebtn, 0, 150.0f); ImGui::NewLine();
         EditorUI::DrawTextureButton(mat->Normal, "Normal", btn_size, meshindex_uitexturebtn, 1);
+        EditorUI::DrawTextureButton(mat->Bump, "Bump", btn_size, meshindex_uitexturebtn, 2, 164.0f);
 
         // -- Smoothness Slider --
         std::string sm_str = std::string("###smoothness" + std::to_string(meshindex_uitexturebtn));
         EditorUI::DrawSlider("Smoothness", sm_str.c_str(), &mat->Smoothness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
+        std::string bmp_str = std::string("###bumpscale" + std::to_string(meshindex_uitexturebtn));
+        EditorUI::DrawSlider("Bumpscale", bmp_str.c_str(), &mat->Bumpscale, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
+        ImGui::PopID();
     }
 }
 

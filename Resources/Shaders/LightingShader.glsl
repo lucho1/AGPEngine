@@ -104,8 +104,7 @@ struct Material
 };
 
 uniform Material u_Material = Material(1.0, vec4(1.0));
-uniform sampler2D u_Albedo;
-uniform sampler2D u_Normal;
+uniform sampler2D u_Albedo, u_Normal, u_Bump;
 
 
 

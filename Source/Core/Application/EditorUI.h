@@ -51,7 +51,7 @@ namespace EditorUI
 	}
 
 
-	static void DrawTextureButton(Ref<Texture>& texture, const char* texture_name, ImVec2 btn_size, uint meshindex_uitexturebtn, uint texturebtn_number)
+	static void DrawTextureButton(Ref<Texture>& texture, const char* texture_name, ImVec2 btn_size, uint meshindex_uitexturebtn, uint texturebtn_number, float sameline_width = 0.0f)
 	{
 		std::string label = "###texture_" + std::string(texture_name) + "_btn";		
 		uint id = texture == nullptr ? 0 : texture->GetTextureID();
@@ -61,8 +61,8 @@ namespace EditorUI
 		sprintf_s(btnid, 24, "MatTextureBtn_%i%i", meshindex_uitexturebtn, texturebtn_number);
 		ImGui::PushID(btnid);
 
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20.0f);
+		ImGui::SameLine(sameline_width);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 5.0f);
 		ImGui::Text(texture_name); ImGui::SameLine();
 		
 		if (id == 0)
@@ -72,7 +72,7 @@ namespace EditorUI
 
 		if (set_mat_texture)
 		{
-			std::string texture_file = FileUtils::FileDialogs::OpenFile("Texture (*.png)\0*.png\0");
+			std::string texture_file = FileUtils::FileDialogs::OpenFile("Any Texture (*.png;*.jpg)\0*.png;*.jpg\0PNG Texture (*.png)\0*.png\0JPG Texture (*.jpg)\0*.jpg\0");
 			if (!texture_file.empty())
 				texture = Resources::CreateTexture(texture_file);
 		}

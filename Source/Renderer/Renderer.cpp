@@ -166,10 +166,12 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 
 	// -- Material & Texture Retrieval --
 	Ref<Material> mesh_mat = Resources::GetMaterial(mesh->GetMaterialIndex());
-	Resources::TexturesIndex alb_binding = Resources::TexturesIndex::MAGENTA, norm_binding = Resources::TexturesIndex::TESTNORMAL;
+	Resources::TexturesIndex alb_binding = Resources::TexturesIndex::MAGENTA, norm_binding = Resources::TexturesIndex::TESTNORMAL,
+		bump_binding = Resources::TexturesIndex::BLACK;
 	
 	Texture* albedo = nullptr;
 	Texture* normal = nullptr;
+	Texture* bump = nullptr;
 
 	if (mesh_mat)
 	{
@@ -183,15 +185,22 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 			normal = mesh_mat->Normal.get();
 			norm_binding = Resources::TexturesIndex::NORMAL;
 		}
+		if (mesh_mat->Bump)
+		{
+			bump = mesh_mat->Bump.get();
+			bump_binding = Resources::TexturesIndex::BUMP;
+		}
 	}
 
 	// -- Shader Bindings --
 	Renderer::BindTexture(alb_binding, albedo);
 	Renderer::BindTexture(norm_binding, normal);
+	Renderer::BindTexture(bump_binding, bump);
 
 	shader->SetUniformMat4("u_Model", transform);
 	shader->SetUniformInt("u_Albedo", (int)alb_binding);
 	shader->SetUniformInt("u_Normal", (int)norm_binding);
+	shader->SetUniformInt("u_Bump", (int)bump_binding);
 	shader->SetUniformVec4("u_Material.AlbedoColor", mesh_mat->AlbedoColor);
 	shader->SetUniformFloat("u_Material.Smoothness", mesh_mat->Smoothness);
 
@@ -200,8 +209,9 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 	RenderCommand::DrawIndexed(mesh->m_VertexArray);
 
 	mesh->m_VertexArray->Unbind();
-	Renderer::UnbindTexture(alb_binding, albedo);
+	Renderer::UnbindTexture(bump_binding, bump);
 	Renderer::UnbindTexture(norm_binding, normal);
+	Renderer::UnbindTexture(alb_binding, albedo);
 }
 
 
