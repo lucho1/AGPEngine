@@ -335,6 +335,5 @@ ASALocalRun/
 
 
 # Own Files
-*.ini
 !Resources/**
 
