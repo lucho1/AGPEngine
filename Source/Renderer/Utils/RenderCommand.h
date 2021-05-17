@@ -34,6 +34,14 @@ public:
 	inline static void SetViewport(uint x, uint y, uint w, uint h)	{ glViewport(x, y, w, h); }
 
 	// --- Drawing ---
+	inline static void DettachDeferredTexture() { glBindTexture(GL_TEXTURE_2D, 0); }
+
+	inline static void AttachDeferredTexture(uint texture_id, uint texture_slot)
+	{
+		glActiveTexture(GL_TEXTURE0 + texture_slot);
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+	}
+
 	inline static void DrawIndexed(const Ref<VertexArray>& vertex_array, uint index_count = 0)
 	{
 		uint count = index_count ? index_count : vertex_array->GetIndexBuffer()->GetCount();

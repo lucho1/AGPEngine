@@ -46,6 +46,9 @@ private:
 
 	std::vector<Ref<Model>> m_SceneModels;
 	Ref<Shader> m_TextureShader, m_LightingShader;
+	Ref<Framebuffer> m_DeferredFramebuffer;
+	Ref<Shader> m_DeferredLightingShader;
+	Ref<VertexArray> m_QuadArray;
 
 	// Viewport
 	Ref<Framebuffer> m_EditorFramebuffer;

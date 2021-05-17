@@ -22,23 +22,24 @@
 void Sandbox::Init()
 {
     // -- Buffers Test --
-    //uint indices[6] = { 0, 1, 2, 2, 3, 0 };
-    //float vertices[5 * 4] = {
-    //    -0.5f,	-0.5f,	0.0f, 0.0f, 0.0f,		// For negative X positions, UV should be 0, for positive, 1
-    //     0.5f,	-0.5f,	0.0f, 1.0f, 0.0f,		// If you render, on a square, the texCoords (as color = vec4(tC, 0, 1)), the colors of the square in its corners are
-    //     0.5f,	 0.5f,	0.0f, 1.0f, 1.0f,		// (0,0,0,1) - Black, (1,0,0,1) - Red, (1,1,0,0) - Yellow, (0,1,0,1) - Green
-    //    -0.5f,	 0.5f,	0.0f, 0.0f, 1.0f
-    //};
-    //
-    //BufferLayout layout = { { SHADER_DATA::FLOAT3, "a_Position" }, { SHADER_DATA::FLOAT2, "a_TexCoord" } };
-    //Ref<VertexBuffer> vbo = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
-    //Ref<IndexBuffer> ibo = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
-    //Ref<VertexArray> vao = CreateRef<VertexArray>();
-    //
-    //vbo->SetLayout(layout);
-    //vao->AddVertexBuffer(vbo);
-    //vao->SetIndexBuffer(ibo);
-    //vao->Unbind(); vbo->Unbind(); ibo->Unbind();
+    uint indices[6] = { 0, 1, 2, 2, 3, 0 };
+    float vertices[5 * 4] = {
+        -0.5f,	-0.5f,	0.0f, 0.0f, 0.0f,		// For negative X positions, UV should be 0, for positive, 1
+         0.5f,	-0.5f,	0.0f, 1.0f, 0.0f,		// If you render, on a square, the texCoords (as color = vec4(tC, 0, 1)), the colors of the square in its corners are
+         0.5f,	 0.5f,	0.0f, 1.0f, 1.0f,		// (0,0,0,1) - Black, (1,0,0,1) - Red, (1,1,0,0) - Yellow, (0,1,0,1) - Green
+        -0.5f,	 0.5f,	0.0f, 0.0f, 1.0f
+    };
+    
+    BufferLayout layout = { { SHADER_DATA::FLOAT3, "a_Position" }, { SHADER_DATA::FLOAT2, "a_TexCoord" } };
+    Ref<VertexBuffer> vbo = CreateRef<VertexBuffer>(vertices, sizeof(vertices));
+    Ref<IndexBuffer> ibo = CreateRef<IndexBuffer>(indices, sizeof(indices) / sizeof(uint));
+    
+    m_QuadArray = CreateRef<VertexArray>();
+
+    vbo->SetLayout(layout);
+    m_QuadArray->AddVertexBuffer(vbo);
+    m_QuadArray->SetIndexBuffer(ibo);
+    m_QuadArray->Unbind(); vbo->Unbind(); ibo->Unbind();
 
     // -- Engine Camera Startup --glm::vec3(14.0f, 15.5f, 18.8f)
     m_EngineCamera.ZoomLevel = 30.0f;
@@ -68,6 +69,7 @@ void Sandbox::Init()
     // -- Shader --
     m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
     m_LightingShader = CreateRef<Shader>("Resources/Shaders/LightingShader.glsl");    
+    m_DeferredLightingShader = CreateRef<Shader>("Resources/Shaders/DeferredLightingShader.glsl");
 
     // -- Framebuffer --
     m_EditorFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT,
@@ -75,6 +77,8 @@ void Sandbox::Init()
                                                         RendererUtils::FBO_TEXTURE_FORMAT::RGBA16,
                                                         RendererUtils::FBO_TEXTURE_FORMAT::RGBA16, 
                                                         RendererUtils::FBO_TEXTURE_FORMAT::DEPTH }));
+
+    m_DeferredFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT, { RendererUtils::FBO_TEXTURE_FORMAT::RGBA8 }));
 
     // -- Resources Print --
     Resources::PrintResourcesReferences();
@@ -123,6 +127,30 @@ void Sandbox::OnUpdate(float dt)
         Renderer::SubmitModel(m_TextureShader, model);
 
     m_EditorFramebuffer->Unbind();
+
+    m_DeferredFramebuffer->Bind();
+    Renderer::ClearRenderer();
+
+    RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(0), 0);
+    RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(1), 1);
+    RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(2), 2);
+
+    Renderer::DeferredLightingPass();
+
+
+    m_DeferredLightingShader->Bind();
+
+    glm::vec3 scale = glm::vec3(2.0f, 2.0f, 1.0f);
+    glm::mat4 transform = glm::scale(glm::mat4(1.0f), scale);
+
+    Renderer::Submit(m_DeferredLightingShader, m_QuadArray, transform);
+
+    m_DeferredLightingShader->Unbind();
+    RenderCommand::DettachDeferredTexture();
+    RenderCommand::DettachDeferredTexture();
+    RenderCommand::DettachDeferredTexture();
+    m_DeferredFramebuffer->Unbind();
+
     Renderer::EndScene();
 }
 
@@ -149,7 +177,8 @@ void Sandbox::OnUIRender(float dt)
     m_ViewportSize = glm::vec2(viewportpanel_size.x, viewportpanel_size.y);
     static uint texture_index = 0;
 
-    ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(texture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    //ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(texture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image((ImTextureID)(m_DeferredFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
 
     ImGui::PopStyleVar();
     ImGui::End();

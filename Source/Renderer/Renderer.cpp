@@ -151,6 +151,27 @@ void Renderer::BeginLightingScene(const glm::mat4& viewproj_mat, const glm::vec3
 	m_LightsSSBuffer->Unbind();
 }
 
+void Renderer::DeferredLightingPass()
+{
+	// -- Set PLighs SSBO --
+	int curr_lights = 0;
+	m_LightsSSBuffer->Bind();
+	for (uint i = 0; i < m_Lights.size(); ++i) // TODO: move this from here (should be on Begin())
+	{
+		if (m_Lights[i].Active)
+		{
+			char uniform_name[16];
+			sprintf_s(uniform_name, 16, "PLightsVec[%i].", i);
+			m_Lights[i].SetLightData(m_LightsSSBuffer, uniform_name);
+			++curr_lights;
+		}
+	}
+
+	m_LightsSSBuffer->SetData("CurrentLights", glm::value_ptr(glm::ivec4(curr_lights, 0, 0, 0)));
+	m_LightsSSBuffer->Unbind();
+
+}
+
 void Renderer::BeginGeometryScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position)
 {
 	// -- Set Camera UBO --

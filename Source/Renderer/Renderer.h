@@ -45,6 +45,7 @@ public:
 
 	static void BeginGeometryScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position);
 	static void BeginLightingScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position);
+	static void DeferredLightingPass();
 	static void EndScene();
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
 	static void SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model);
