@@ -34,6 +34,11 @@ public:
 	inline uint GetID()		const { return m_ID; }
 	inline operator uint()	const { return m_ID; }
 
+	float GetLightRadius(float max_distance)
+	{
+		return 1.0f / (AttenuationK + AttenuationL * max_distance + AttenuationQ * max_distance * max_distance);
+	}
+
 	void SetLightData(ShaderStorageBuffer* ssbo, const std::string& lightunif_name)
 	{
 		ssbo->SetData(lightunif_name + "Pos", glm::value_ptr(glm::vec4(Position, 0.0f)));

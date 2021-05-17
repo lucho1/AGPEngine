@@ -134,8 +134,10 @@ void Renderer::DrawLightsSpheres(const Ref<Shader>& shader)
 	{
 		if (m_Lights[i].Active)
 		{
+			float light_rad = m_Lights[i].GetLightRadius(10.0f);
+
 			m_Sphere->GetTransformation().Translation = m_Lights[i].Position;
-			m_Sphere->GetTransformation().Scale = glm::vec3(0.05f) * m_Lights[i].AttenuationK;
+			m_Sphere->GetTransformation().Scale = glm::vec3(light_rad);
 			SubmitModel(shader, m_Sphere);
 		}
 	}
