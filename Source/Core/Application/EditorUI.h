@@ -44,7 +44,7 @@ namespace EditorUI
 	{
 		char overlay[50] = "";
 		if (print_overlay)
-			sprintf(overlay, overlay_label, label_value, label_unit);
+			sprintf_s(overlay, overlay_label, label_value, label_unit);
 
 		std::string label = "###" + std::string(overlay_label);
 		ImGui::PlotLines(label.c_str(), values, IM_ARRAYSIZE(values), 0, overlay, 0.0f, plot_scale, ImVec2(ImGui::GetContentRegionAvailWidth(), 100.0f));

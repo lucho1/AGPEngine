@@ -84,6 +84,9 @@ void Sandbox::Init()
 
     // -- Resources Print --
     Resources::PrintResourcesReferences();
+
+    // -- Measurement Timer --
+    m_MeasureTime.Start();
 }
 
 
@@ -105,6 +108,13 @@ void Sandbox::OnUpdate(float dt)
     // -- Shader Hot Reload --
     //m_LightingShader->CheckLastModification();
 
+    bool rendering_measure = false;
+    if (m_MeasureTime.GetSeconds() > 1.0f)
+    {
+        rendering_measure = true;
+        m_MeasureTime.Start();
+    }
+
     // -- Viewport Resize --
     if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f)
     {
@@ -117,6 +127,21 @@ void Sandbox::OnUpdate(float dt)
 
     // -- Camera Update --
     m_EngineCamera.OnUpdate(dt, (m_ViewportFocused || m_ViewportHovered));
+
+    // -- Measure Rendering --
+    if (rendering_measure)
+    {
+        if (m_DeferredRendering)
+        {
+            m_FwRendTimer.Stop();
+            m_DefRendTimer.Start();
+        }
+        else
+        {
+            m_DefRendTimer.Stop();
+            m_FwRendTimer.Start();
+        }
+    }
 
     // -- Render Geometry --
     m_EditorFramebuffer->Bind();
@@ -176,6 +201,13 @@ void Sandbox::OnUpdate(float dt)
         // End Scene
         Renderer::EndScene(m_DeferredLightingShader);
         m_DeferredFramebuffer->Unbind();
+    }
+
+    if (rendering_measure)
+    {
+        m_DefRendTimer.Stop();
+        m_FwRendTimer.Stop();
+        rendering_measure = false;
     }
 }
 
@@ -273,7 +305,10 @@ void Sandbox::OnUIRender(float dt)
     ImGui::PopTextWrapPos();
     
     ImGui::Checkbox("Draw Light Spheres", &m_DrawLightsSpheres);
-    //ImGui::Checkbox("Deferred Rendering", &m_DeferredRenderer);
+
+    float asdasd = m_DefRendTimer.GetNanoseconds();
+    ImGui::Text("Last Measured Deferred Rendering: %.2f ms", m_DefRendTimer.GetMilliseconds());
+    ImGui::Text("Last Measured Forward Rendering: %.2f ms", m_FwRendTimer.GetMilliseconds());
 
     // Rendering Type Dropdown
     const char* rendering_options[] = { "Forward", "Deferred" };
@@ -553,7 +588,7 @@ void Sandbox::DrawEntitiesPanel()
 
         char buffer[256];
         memset(buffer, 0, sizeof(buffer));
-        std::strncpy(buffer, entity->GetName().c_str(), sizeof(buffer));
+        strncpy_s(buffer, entity->GetName().c_str(), sizeof(buffer));
 
         if (ImGui::InputText("##EntName", buffer, sizeof(buffer), ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_CharsNoBlank))
             entity->SetName(std::string(buffer));

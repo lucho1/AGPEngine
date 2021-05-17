@@ -1,6 +1,8 @@
 #ifndef _SANDBOX_H_
 #define _SANDBOX_H_
 
+#include "Core/Utils/Timer.h"
+
 #include "Core/Globals.h"
 #include "Application.h"
 
@@ -49,6 +51,8 @@ private:
 	Ref<Framebuffer> m_DeferredFramebuffer;
 	Ref<Shader> m_DeferredLightingShader;
 	Ref<VertexArray> m_QuadArray;
+
+	Timer m_FwRendTimer, m_DefRendTimer, m_MeasureTime;
 
 	// Viewport
 	Ref<Framebuffer> m_EditorFramebuffer;

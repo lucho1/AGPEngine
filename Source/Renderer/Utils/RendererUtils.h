@@ -87,7 +87,7 @@ namespace RendererUtils
 
 	// ------------------------------------------------------------------------------
 	// ----- Shader Type Stuff -----
-	static const uint s_MaxLights = 10;
+	static const uint s_MaxLights = 200;
 
 	static GLenum ShaderTypeFromString(const std::string& shader_type_str)
 	{

@@ -50,6 +50,7 @@
     <ClInclude Include="Source\Core\Platform\Input.h" />
     <ClInclude Include="Source\Core\Utils\FileStringUtils.h" />
     <ClInclude Include="Source\Core\Platform\Window.h" />
+    <ClInclude Include="Source\Core\Utils\Timer.h" />
     <ClInclude Include="Source\Renderer\Entities\Camera.h" />
     <ClInclude Include="Source\Renderer\Entities\CameraController.h" />
     <ClInclude Include="Source\Renderer\Entities\Lights.h" />
