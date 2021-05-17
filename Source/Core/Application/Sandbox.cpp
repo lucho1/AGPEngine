@@ -304,9 +304,10 @@ void Sandbox::OnUIRender(float dt)
     ImGui::Text("Shading Version:   GLSL %s", stats.GLShadingVersion.c_str()); ImGui::NewLine();
     ImGui::PopTextWrapPos();
     
+    ImGui::Separator();
+    ImGui::NewLine();
     ImGui::Checkbox("Draw Light Spheres", &m_DrawLightsSpheres);
-
-    float asdasd = m_DefRendTimer.GetNanoseconds();
+    ImGui::NewLine();
     ImGui::Text("Last Measured Deferred Rendering: %.2f ms", m_DefRendTimer.GetMilliseconds());
     ImGui::Text("Last Measured Forward Rendering: %.2f ms", m_FwRendTimer.GetMilliseconds());
 
@@ -314,6 +315,7 @@ void Sandbox::OnUIRender(float dt)
     const char* rendering_options[] = { "Forward", "Deferred" };
     const char* current_rend_option = rendering_options[(int)m_DeferredRendering];
 
+    ImGui::NewLine();
     if (ImGui::BeginCombo("Rendering Type", current_rend_option))
     {
         for (uint i = 0; i < 2; ++i)
