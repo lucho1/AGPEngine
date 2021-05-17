@@ -30,7 +30,7 @@ public:
 	
 	void SetName(const std::string& name)		{ m_Name = name; }
 	const std::string& GetName()		const	{ return m_Name; }
-	const Mesh* GetRootMesh()			const	{ return m_RootMesh; }
+	Mesh* GetRootMesh()			const	{ return m_RootMesh; }
 
 	TransformComponent& GetTransformation() { return m_Transform; }
 
@@ -64,6 +64,8 @@ public:
 
 	// --- Getters/Setters ---
 	inline void SetName(const std::string& name)			{ m_Name = name; }
+	inline void SetMaterial(uint mat_id)					{ m_MaterialIndex = mat_id; }
+
 	inline const std::string& GetName()				const	{ return m_Name; }
 	inline uint GetID()								const	{ return m_ID; }
 	

@@ -64,6 +64,8 @@ public:
 	// --- Getters ---
 	static const RendererStatistics& GetStatistics() { return m_RendererStatistics; }
 
+	static void DrawLightsSpheres(const Ref<Shader>& shader);
+
 private:
 
 	// --- Private Rendering Stuff ---
@@ -84,6 +86,11 @@ private:
 	static ShaderStorageBuffer* m_LightsSSBuffer;
 	static std::vector<PointLight> m_Lights;
 	static uint m_LightsIndex;
+
+
+	static Ref<Model> m_Sphere;
+	static Ref<Material> m_DefaultMaterial ;
+	static Ref<Material> m_MagentaMaterial ;
 };
 
 #endif //_RENDERER_H_

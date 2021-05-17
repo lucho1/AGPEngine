@@ -22,6 +22,9 @@ Light Renderer::m_DirectionalLight = {};
 ShaderStorageBuffer* Renderer::m_LightsSSBuffer = nullptr;
 std::vector<PointLight> Renderer::m_Lights = {};
 uint Renderer::m_LightsIndex = 0;
+Ref<Model> Renderer::m_Sphere = nullptr;
+Ref<Material> Renderer::m_DefaultMaterial = nullptr;
+Ref<Material> Renderer::m_MagentaMaterial = nullptr;
 // ------------------------------------------------------------------------------
 
 
@@ -49,8 +52,15 @@ void Renderer::Init()
 	RenderCommand::SetDepthTest(true);
 	RenderCommand::SetScissorTest(true);
 
-	// -- Load Default Textures --
+	// -- Load Default Materials, Textures & Meshes --
+	m_MagentaMaterial = *Resources::CreateMaterial("Magenta Material");
+	m_DefaultMaterial = *Resources::CreateMaterial("Default Material");
 	LoadDefaultTextures();
+
+	m_Sphere = Resources::CreateModel("Resources/Models/Sphere.obj");
+	m_Sphere->GetRootMesh()->SetMaterial(m_DefaultMaterial->m_ID);
+	m_Sphere->GetTransformation().Translation = glm::vec3(1.0f);
+	m_Sphere->GetTransformation().Scale = glm::vec3(0.1f);
 
 	// -- Create the Uniform Buffer for the Camera --
 	BufferLayout camera_ubo_layout = { { SHADER_DATA::MAT4, "ViewProjection" }, { SHADER_DATA::FLOAT4, "Position" } }; //Vec3 "are like" Vec4 in this case for GPU alignment
@@ -197,6 +207,9 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 	Resources::TexturesIndex alb_binding = Resources::TexturesIndex::MAGENTA, norm_binding = Resources::TexturesIndex::TESTNORMAL,
 		bump_binding = Resources::TexturesIndex::BLACK;
 	
+	if (mesh_mat->GetID() == m_DefaultMaterial->GetID())
+		alb_binding = Resources::TexturesIndex::WHITE;
+
 	Texture* albedo = nullptr;
 	Texture* normal = nullptr;
 	Texture* bump = nullptr;
@@ -326,4 +339,23 @@ void Renderer::LoadDefaultTextures()
 	RendererPrimitives::DefaultTextures::BlackTexture->SetData(&black_data, sizeof(black_data));
 	RendererPrimitives::DefaultTextures::MagentaTexture->SetData(&magenta_data, sizeof(magenta_data));
 	RendererPrimitives::DefaultTextures::TempNormalTexture->SetData(&normal_data, sizeof(normal_data));
+}
+
+void Renderer::DrawLightsSpheres(const Ref<Shader>& shader)
+{
+	RenderCommand::SetWireframeDraw();
+	shader->Bind();
+
+	for (uint i = 0; i < m_Lights.size(); ++i)
+	{
+		if (m_Lights[i].Active)
+		{
+			m_Sphere->GetTransformation().Translation = m_Lights[i].Position;
+			m_Sphere->GetTransformation().Scale = glm::vec3(0.05f) * m_Lights[i].AttenuationK;
+			SubmitModel(shader, m_Sphere);
+		}
+	}
+
+	shader->Unbind();
+	RenderCommand::ResetWireframeDraw();
 }

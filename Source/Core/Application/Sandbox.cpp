@@ -126,6 +126,9 @@ void Sandbox::OnUpdate(float dt)
     for (auto& model : m_SceneModels)
         Renderer::SubmitModel(m_TextureShader, model);
 
+    if (m_DrawLightsSpheres)
+        Renderer::DrawLightsSpheres(m_TextureShader);
+
     m_EditorFramebuffer->Unbind();
 
     m_DeferredFramebuffer->Bind();
@@ -233,6 +236,7 @@ void Sandbox::OnUIRender(float dt)
     ImGui::Text("Shading Version:   GLSL %s", stats.GLShadingVersion.c_str()); ImGui::NewLine();
     ImGui::PopTextWrapPos();
     
+    ImGui::Checkbox("Draw Light Spheres", &m_DrawLightsSpheres);
 
     static bool show_color = true, show_norm = false, show_pos = false;
     static const char* shownText = "G Buffer Texture";

@@ -59,6 +59,8 @@ private:
 	uint m_MemoryAllocations[ALLOCATIONS_SAMPLES] = { 0 };
 	uint m_AllocationsIndex = 0;
 	MemoryMetrics m_MemoryMetrics = {};
+
+	bool m_DrawLightsSpheres = true;
 };
 
 #endif //_SANDBOX_H_

@@ -30,6 +30,10 @@ public:
 	inline static void SetScissorTest(bool enable)					{ m_ScissorTestEnabled = enable;  enable ? glEnable(GL_SCISSOR_TEST) : glDisable(GL_SCISSOR_TEST); }
 	inline static bool IsScissorTestEnabled()						{ return m_ScissorTestEnabled; }
 
+	// --- Rendering States ---
+	inline static void SetWireframeDraw()							{ glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
+	inline static void ResetWireframeDraw()							{ glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
+
 	// --- Viewport ---
 	inline static void SetViewport(uint x, uint y, uint w, uint h)	{ glViewport(x, y, w, h); }
 
