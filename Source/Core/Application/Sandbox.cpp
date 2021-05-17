@@ -162,6 +162,18 @@ void Sandbox::OnUIRender(float dt)
     // -- Docking Space --
     EditorUI::SetDocking();    
 
+    // -- GBuffer Framebuffer --
+    ImGui::Begin("GBuffer View", (bool*)true, ImGuiWindowFlags_NoScrollbar);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+
+    // Get viewport size & draw fbo texture
+    static uint texture_index = 0;
+    ImVec2 viewportpanel_size = ImGui::GetContentRegionAvail();
+    ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(texture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+
+    ImGui::PopStyleVar();
+    ImGui::End();
+
     // --- Scene Framebuffer ---
     ImGui::Begin("Scene", (bool*)true, ImGuiWindowFlags_NoScrollbar);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
@@ -173,10 +185,9 @@ void Sandbox::OnUIRender(float dt)
     m_ViewportHovered = ImGui::IsWindowHovered();
 
     // Get viewport size & draw fbo texture
-    ImVec2 viewportpanel_size = ImGui::GetContentRegionAvail();
+    viewportpanel_size = ImGui::GetContentRegionAvail();
     m_ViewportSize = glm::vec2(viewportpanel_size.x, viewportpanel_size.y);
-    static uint texture_index = 0;
-
+    
     //ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(texture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
     ImGui::Image((ImTextureID)(m_DeferredFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
 
