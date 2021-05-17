@@ -307,9 +307,9 @@ void Sandbox::OnUIRender(float dt)
     ImGui::Separator();
     ImGui::NewLine();
     ImGui::Checkbox("Draw Light Spheres", &m_DrawLightsSpheres);
-    ImGui::NewLine();
-    ImGui::Text("Last Measured Deferred Rendering: %.2f ms", m_DefRendTimer.GetMilliseconds());
-    ImGui::Text("Last Measured Forward Rendering: %.2f ms", m_FwRendTimer.GetMilliseconds());
+    //ImGui::NewLine();
+    //ImGui::Text("Last Measured Deferred Rendering: %.2f ms", m_DefRendTimer.GetMilliseconds());
+    //ImGui::Text("Last Measured Forward Rendering: %.2f ms", m_FwRendTimer.GetMilliseconds());
 
     // Rendering Type Dropdown
     const char* rendering_options[] = { "Forward", "Deferred" };
