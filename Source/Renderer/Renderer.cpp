@@ -8,9 +8,6 @@
 #include "Resources/Texture.h"
 
 #include <glad/glad.h>
-
-//#include <glm/glm.hpp>
-//#include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 
@@ -52,6 +49,7 @@ void Renderer::Init()
 	RenderCommand::SetDepthTest(true);
 	RenderCommand::SetScissorTest(true);
 
+
 	// -- Load Default Materials, Textures & Meshes --
 	m_MagentaMaterial = *Resources::CreateMaterial("Magenta Material");
 	m_DefaultMaterial = *Resources::CreateMaterial("Default Material");
@@ -61,6 +59,7 @@ void Renderer::Init()
 	m_Sphere->GetRootMesh()->SetMaterial(m_DefaultMaterial->m_ID);
 	m_Sphere->GetTransformation().Translation = glm::vec3(1.0f);
 	m_Sphere->GetTransformation().Scale = glm::vec3(0.1f);
+
 
 	// -- Create the Uniform Buffer for the Camera --
 	BufferLayout camera_ubo_layout = { { SHADER_DATA::MAT4, "ViewProjection" }, { SHADER_DATA::FLOAT4, "Position" } }; //Vec3 "are like" Vec4 in this case for GPU alignment
@@ -126,6 +125,25 @@ void Renderer::RemoveLight(uint light_id)
 	}
 }
 
+void Renderer::DrawLightsSpheres(const Ref<Shader>& shader)
+{
+	RenderCommand::SetWireframeDraw();
+	shader->Bind();
+
+	for (uint i = 0; i < m_Lights.size(); ++i)
+	{
+		if (m_Lights[i].Active)
+		{
+			m_Sphere->GetTransformation().Translation = m_Lights[i].Position;
+			m_Sphere->GetTransformation().Scale = glm::vec3(0.05f) * m_Lights[i].AttenuationK;
+			SubmitModel(shader, m_Sphere);
+		}
+	}
+
+	shader->Unbind();
+	RenderCommand::ResetWireframeDraw();
+}
+
 
 
 // ------------------------------------------------------------------------------
@@ -135,67 +153,46 @@ void Renderer::ClearRenderer()
 	RenderCommand::Clear();
 }
 
-void Renderer::BeginLightingScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position)
-{
-	// -- Set Camera UBO --
-	m_CameraUniformBuffer->Bind();
-	m_CameraUniformBuffer->SetData("ViewProjection", glm::value_ptr(viewproj_mat));
-	m_CameraUniformBuffer->SetData("CamPosition", glm::value_ptr(glm::vec4(view_position, 0.0f)));	
-	m_CameraUniformBuffer->Unbind();
-
-	// -- Set PLighs SSBO --
-	int curr_lights = 0;
-	m_LightsSSBuffer->Bind();
-	for (uint i = 0; i < m_Lights.size(); ++i) // TODO: move this from here (should be on Begin())
-	{
-		if (m_Lights[i].Active)
-		{
-			char uniform_name[16];
-			sprintf_s(uniform_name, 16, "PLightsVec[%i].", i);
-			m_Lights[i].SetLightData(m_LightsSSBuffer, uniform_name);
-			++curr_lights;
-		}
-	}
-
-	m_LightsSSBuffer->SetData("CurrentLights", glm::value_ptr(glm::ivec4(curr_lights, 0, 0, 0)));
-	m_LightsSSBuffer->Unbind();
-}
-
-void Renderer::DeferredLightingPass(const Ref<Shader>& shader)
-{
-	// -- Set PLighs SSBO --
-	int curr_lights = 0;
-	m_LightsSSBuffer->Bind();
-	for (uint i = 0; i < m_Lights.size(); ++i) // TODO: move this from here (should be on Begin())
-	{
-		if (m_Lights[i].Active)
-		{
-			char uniform_name[16];
-			sprintf_s(uniform_name, 16, "PLightsVec[%i].", i);
-			m_Lights[i].SetLightData(m_LightsSSBuffer, uniform_name);
-			++curr_lights;
-		}
-	}
-
-	m_LightsSSBuffer->SetData("CurrentLights", glm::value_ptr(glm::ivec4(curr_lights, 0, 0, 0)));
-	m_LightsSSBuffer->Unbind();
-
-	shader->SetUniformVec3("u_DirLight.Direction", m_DirectionalLight.Direction);
-	shader->SetUniformVec3("u_DirLight.Color", m_DirectionalLight.Color);
-	shader->SetUniformFloat("u_DirLight.Intensity", m_DirectionalLight.Intensity);
-}
-
-void Renderer::BeginGeometryScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position)
+void Renderer::SetSceneData(const glm::mat4& viewproj_mat, const glm::vec3& view_position)
 {
 	// -- Set Camera UBO --
 	m_CameraUniformBuffer->Bind();
 	m_CameraUniformBuffer->SetData("ViewProjection", glm::value_ptr(viewproj_mat));
 	m_CameraUniformBuffer->SetData("CamPosition", glm::value_ptr(glm::vec4(view_position, 0.0f)));
 	m_CameraUniformBuffer->Unbind();
+
+	// -- Set PLighs SSBO --
+	int curr_lights = 0;
+	m_LightsSSBuffer->Bind();
+	for (uint i = 0; i < m_Lights.size(); ++i) // TODO: move this from here (should be on Begin())
+	{
+		if (m_Lights[i].Active)
+		{
+			char uniform_name[16];
+			sprintf_s(uniform_name, 16, "PLightsVec[%i].", i);
+			m_Lights[i].SetLightData(m_LightsSSBuffer, uniform_name);
+			++curr_lights;
+		}
+	}
+
+	m_LightsSSBuffer->SetData("CurrentLights", glm::value_ptr(glm::ivec4(curr_lights, 0, 0, 0)));
+	m_LightsSSBuffer->Unbind();
 }
 
-void Renderer::EndScene()
+void Renderer::BeginScene(const Ref<Shader>& shader, bool set_directional_lights)
 {
+	shader->Bind();
+	if (set_directional_lights)
+	{
+		shader->SetUniformVec3("u_DirLight.Direction", m_DirectionalLight.Direction);
+		shader->SetUniformVec3("u_DirLight.Color", m_DirectionalLight.Color);
+		shader->SetUniformFloat("u_DirLight.Intensity", m_DirectionalLight.Intensity);
+	}
+}
+
+void Renderer::EndScene(const Ref<Shader>& shader)
+{
+	shader->Unbind();
 }
 
 // ------------------------------------------------------------------------------
@@ -251,8 +248,8 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 	// -- Draw Call & Unbinds --
 	mesh->m_VertexArray->Bind();
 	RenderCommand::DrawIndexed(mesh->m_VertexArray);
-
 	mesh->m_VertexArray->Unbind();
+
 	Renderer::UnbindTexture(bump_binding, bump);
 	Renderer::UnbindTexture(norm_binding, normal);
 	Renderer::UnbindTexture(alb_binding, albedo);
@@ -265,10 +262,6 @@ void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model)
 		return;
 
 	shader->Bind();
-	shader->SetUniformVec3("u_DirLight.Direction", m_DirectionalLight.Direction);
-	shader->SetUniformVec3("u_DirLight.Color", m_DirectionalLight.Color);
-	shader->SetUniformFloat("u_DirLight.Intensity", m_DirectionalLight.Intensity);
-
 	RenderMesh(shader, model->GetRootMesh(), model->GetTransformation().GetTransform());
 	shader->Unbind();
 }
@@ -276,11 +269,10 @@ void Renderer::SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model)
 
 void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform)
 {
-	shader->Bind();
 	shader->SetUniformMat4("u_Model", transform);
-
 	vertex_array->Bind();
 	RenderCommand::DrawIndexed(vertex_array);
+	vertex_array->Unbind();
 }
 
 
@@ -342,23 +334,4 @@ void Renderer::LoadDefaultTextures()
 	RendererPrimitives::DefaultTextures::BlackTexture->SetData(&black_data, sizeof(black_data));
 	RendererPrimitives::DefaultTextures::MagentaTexture->SetData(&magenta_data, sizeof(magenta_data));
 	RendererPrimitives::DefaultTextures::TempNormalTexture->SetData(&normal_data, sizeof(normal_data));
-}
-
-void Renderer::DrawLightsSpheres(const Ref<Shader>& shader)
-{
-	RenderCommand::SetWireframeDraw();
-	shader->Bind();
-
-	for (uint i = 0; i < m_Lights.size(); ++i)
-	{
-		if (m_Lights[i].Active)
-		{
-			m_Sphere->GetTransformation().Translation = m_Lights[i].Position;
-			m_Sphere->GetTransformation().Scale = glm::vec3(0.05f) * m_Lights[i].AttenuationK;
-			SubmitModel(shader, m_Sphere);
-		}
-	}
-
-	shader->Unbind();
-	RenderCommand::ResetWireframeDraw();
 }

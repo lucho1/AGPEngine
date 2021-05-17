@@ -30,7 +30,7 @@ public:
 	
 	void SetName(const std::string& name)		{ m_Name = name; }
 	const std::string& GetName()		const	{ return m_Name; }
-	Mesh* GetRootMesh()			const	{ return m_RootMesh; }
+	Mesh* GetRootMesh()					const	{ return m_RootMesh; }
 
 	TransformComponent& GetTransformation() { return m_Transform; }
 

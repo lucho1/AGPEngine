@@ -116,47 +116,52 @@ void Sandbox::OnUpdate(float dt)
     // -- Camera Update --
     m_EngineCamera.OnUpdate(dt, (m_ViewportFocused || m_ViewportHovered));
 
-    // -- Render --
+    // -- Render Geometry --
     m_EditorFramebuffer->Bind();
-
     Renderer::ClearRenderer();
-    Renderer::BeginGeometryScene(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
+    Renderer::SetSceneData(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
+    Renderer::BeginScene(m_TextureShader, false);
     
-    // Draw Call
+    // Draw Calls
     for (auto& model : m_SceneModels)
         Renderer::SubmitModel(m_TextureShader, model);
 
+    // Draw Lights Spheres
     if (m_DrawLightsSpheres)
         Renderer::DrawLightsSpheres(m_TextureShader);
 
+    // End Scene
+    Renderer::EndScene(m_TextureShader);
     m_EditorFramebuffer->Unbind();
 
+    // -- Render Lighting --
     m_DeferredFramebuffer->Bind();
     Renderer::ClearRenderer();
+    Renderer::BeginScene(m_DeferredLightingShader, true);
 
+    // Attach & Send GBuffer Textures
     RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(0), 0);
     RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(1), 1);
     RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(2), 2);
-
-    m_DeferredLightingShader->Bind();
-    Renderer::DeferredLightingPass(m_DeferredLightingShader);
 
     m_DeferredLightingShader->SetUniformInt("u_gColor", 0);
     m_DeferredLightingShader->SetUniformInt("u_gNormal", 1);
     m_DeferredLightingShader->SetUniformInt("u_gPosition", 2);
 
+    // Draw Deferred Quad
     glm::vec3 scale = glm::vec3(2.0f, 2.0f, 1.0f);
     glm::mat4 transform = glm::scale(glm::mat4(1.0f), scale);
 
     Renderer::Submit(m_DeferredLightingShader, m_QuadArray, transform);
 
-    m_DeferredLightingShader->Unbind();
+    // Detach GBuffer Textures
     RenderCommand::DettachDeferredTexture();
     RenderCommand::DettachDeferredTexture();
     RenderCommand::DettachDeferredTexture();
-    m_DeferredFramebuffer->Unbind();
 
-    Renderer::EndScene();
+    // End Scene
+    Renderer::EndScene(m_DeferredLightingShader);
+    m_DeferredFramebuffer->Unbind();
 }
 
 

@@ -38,16 +38,21 @@ public:
 	static void RemoveLight(uint light_id);
 	static std::vector<PointLight>& GetLights()	{ return m_Lights; }
 	static Light& GetDirectionalLight()			{ return m_DirectionalLight; }
+	
+	static void DrawLightsSpheres(const Ref<Shader>& shader);
 
 
 	// --- Rendering Stuff ---
 	static void ClearRenderer();
+	static void SetSceneData(const glm::mat4& viewproj_mat, const glm::vec3& view_position);
+	
+	static void BeginScene(const Ref<Shader>& shader, bool set_directional_lights);
+	static void EndScene(const Ref<Shader>& shader);
 
-	static void BeginGeometryScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position);
-	static void BeginLightingScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position);
-	static void DeferredLightingPass(const Ref<Shader>& shader);
-	static void EndScene();
+	// Needs an already-bound shader!
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
+
+	// Needs an already-bound shader!
 	static void SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model);
 
 
@@ -63,8 +68,6 @@ public:
 
 	// --- Getters ---
 	static const RendererStatistics& GetStatistics() { return m_RendererStatistics; }
-
-	static void DrawLightsSpheres(const Ref<Shader>& shader);
 
 private:
 
