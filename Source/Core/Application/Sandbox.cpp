@@ -179,9 +179,9 @@ void Sandbox::OnUIRender(float dt)
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
 
     // Get viewport size & draw fbo texture
-    static uint texture_index = 0;
+    static uint gbtexture_index = 0;
     ImVec2 viewportpanel_size = ImGui::GetContentRegionAvail();
-    ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(texture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(gbtexture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
 
     ImGui::PopStyleVar();
     ImGui::End();
@@ -247,53 +247,27 @@ void Sandbox::OnUIRender(float dt)
     
     ImGui::Checkbox("Draw Light Spheres", &m_DrawLightsSpheres);
 
-    static bool show_color = true, show_norm = false, show_pos = false, show_smooth = false, show_depth = false;
-    static const char* shownText = "G Buffer Texture";
-    if (ImGui::BeginCombo("##GBuffer Type", shownText))
-    {
-        if (ImGui::Selectable("Color", show_color))
-        {
-            shownText = "Color";
-            show_color = true;
-            show_norm = show_pos = show_smooth = show_depth = false;
-            texture_index = 0;
-        }
-        if(ImGui::Selectable("Norm", show_norm))
-        {
-            shownText = "Norm";
-            show_norm= true;
-            show_color= show_pos = show_smooth = show_depth = false;
-            texture_index = 1;
-        }
-        if (ImGui::Selectable("Pos", show_pos))
-        {
-            shownText = "Pos";
-            show_pos = true;
-            show_norm = show_color = show_smooth = show_depth = false;
-            texture_index = 2;
-        }
-        if (ImGui::Selectable("Material Smooth/Specular", show_smooth))
-        {
-            shownText = "Mat Smooth/Spec";
-            show_smooth = true;
-            show_norm = show_color = show_pos = show_depth = false;
-            texture_index = 3;
-        }
-        if (ImGui::Selectable("Depth", show_depth))
-        {
-            shownText = "Depth";
-            show_depth = true;
-            show_norm = show_color = show_smooth = show_pos = false;
-            texture_index = 4;
-        }
-        ImGui::EndCombo();
-    
-    }
+    // GBuffer Renderer Dropdown
+    uint current_gbtexture = gbtexture_index;
+    const char* gbuffer_options[] = { "Colors", "Normals", "Positions", "Mat. Smoothness/Specular", "Depth"  };
+    const char* current_option = gbuffer_options[current_gbtexture];
 
-    if (!show_color && !show_norm && !show_pos && !show_smooth && !show_depth)
+    if (ImGui::BeginCombo("GBuffer Texture Display", current_option))
     {
-        show_color = true;
-        texture_index = 0;
+        for (uint i = 0; i < 5; ++i)
+        {
+            bool selected = current_option == gbuffer_options[i];
+            if (ImGui::Selectable(gbuffer_options[i], selected))
+            {
+                current_option = gbuffer_options[i];
+                gbtexture_index = i;
+            }
+
+            if (selected)
+                ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::EndCombo();
     }
 
     ImGui::End();
