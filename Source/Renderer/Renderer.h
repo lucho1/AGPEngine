@@ -83,17 +83,16 @@ private:
 	// --- Renderer Variables ---
 	static RendererStatistics m_RendererStatistics;
 	static UniformBuffer* m_CameraUniformBuffer;
+
+	static Ref<Model> m_Sphere;
+	static Ref<Material> m_DefaultMaterial;
+	static Ref<Material> m_MagentaMaterial;
 	
 	// --- Lighting Variables ---
 	static Light m_DirectionalLight;
 	static ShaderStorageBuffer* m_LightsSSBuffer;
 	static std::vector<PointLight> m_Lights;
 	static uint m_LightsIndex;
-
-
-	static Ref<Model> m_Sphere;
-	static Ref<Material> m_DefaultMaterial ;
-	static Ref<Material> m_MagentaMaterial ;
 };
 
 #endif //_RENDERER_H_
