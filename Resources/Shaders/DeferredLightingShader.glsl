@@ -37,10 +37,6 @@ void main()
 
 layout(location = 0) out vec4 color;
 
-uniform sampler2D u_gColor;
-uniform sampler2D u_gNormal;
-uniform sampler2D u_gPosition;
-
 
 // --- Output Values ---
 in vec2 TexCoord;
@@ -62,6 +58,10 @@ struct PointLight // Pos & Color are vec4 to remember that they are aligned!
 
 
 // --- Lights Uniforms ---
+uniform sampler2D u_gColor;
+uniform sampler2D u_gNormal;
+uniform sampler2D u_gPosition;
+
 uniform DirectionalLight u_DirLight = DirectionalLight(vec3(1.0), vec3(1.0), 1.0);
 
 layout(std430, binding = 0) buffer ssb_Lights // PLights SSBO
@@ -72,72 +72,68 @@ layout(std430, binding = 0) buffer ssb_Lights // PLights SSBO
 
 
 // ------------------------------------------ LIGHT CALCULATION ------------------------------------------
-//vec4 CalculateDirectionalLight(vec3 normal, vec3 view)
-//{
-//	// Direction & Distance
-//	vec3 dir = normalize(u_DirLight.Direction);
-//	vec3 halfway_dir = normalize(dir + view);
-//
-//	// Diffuse & Specular
-//	float diff_impact = max(dot(normal, dir), 0.0);
-//	float spec_impact = pow(max(dot(normal, halfway_dir), 0.0), u_Material.Smoothness * 256.0);
-//
-//	// Final Impact
-//	vec3 light_impact = u_DirLight.Color * u_DirLight.Intensity * (diff_impact + spec_impact);
-//	return vec4(light_impact, 1.0);
-//}
-//
-//
-//vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
-//{
-//	// Direction & Distance
-//	vec3 pos_to_frag = light.Pos.xyz - v_VertexData.FragPos;
-//	float dist = length(pos_to_frag);
-//	vec3 dir = normalize(pos_to_frag);
-//	vec3 halfway_dir = normalize(dir + view);
-//
-//	// Diffuse & Specular
-//	float diff_impact = max(dot(normal, dir), 0.0);
-//	float spec_impact = pow(max(dot(normal, halfway_dir), 0.0), u_Material.Smoothness * 256.0); //MATERIAL SHININESS!
-//
-//	// Final Impact
-//	float light_att = 1.0/(light.AttK + light.AttL * dist + light.AttQ * dist * dist);
-//	vec4 light_impact = light.Color * light.Intensity * light_att * (diff_impact + spec_impact);
-//	
-//	return vec4(light_impact.rgb, 1.0);
-//}
+vec3 CalculateDirectionalLight(vec3 normal, vec3 view, float mat_smoothness)
+{
+	// Direction & Distance
+	vec3 dir = normalize(u_DirLight.Direction);
+	vec3 halfway_dir = normalize(dir + view);
+
+	// Diffuse & Specular
+	float diff_impact = max(dot(normal, dir), 0.0);
+	float spec_impact = pow(max(dot(normal, halfway_dir), 0.0), mat_smoothness * 256.0);
+
+	// Final Impact
+	vec3 light_impact = u_DirLight.Color.rgb * u_DirLight.Intensity * (diff_impact + spec_impact);
+	return light_impact;
+}
+
+
+vec3 CalculateLighting(PointLight light, vec3 normal, vec3 view, vec3 frag_pos, float mat_smoothness)
+{
+	// Direction & Distance
+	vec3 pos_to_frag = light.Pos.xyz - frag_pos;
+	float dist = length(pos_to_frag);
+	vec3 dir = normalize(pos_to_frag);
+	vec3 halfway_dir = normalize(dir + view);
+
+	// Diffuse & Specular
+	float diff_impact = max(dot(normal, dir), 0.0);
+	float spec_impact = pow(max(dot(normal, halfway_dir), 0.0), mat_smoothness * 256.0); //MATERIAL SHININESS!
+
+	// Final Impact
+	float light_att = 1.0/(light.AttK + light.AttL * dist + light.AttQ * dist * dist);
+	vec3 light_impact = light.Color.rgb * light.Intensity * light_att * (diff_impact + spec_impact);
+	
+	return light_impact;
+}
 
 
 // ------------------------------------------------ MAIN -------------------------------------------------
 void main()
 {
-	vec3 color_vec = texture(u_gColor, TexCoord).rgb;
+	vec4 albedo_color = texture(u_gColor, TexCoord);
+	if(albedo_color.a < 0.1)
+	{
+		color = albedo_color;
+		return;
+	}
+
+	vec3 color_vec = albedo_color.rgb;
 	vec3 normal_vec = texture(u_gNormal, TexCoord).rgb;
 	vec3 frag_pos = texture(u_gPosition, TexCoord).rgb;
-	//float specular = texture(u_gPosition, TexCoord).a;
+	float mat_smoothness = texture(u_gPosition, TexCoord).a;
 
 
 
 
 	//vec3 normal_vec = normalize(v_VertexData.Normal);
 	vec3 view_dir = normalize(CamPos - frag_pos);
-//
-	//vec3 normal_vec = texture(u_Normal, v_VertexData.TexCoord).rgb;
-	//normal_vec = normal_vec * 2.0 - 1.0;
-	//normal_vec = normalize(v_VertexData.TBN * normal_vec);
 
-	//vec4 light_impact = CalculateDirectionalLight(normal_vec, view_dir);
-	vec3 light_impact = vec3(0.0);
+	vec3 light_impact = CalculateDirectionalLight(normal_vec, view_dir, mat_smoothness);
 	for(int i = 0; i < CurrentLights; ++i)
 	{
-		vec3 light_dir = normalize(PLightsVec[i].Pos.xyz - frag_pos);
-		vec3 diffuse = max(dot(normal_vec, light_dir), 0.0) * color_vec * PLightsVec[i].Color.rgb;
-		light_impact += diffuse;
-
-		//light_impact += CalculateLighting(PLightsVec[i], normal_vec, view_dir);
+		light_impact += CalculateLighting(PLightsVec[i], normal_vec, view_dir, frag_pos, mat_smoothness);
 	}
 
-	color = vec4(light_impact, 1.0);
-	//color = texture(u_Albedo, v_VertexData.TexCoord) * u_Material.AlbedoColor + light_impact;
-	//color = vec4(normal_vec, 1.0);
+	color = vec4(color_vec + light_impact, 1.0);
 }

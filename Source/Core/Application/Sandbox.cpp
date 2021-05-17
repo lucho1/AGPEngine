@@ -75,7 +75,7 @@ void Sandbox::Init()
     m_EditorFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT,
                                                     {   RendererUtils::FBO_TEXTURE_FORMAT::RGBA8,
                                                         RendererUtils::FBO_TEXTURE_FORMAT::RGBA16,
-                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA16, 
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA8,
                                                         RendererUtils::FBO_TEXTURE_FORMAT::DEPTH }));
 
     m_DeferredFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT, { RendererUtils::FBO_TEXTURE_FORMAT::RGBA8 }));
@@ -138,10 +138,12 @@ void Sandbox::OnUpdate(float dt)
     RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(1), 1);
     RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(2), 2);
 
-    Renderer::DeferredLightingPass();
-
-
     m_DeferredLightingShader->Bind();
+    Renderer::DeferredLightingPass(m_DeferredLightingShader);
+
+    m_DeferredLightingShader->SetUniformInt("u_gColor", 0);
+    m_DeferredLightingShader->SetUniformInt("u_gNormal", 1);
+    m_DeferredLightingShader->SetUniformInt("u_gPosition", 2);
 
     glm::vec3 scale = glm::vec3(2.0f, 2.0f, 1.0f);
     glm::mat4 transform = glm::scale(glm::mat4(1.0f), scale);

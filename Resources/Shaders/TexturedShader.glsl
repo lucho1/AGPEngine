@@ -14,6 +14,8 @@ out IBlock
 	vec2 TexCoord;
 	vec3 FragPos;
 	vec3 Normal;
+	vec3 CamPos;
+	mat3 TBN;
 } v_VertexData;
 
 // --- Camera UBO ---
@@ -35,7 +37,17 @@ void main()
 	v_VertexData.TexCoord = a_TexCoord;
 	v_VertexData.FragPos = world_pos.xyz;
 	v_VertexData.Normal = transpose(inverse(mat3(u_Model))) * a_Normal;
-	
+	v_VertexData.CamPos = CamPosition;
+
+	vec3 T = normalize(vec3(u_Model * vec4(a_Tangent, 0.0)));
+	vec3 N = normalize(vec3(u_Model * vec4(a_Normal, 0.0)));
+
+	T = normalize(T - dot(T, N)*N); // Re-orthogonalize
+	vec3 B = cross(N, T);
+
+	mat3 TBN = mat3(T, B, N);
+	v_VertexData.TBN = TBN;
+
 	gl_Position = ViewProjection * u_Model * vec4(a_Position, 1.0);
 }
 
@@ -57,6 +69,8 @@ in IBlock
 	vec2 TexCoord;
 	vec3 FragPos;
 	vec3 Normal;
+	vec3 CamPos;
+	mat3 TBN;
 } v_VertexData;
 
 // --- Uniforms ---
@@ -76,7 +90,15 @@ void main()
 	//normal_vec = normal_vec * 2.0 - 1.0;
 	//normal_vec = normalize(v_VertexData.TBN * normal_vec);
 
+	vec3 view_dir = normalize(v_VertexData.CamPos - v_VertexData.FragPos);
+
+	vec3 normal_vec = texture(u_Normal, v_VertexData.TexCoord).rgb;
+	normal_vec = normal_vec * 2.0 - 1.0;
+	normal_vec = normalize(v_VertexData.TBN * normal_vec);
+
+
+
 	gBuff_Color = texture(u_Albedo, v_VertexData.TexCoord) * u_Material.AlbedoColor;
-	gBuff_Normal = vec4(normalize(v_VertexData.Normal), 1.0);
-	gBuff_Position = vec4(v_VertexData.FragPos, 1.0);
+	gBuff_Normal = vec4(normal_vec, 1.0);
+	gBuff_Position = vec4(v_VertexData.FragPos, u_Material.Smoothness); // Store Material Smoothness in Pos.a
 }

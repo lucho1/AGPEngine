@@ -131,7 +131,7 @@ void Renderer::RemoveLight(uint light_id)
 // ------------------------------------------------------------------------------
 void Renderer::ClearRenderer()
 {
-	RenderCommand::SetClearColor(glm::vec3(0.15f));
+	RenderCommand::SetClearColor(glm::vec4(glm::vec3(0.2f), 0.099f));
 	RenderCommand::Clear();
 }
 
@@ -161,7 +161,7 @@ void Renderer::BeginLightingScene(const glm::mat4& viewproj_mat, const glm::vec3
 	m_LightsSSBuffer->Unbind();
 }
 
-void Renderer::DeferredLightingPass()
+void Renderer::DeferredLightingPass(const Ref<Shader>& shader)
 {
 	// -- Set PLighs SSBO --
 	int curr_lights = 0;
@@ -180,6 +180,9 @@ void Renderer::DeferredLightingPass()
 	m_LightsSSBuffer->SetData("CurrentLights", glm::value_ptr(glm::ivec4(curr_lights, 0, 0, 0)));
 	m_LightsSSBuffer->Unbind();
 
+	shader->SetUniformVec3("u_DirLight.Direction", m_DirectionalLight.Direction);
+	shader->SetUniformVec3("u_DirLight.Color", m_DirectionalLight.Color);
+	shader->SetUniformFloat("u_DirLight.Intensity", m_DirectionalLight.Intensity);
 }
 
 void Renderer::BeginGeometryScene(const glm::mat4& viewproj_mat, const glm::vec3& view_position)
