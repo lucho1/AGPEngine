@@ -89,7 +89,7 @@ uint Framebuffer::GetFBOTextureID(uint index) const
 
 
 // ------------------------------------------------------------------------------
-void Framebuffer::SetTexture(bool depth_texture, GLenum internal_format, GLenum format, uint width, uint height, uint samples)
+void Framebuffer::SetTexture(bool depth_texture, GLenum internal_format, GLenum format, uint width, uint height, GLenum data_type, uint samples)
 {
 	if (samples > 1)
 	{
@@ -98,7 +98,7 @@ void Framebuffer::SetTexture(bool depth_texture, GLenum internal_format, GLenum 
 	}
 
 	if (!depth_texture)
-		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, data_type, nullptr);
 	else
 		glTexStorage2D(GL_TEXTURE_2D, 1, internal_format, width, height);
 
@@ -114,10 +114,10 @@ void Framebuffer::DeleteTexturesAndFBO()
 {
 	glDeleteFramebuffers(1, &m_ID);
 
-	if(m_ColorTextures.size() > 0)
+	//if(m_ColorTextures.size() > 0)
 		glDeleteTextures(m_ColorTextures.size(), m_ColorTextures.data());
 
-	if(m_DepthTexture != 0)
+	//if(m_DepthTexture != 0)
 		glDeleteTextures(1, &m_DepthTexture);
 
 	m_ColorTextures.clear();
@@ -136,7 +136,10 @@ void Framebuffer::ResetColorTextures(GLenum FBOsampling)
 		switch (m_ColorAttachments[i])
 		{
 			case RendererUtils::FBO_TEXTURE_FORMAT::RGBA8:
-				SetTexture(false, GL_RGBA8, GL_RGBA, m_Width, m_Height, m_Samples);
+				SetTexture(false, GL_RGBA8, GL_RGBA, m_Width, m_Height, GL_UNSIGNED_BYTE, m_Samples);
+				break;
+			case RendererUtils::FBO_TEXTURE_FORMAT::RGBA16:
+				SetTexture(false, GL_RGBA16F, GL_RGBA, m_Width, m_Height, GL_FLOAT, m_Samples);
 				break;
 		}
 
@@ -152,7 +155,7 @@ void Framebuffer::ResetDepthTexture(GLenum FBOsampling)
 	switch (m_DepthAttachment)
 	{
 		case RendererUtils::FBO_TEXTURE_FORMAT::DEPTH24STENCIL8:
-			SetTexture(true, GL_DEPTH24_STENCIL8, GL_NONE, m_Width, m_Height, m_Samples);
+			SetTexture(true, GL_DEPTH24_STENCIL8, GL_NONE, m_Width, m_Height, 0, m_Samples);
 			break;
 	}
 

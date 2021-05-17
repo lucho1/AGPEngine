@@ -71,7 +71,10 @@ void Sandbox::Init()
 
     // -- Framebuffer --
     m_EditorFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT,
-                                                    { RendererUtils::FBO_TEXTURE_FORMAT::RGBA8, RendererUtils::FBO_TEXTURE_FORMAT::DEPTH }));
+                                                    {   RendererUtils::FBO_TEXTURE_FORMAT::RGBA8,
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA16,
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA16, 
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::DEPTH }));
 
     // -- Resources Print --
     Resources::PrintResourcesReferences();
@@ -94,7 +97,7 @@ void Sandbox::OnWindowResizeEvent(uint width, uint height)
 void Sandbox::OnUpdate(float dt)
 {
     // -- Shader Hot Reload --
-    m_LightingShader->CheckLastModification();
+    //m_LightingShader->CheckLastModification();
 
     // -- Viewport Resize --
     if (m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f)
@@ -113,11 +116,11 @@ void Sandbox::OnUpdate(float dt)
     m_EditorFramebuffer->Bind();
 
     Renderer::ClearRenderer();
-    Renderer::BeginScene(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
-
+    Renderer::BeginGeometryScene(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
+    
     // Draw Call
     for (auto& model : m_SceneModels)
-        Renderer::SubmitModel(m_LightingShader, model);
+        Renderer::SubmitModel(m_TextureShader, model);
 
     m_EditorFramebuffer->Unbind();
     Renderer::EndScene();
@@ -144,7 +147,9 @@ void Sandbox::OnUIRender(float dt)
     // Get viewport size & draw fbo texture
     ImVec2 viewportpanel_size = ImGui::GetContentRegionAvail();
     m_ViewportSize = glm::vec2(viewportpanel_size.x, viewportpanel_size.y);
-    ImGui::Image(reinterpret_cast<void*>(m_EditorFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    static uint texture_index = 0;
+
+    ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(texture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
 
     ImGui::PopStyleVar();
     ImGui::End();
@@ -187,6 +192,32 @@ void Sandbox::OnUIRender(float dt)
     ImGui::Text("OpenGL Version:    %i.%i (%s)", stats.OGL_MajorVersion, stats.OGL_MinorVersion, stats.GLVersion.c_str()); ImGui::NewLine();
     ImGui::Text("Shading Version:   GLSL %s", stats.GLShadingVersion.c_str()); ImGui::NewLine();
     ImGui::PopTextWrapPos();
+    
+    static bool show_color = true, show_norm = false, show_pos = false;
+    if (ImGui::Checkbox("Color", &show_color) && show_color)
+    {
+        show_norm = show_pos = false;
+        texture_index = 0;
+    }
+
+    if (ImGui::Checkbox("Normal", &show_norm) && show_norm)
+    {
+        show_color = show_pos = false;
+        texture_index = 1;
+    }
+
+    if (ImGui::Checkbox("Position", &show_pos) && show_pos)
+    {
+        show_norm = show_color = false;
+        texture_index = 2;
+    }
+
+    if (!show_color && !show_norm && !show_pos)
+    {
+        show_color = true;
+        texture_index = 0;
+    }
+
     ImGui::End();
 }
 

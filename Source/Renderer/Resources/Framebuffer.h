@@ -30,7 +30,7 @@ public:
 private:
 
 	// --- Private FBO Methods ---
-	void SetTexture(bool depth_texture, GLenum internal_format, GLenum format, uint width, uint height, uint samples);
+	void SetTexture(bool depth_texture, GLenum internal_format, GLenum format, uint width, uint height, GLenum data_type, uint samples);
 	void DeleteTexturesAndFBO();
 	void ResetColorTextures(GLenum FBOsampling);
 	void ResetDepthTexture(GLenum FBOsampling);

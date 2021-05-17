@@ -145,6 +145,7 @@ namespace RendererUtils
 	{
 		NONE = 0,
 		RGBA8,				// Color
+		RGBA16,
 		DEPTH24STENCIL8,	// Depth & Stencil
 
 		// Defaults
@@ -157,6 +158,7 @@ namespace RendererUtils
 		{
 			case FBO_TEXTURE_FORMAT::DEPTH24STENCIL8:	return GL_DEPTH24_STENCIL8;
 			case FBO_TEXTURE_FORMAT::RGBA8:				return GL_RGBA8;
+			case FBO_TEXTURE_FORMAT::RGBA16:			return GL_RGBA16F;
 		}
 
 		ASSERT(false, "Invalid Format Passed to GLTextureFormat!");
