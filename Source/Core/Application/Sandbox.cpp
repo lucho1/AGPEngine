@@ -233,23 +233,34 @@ void Sandbox::OnUIRender(float dt)
     ImGui::Text("Shading Version:   GLSL %s", stats.GLShadingVersion.c_str()); ImGui::NewLine();
     ImGui::PopTextWrapPos();
     
+
     static bool show_color = true, show_norm = false, show_pos = false;
-    if (ImGui::Checkbox("Color", &show_color) && show_color)
+    static const char* shownText = "G Buffer Texture";
+    if (ImGui::BeginCombo("##GBuffer Type", shownText))
     {
-        show_norm = show_pos = false;
-        texture_index = 0;
-    }
-
-    if (ImGui::Checkbox("Normal", &show_norm) && show_norm)
-    {
-        show_color = show_pos = false;
-        texture_index = 1;
-    }
-
-    if (ImGui::Checkbox("Position", &show_pos) && show_pos)
-    {
-        show_norm = show_color = false;
-        texture_index = 2;
+        if (ImGui::Selectable("Color", show_color))
+        {
+            shownText = "Color";
+            show_color = true;
+            show_norm = show_pos = false;
+            texture_index = 0;
+        }
+        if(ImGui::Selectable("Norm", show_norm))
+        {
+            shownText = "Norm";
+            show_norm= true;
+            show_color= show_pos = false;
+            texture_index = 1;
+        }
+        if (ImGui::Selectable("Pos", show_pos))
+        {
+            shownText = "Pos";
+            show_pos = true;
+            show_norm = show_color = false;
+            texture_index = 2;
+        }
+        ImGui::EndCombo();
+    
     }
 
     if (!show_color && !show_norm && !show_pos)
