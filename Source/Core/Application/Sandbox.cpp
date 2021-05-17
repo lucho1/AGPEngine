@@ -122,48 +122,61 @@ void Sandbox::OnUpdate(float dt)
     m_EditorFramebuffer->Bind();
     Renderer::ClearRenderer();
     Renderer::SetSceneData(m_EngineCamera.GetCamera().GetViewProjection(), m_EngineCamera.GetPosition());
-    Renderer::BeginScene(m_TextureShader, false);
+
+    Ref<Shader> shader = m_TextureShader;
+    bool set_directionals = false;
+
+    if (!m_DeferredRendering)
+    {
+        shader = m_LightingShader;
+        set_directionals = true;
+    }
+
+    Renderer::BeginScene(shader, set_directionals);
     
     // Draw Calls
     for (auto& model : m_SceneModels)
-        Renderer::SubmitModel(m_TextureShader, model);
+        Renderer::SubmitModel(shader, model);
 
     // Draw Lights Spheres
     if (m_DrawLightsSpheres)
-        Renderer::DrawLightsSpheres(m_TextureShader);
+        Renderer::DrawLightsSpheres(shader);
 
     // End Scene
-    Renderer::EndScene(m_TextureShader);
+    Renderer::EndScene(shader);
     m_EditorFramebuffer->Unbind();
 
-    // -- Render Lighting --
-    m_DeferredFramebuffer->Bind();
-    Renderer::ClearRenderer();
-    Renderer::BeginScene(m_DeferredLightingShader, true);
+    if (m_DeferredRendering)
+    {
+        // -- Render Lighting --
+        m_DeferredFramebuffer->Bind();
+        Renderer::ClearRenderer();
+        Renderer::BeginScene(m_DeferredLightingShader, true);
 
-    // Attach & Send GBuffer Textures
-    RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(0), 0);
-    RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(1), 1);
-    RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(2), 2);
-    RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(3), 3);
+        // Attach & Send GBuffer Textures
+        RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(0), 0);
+        RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(1), 1);
+        RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(2), 2);
+        RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(3), 3);
 
-    m_DeferredLightingShader->SetUniformInt("u_gColor", 0);
-    m_DeferredLightingShader->SetUniformInt("u_gNormal", 1);
-    m_DeferredLightingShader->SetUniformInt("u_gPosition", 2);
-    m_DeferredLightingShader->SetUniformInt("u_gSmoothness", 3);
+        m_DeferredLightingShader->SetUniformInt("u_gColor", 0);
+        m_DeferredLightingShader->SetUniformInt("u_gNormal", 1);
+        m_DeferredLightingShader->SetUniformInt("u_gPosition", 2);
+        m_DeferredLightingShader->SetUniformInt("u_gSmoothness", 3);
 
-    // Draw Deferred Quad
-    Renderer::Submit(m_DeferredLightingShader, m_QuadArray);
+        // Draw Deferred Quad
+        Renderer::Submit(m_DeferredLightingShader, m_QuadArray);
 
-    // Detach GBuffer Textures
-    RenderCommand::DettachDeferredTexture();
-    RenderCommand::DettachDeferredTexture();
-    RenderCommand::DettachDeferredTexture();
-    RenderCommand::DettachDeferredTexture();
+        // Detach GBuffer Textures
+        RenderCommand::DettachDeferredTexture();
+        RenderCommand::DettachDeferredTexture();
+        RenderCommand::DettachDeferredTexture();
+        RenderCommand::DettachDeferredTexture();
 
-    // End Scene
-    Renderer::EndScene(m_DeferredLightingShader);
-    m_DeferredFramebuffer->Unbind();
+        // End Scene
+        Renderer::EndScene(m_DeferredLightingShader);
+        m_DeferredFramebuffer->Unbind();
+    }
 }
 
 
@@ -181,7 +194,18 @@ void Sandbox::OnUIRender(float dt)
     // Get viewport size & draw fbo texture
     static uint gbtexture_index = 0;
     ImVec2 viewportpanel_size = ImGui::GetContentRegionAvail();
-    ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(gbtexture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+
+    if(m_DeferredRendering)
+        ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(gbtexture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    else
+    {
+        std::string text = "Deferred Rendering Needs to be Active to Display the GBuffer!";
+        float font_size = ImGui::GetFontSize() * text.size() / 2;
+
+        ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine(); ImGui::NewLine();
+        ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
+        ImGui::TextColored(ImVec4(1.0f, 0.25f, 0.25f, 1.0f), text.c_str());
+    }
 
     ImGui::PopStyleVar();
     ImGui::End();
@@ -201,7 +225,10 @@ void Sandbox::OnUIRender(float dt)
     m_ViewportSize = glm::vec2(viewportpanel_size.x, viewportpanel_size.y);
     
     //ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(texture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
-    ImGui::Image((ImTextureID)(m_DeferredFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    if(m_DeferredRendering)
+        ImGui::Image((ImTextureID)(m_DeferredFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    else
+        ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
 
     ImGui::PopStyleVar();
     ImGui::End();
@@ -246,20 +273,44 @@ void Sandbox::OnUIRender(float dt)
     ImGui::PopTextWrapPos();
     
     ImGui::Checkbox("Draw Light Spheres", &m_DrawLightsSpheres);
+    //ImGui::Checkbox("Deferred Rendering", &m_DeferredRenderer);
+
+    // Rendering Type Dropdown
+    const char* rendering_options[] = { "Forward", "Deferred" };
+    const char* current_rend_option = rendering_options[(int)m_DeferredRendering];
+
+    if (ImGui::BeginCombo("Rendering Type", current_rend_option))
+    {
+        for (uint i = 0; i < 2; ++i)
+        {
+            bool selected = current_rend_option == rendering_options[i];
+            if (ImGui::Selectable(rendering_options[i], selected))
+            {
+                current_rend_option = rendering_options[i];
+                m_DeferredRendering = (bool)i;
+            }
+
+            if (selected)
+                ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::EndCombo();
+    }
+
 
     // GBuffer Renderer Dropdown
     uint current_gbtexture = gbtexture_index;
-    const char* gbuffer_options[] = { "Colors", "Normals", "Positions", "Mat. Smoothness/Specular", "Depth"  };
-    const char* current_option = gbuffer_options[current_gbtexture];
+    const char* gbt_options[] = { "Colors", "Normals", "Positions", "Mat. Smoothness/Specular", "Depth"  };
+    const char* current_gbt_option = gbt_options[current_gbtexture];
 
-    if (ImGui::BeginCombo("GBuffer Texture Display", current_option))
+    if (ImGui::BeginCombo("GBuffer Texture Display", current_gbt_option))
     {
         for (uint i = 0; i < 5; ++i)
         {
-            bool selected = current_option == gbuffer_options[i];
-            if (ImGui::Selectable(gbuffer_options[i], selected))
+            bool selected = current_gbt_option == gbt_options[i];
+            if (ImGui::Selectable(gbt_options[i], selected))
             {
-                current_option = gbuffer_options[i];
+                current_gbt_option = gbt_options[i];
                 gbtexture_index = i;
             }
 

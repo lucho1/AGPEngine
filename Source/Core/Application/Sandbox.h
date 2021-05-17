@@ -61,6 +61,7 @@ private:
 	MemoryMetrics m_MemoryMetrics = {};
 
 	bool m_DrawLightsSpheres = true;
+	bool m_DeferredRendering = true;
 };
 
 #endif //_SANDBOX_H_
