@@ -60,9 +60,9 @@ void Framebuffer::Resize(uint width, uint height)
 	// -- Draw Buffers --
 	if (m_ColorTextures.size() > 1)
 	{
-		ASSERT(m_ColorTextures.size() <= 4, "(FBO): More than 4 color attachments is not allowed!");
+		ASSERT(m_ColorTextures.size() <= 6, "(FBO): More than 5 color attachments is not allowed!");
 
-		GLenum color_buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+		GLenum color_buffers[5] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
 		glDrawBuffers((GLsizei)m_ColorTextures.size(), color_buffers);
 	}
 	else if (m_ColorTextures.empty()) // Depth pass
@@ -141,6 +141,12 @@ void Framebuffer::ResetColorTextures(GLenum FBOsampling)
 			case RendererUtils::FBO_TEXTURE_FORMAT::RGBA16:
 				SetTexture(false, GL_RGBA16F, GL_RGBA, m_Width, m_Height, GL_FLOAT, m_Samples);
 				break;
+			case RendererUtils::FBO_TEXTURE_FORMAT::RGBA32:
+				SetTexture(false, GL_RGBA32F, GL_RGBA, m_Width, m_Height, GL_FLOAT, m_Samples);
+				break;
+			//case RendererUtils::FBO_TEXTURE_FORMAT::FLOAT:
+			//	SetTexture(false, GL_R32F, GL_RED, m_Width, m_Height, GL_UNSIGNED_BYTE, m_Samples);
+			//	break;
 		}
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, FBOsampling, m_ColorTextures[i], 0);

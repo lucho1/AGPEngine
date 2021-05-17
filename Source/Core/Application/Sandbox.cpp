@@ -73,10 +73,12 @@ void Sandbox::Init()
 
     // -- Framebuffer --
     m_EditorFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT,
-                                                    {   RendererUtils::FBO_TEXTURE_FORMAT::RGBA8,
-                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA16,
-                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA8,
-                                                        RendererUtils::FBO_TEXTURE_FORMAT::DEPTH }));
+                                                    {   RendererUtils::FBO_TEXTURE_FORMAT::RGBA8,           // Color Attachment
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA32,          // Normal Attachment
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA32,          // Position Attachment
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA32,          // Smoothness Attachment (LOL, pretty much ugly)
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::RGBA32,          // Depth Attachment (ugly too)
+                                                        RendererUtils::FBO_TEXTURE_FORMAT::DEPTH }));       // Depth
 
     m_DeferredFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT, { RendererUtils::FBO_TEXTURE_FORMAT::RGBA8 }));
 
@@ -143,15 +145,18 @@ void Sandbox::OnUpdate(float dt)
     RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(0), 0);
     RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(1), 1);
     RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(2), 2);
+    RenderCommand::AttachDeferredTexture(m_EditorFramebuffer->GetFBOTextureID(3), 3);
 
     m_DeferredLightingShader->SetUniformInt("u_gColor", 0);
     m_DeferredLightingShader->SetUniformInt("u_gNormal", 1);
     m_DeferredLightingShader->SetUniformInt("u_gPosition", 2);
+    m_DeferredLightingShader->SetUniformInt("u_gSmoothness", 3);
 
     // Draw Deferred Quad
     Renderer::Submit(m_DeferredLightingShader, m_QuadArray);
 
     // Detach GBuffer Textures
+    RenderCommand::DettachDeferredTexture();
     RenderCommand::DettachDeferredTexture();
     RenderCommand::DettachDeferredTexture();
     RenderCommand::DettachDeferredTexture();
@@ -242,7 +247,7 @@ void Sandbox::OnUIRender(float dt)
     
     ImGui::Checkbox("Draw Light Spheres", &m_DrawLightsSpheres);
 
-    static bool show_color = true, show_norm = false, show_pos = false;
+    static bool show_color = true, show_norm = false, show_pos = false, show_smooth = false, show_depth = false;
     static const char* shownText = "G Buffer Texture";
     if (ImGui::BeginCombo("##GBuffer Type", shownText))
     {
@@ -250,28 +255,42 @@ void Sandbox::OnUIRender(float dt)
         {
             shownText = "Color";
             show_color = true;
-            show_norm = show_pos = false;
+            show_norm = show_pos = show_smooth = show_depth = false;
             texture_index = 0;
         }
         if(ImGui::Selectable("Norm", show_norm))
         {
             shownText = "Norm";
             show_norm= true;
-            show_color= show_pos = false;
+            show_color= show_pos = show_smooth = show_depth = false;
             texture_index = 1;
         }
         if (ImGui::Selectable("Pos", show_pos))
         {
             shownText = "Pos";
             show_pos = true;
-            show_norm = show_color = false;
+            show_norm = show_color = show_smooth = show_depth = false;
             texture_index = 2;
+        }
+        if (ImGui::Selectable("Material Smooth/Specular", show_smooth))
+        {
+            shownText = "Mat Smooth/Spec";
+            show_smooth = true;
+            show_norm = show_color = show_pos = show_depth = false;
+            texture_index = 3;
+        }
+        if (ImGui::Selectable("Depth", show_depth))
+        {
+            shownText = "Depth";
+            show_depth = true;
+            show_norm = show_color = show_smooth = show_pos = false;
+            texture_index = 4;
         }
         ImGui::EndCombo();
     
     }
 
-    if (!show_color && !show_norm && !show_pos)
+    if (!show_color && !show_norm && !show_pos && !show_smooth && !show_depth)
     {
         show_color = true;
         texture_index = 0;

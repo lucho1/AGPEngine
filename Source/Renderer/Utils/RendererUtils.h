@@ -144,8 +144,10 @@ namespace RendererUtils
 	enum class FBO_TEXTURE_FORMAT
 	{
 		NONE = 0,
-		RGBA8,				// Color
-		RGBA16,
+		//FLOAT,				// Single Float
+		RGBA8,				// 8b Color
+		RGBA16,				// 16b Color
+		RGBA32,				// 32b Color
 		DEPTH24STENCIL8,	// Depth & Stencil
 
 		// Defaults
@@ -157,8 +159,10 @@ namespace RendererUtils
 		switch (format)
 		{
 			case FBO_TEXTURE_FORMAT::DEPTH24STENCIL8:	return GL_DEPTH24_STENCIL8;
+			//case FBO_TEXTURE_FORMAT::FLOAT:				return GL_RED;
 			case FBO_TEXTURE_FORMAT::RGBA8:				return GL_RGBA8;
 			case FBO_TEXTURE_FORMAT::RGBA16:			return GL_RGBA16F;
+			case FBO_TEXTURE_FORMAT::RGBA32:			return GL_RGBA32F;
 		}
 
 		ASSERT(false, "Invalid Format Passed to GLTextureFormat!");

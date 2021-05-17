@@ -62,6 +62,8 @@ void main()
 layout(location = 0) out vec4 gBuff_Color;
 layout(location = 1) out vec4 gBuff_Normal;
 layout(location = 2) out vec4 gBuff_Position;
+layout(location = 3) out vec4 gBuff_Smoothness;
+layout(location = 4) out vec4 gBuff_Depth;
 
 // --- Interface Block ---
 in IBlock
@@ -86,19 +88,15 @@ uniform sampler2D u_Albedo, u_Normal, u_Bump;
 // --- MAIN ---
 void main()
 {
-	//vec3 normal_vec = texture(u_Normal, v_VertexData.TexCoord).rgb;
-	//normal_vec = normal_vec * 2.0 - 1.0;
-	//normal_vec = normalize(v_VertexData.TBN * normal_vec);
-
 	vec3 view_dir = normalize(v_VertexData.CamPos - v_VertexData.FragPos);
 
 	vec3 normal_vec = texture(u_Normal, v_VertexData.TexCoord).rgb;
 	normal_vec = normal_vec * 2.0 - 1.0;
 	normal_vec = normalize(v_VertexData.TBN * normal_vec);
 
-
-
 	gBuff_Color = texture(u_Albedo, v_VertexData.TexCoord) * u_Material.AlbedoColor;
 	gBuff_Normal = vec4(normal_vec, 1.0);
-	gBuff_Position = vec4(v_VertexData.FragPos, u_Material.Smoothness); // Store Material Smoothness in Pos.a
+	gBuff_Position = vec4(v_VertexData.FragPos, 1.0);
+	gBuff_Smoothness = vec4(vec3(u_Material.Smoothness), 1.0);
+	gBuff_Depth = vec4(vec3(gl_FragCoord.z), 1.0);
 }

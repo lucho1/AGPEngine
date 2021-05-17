@@ -61,6 +61,7 @@ struct PointLight // Pos & Color are vec4 to remember that they are aligned!
 uniform sampler2D u_gColor;
 uniform sampler2D u_gNormal;
 uniform sampler2D u_gPosition;
+uniform sampler2D u_gSmoothness;
 
 uniform DirectionalLight u_DirLight = DirectionalLight(vec3(1.0), vec3(1.0), 1.0);
 
@@ -121,12 +122,8 @@ void main()
 	vec3 color_vec = albedo_color.rgb;
 	vec3 normal_vec = texture(u_gNormal, TexCoord).rgb;
 	vec3 frag_pos = texture(u_gPosition, TexCoord).rgb;
-	float mat_smoothness = texture(u_gPosition, TexCoord).a;
-
-
-
-
-	//vec3 normal_vec = normalize(v_VertexData.Normal);
+	float mat_smoothness = texture(u_gSmoothness, TexCoord).r;
+	
 	vec3 view_dir = normalize(CamPos - frag_pos);
 
 	vec3 light_impact = CalculateDirectionalLight(normal_vec, view_dir, mat_smoothness);
