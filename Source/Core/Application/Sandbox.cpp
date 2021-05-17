@@ -24,10 +24,10 @@ void Sandbox::Init()
     // -- Buffers Test --
     uint indices[6] = { 0, 1, 2, 2, 3, 0 };
     float vertices[5 * 4] = {
-        -0.5f,	-0.5f,	0.0f, 0.0f, 0.0f,		// For negative X positions, UV should be 0, for positive, 1
-         0.5f,	-0.5f,	0.0f, 1.0f, 0.0f,		// If you render, on a square, the texCoords (as color = vec4(tC, 0, 1)), the colors of the square in its corners are
-         0.5f,	 0.5f,	0.0f, 1.0f, 1.0f,		// (0,0,0,1) - Black, (1,0,0,1) - Red, (1,1,0,0) - Yellow, (0,1,0,1) - Green
-        -0.5f,	 0.5f,	0.0f, 0.0f, 1.0f
+        -1.0f,	-1.0f,	0.0f, 0.0f, 0.0f,		// For negative X positions, UV should be 0, for positive, 1
+         1.0f,	-1.0f,	0.0f, 1.0f, 0.0f,		// If you render, on a square, the texCoords (as color = vec4(tC, 0, 1)), the colors of the square in its corners are
+         1.0f,	 1.0f,	0.0f, 1.0f, 1.0f,		// (0,0,0,1) - Black, (1,0,0,1) - Red, (1,1,0,0) - Yellow, (0,1,0,1) - Green
+        -1.0f,	 1.0f,	0.0f, 0.0f, 1.0f
     };
     
     BufferLayout layout = { { SHADER_DATA::FLOAT3, "a_Position" }, { SHADER_DATA::FLOAT2, "a_TexCoord" } };
@@ -149,10 +149,7 @@ void Sandbox::OnUpdate(float dt)
     m_DeferredLightingShader->SetUniformInt("u_gPosition", 2);
 
     // Draw Deferred Quad
-    glm::vec3 scale = glm::vec3(2.0f, 2.0f, 1.0f);
-    glm::mat4 transform = glm::scale(glm::mat4(1.0f), scale);
-
-    Renderer::Submit(m_DeferredLightingShader, m_QuadArray, transform);
+    Renderer::Submit(m_DeferredLightingShader, m_QuadArray);
 
     // Detach GBuffer Textures
     RenderCommand::DettachDeferredTexture();
