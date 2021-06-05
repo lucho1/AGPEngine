@@ -31,6 +31,15 @@ namespace EditorUI
 		SetItemWidth(width);
 		return ImGui::SliderFloat(label, value, min, max, "%.1f", 1.0f);
 	}
+
+	static bool DrawDragFloat(const char* text, const char* label, float* value, float text_indent, float slider_indent, float speed, float min = 0.0f, float max = 0.0f)
+	{
+		ImGui::NewLine(); ImGui::SameLine(text_indent);
+		ImGui::Text(text); ImGui::SameLine(slider_indent);
+		float width = ImGui::GetContentRegionAvailWidth() / 1.3f;
+		SetItemWidth(width);
+		return ImGui::DragFloat(label, value, speed, min, max, "%.2f");
+	}
 	
 	static void SetItemSpacing(float width, float indent = 0.0f, bool set_indent = false)
 	{

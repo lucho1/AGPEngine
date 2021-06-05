@@ -246,6 +246,7 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 	shader->SetUniformInt("u_Bump", (int)bump_binding);
 	shader->SetUniformVec4("u_Material.AlbedoColor", mesh_mat->AlbedoColor);
 	shader->SetUniformFloat("u_Material.Smoothness", mesh_mat->Smoothness);
+	shader->SetUniformFloat("u_Material.Bumpiness", mesh_mat->Bumpiness);
 
 	// -- Draw Call & Unbinds --
 	mesh->m_VertexArray->Bind();

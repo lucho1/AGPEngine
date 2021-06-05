@@ -102,11 +102,11 @@ layout(std430, binding = 0) buffer ssb_Lights // PLights SSBO
 // --- Material Struct & Uniform ---
 struct Material
 {
-	float Smoothness;
+	float Smoothness, Bumpiness;
 	vec4 AlbedoColor;
 };
 
-uniform Material u_Material = Material(1.0, vec4(1.0));
+uniform Material u_Material = Material(1.0, 1.0, vec4(1.0));
 uniform sampler2D u_Albedo, u_Normal, u_Bump;
 
 
@@ -156,7 +156,9 @@ void main()
 
 	vec3 normal_vec = texture(u_Normal, v_VertexData.TexCoord).rgb;
 	normal_vec = normal_vec * 2.0 - 1.0;
+	normal_vec.z *= u_Material.Bumpiness;
 	normal_vec = normalize(v_VertexData.TBN * normal_vec);
+	
 
 	vec4 light_impact = CalculateDirectionalLight(normal_vec, view_dir);
 	//vec4 light_impact = vec4(0.0);

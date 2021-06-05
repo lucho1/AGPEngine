@@ -45,7 +45,7 @@ private:
 
 public:
 
-	float Smoothness = 0.01f, Bumpscale = 0.01f;// , Metallic = 0.0f; TODO: ? -> Also a Metallic texture?
+	float Smoothness = 0.01f, Bumpiness = 1.0f;// , Metallic = 0.0f; TODO: ? -> Also a Metallic texture?
 	bool IsTransparent = false, IsEmissive = false, IsTwoSided = false;
 
 	glm::vec4 AlbedoColor = glm::vec4(1.0f);

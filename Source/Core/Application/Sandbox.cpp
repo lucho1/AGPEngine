@@ -565,7 +565,8 @@ void Sandbox::DrawMeshMaterials(const Mesh* mesh, std::vector<uint>& materials_s
         std::string sm_str = std::string("###smoothness" + std::to_string(meshindex_uitexturebtn));
         EditorUI::DrawSlider("Smoothness", sm_str.c_str(), &mat->Smoothness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
         std::string bmp_str = std::string("###bumpscale" + std::to_string(meshindex_uitexturebtn));
-        EditorUI::DrawSlider("Bumpscale", bmp_str.c_str(), &mat->Bumpscale, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
+        EditorUI::DrawDragFloat("Bumpiness", bmp_str.c_str(), &mat->Bumpiness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.01f, 0.1f, 2.0f);
+
         ImGui::PopID();
     }
 }

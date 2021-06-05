@@ -167,7 +167,7 @@ const Ref<Material>* MeshImporter::ProcessAssimpMaterial(aiMaterial* ai_material
         return nullptr;
 
     // -- Load Material Variables --
-    ai_real shininess = 0.1f, opacity = 1.0f, bumpscale = 0.1f;
+    ai_real shininess = 0.1f, opacity = 1.0f, bumpscale = 1.0f;
     ai_int two_sided = 0;
     aiColor3D diffuse, emissive, specular;
 
@@ -196,14 +196,14 @@ const Ref<Material>* MeshImporter::ProcessAssimpMaterial(aiMaterial* ai_material
     const Ref<Material>& mat = *Resources::CreateMaterial(name.C_Str());
     mat->AlbedoColor = glm::vec4(diffuse.r, diffuse.g, diffuse.b, opacity);
     mat->EmissiveColor= glm::vec4(emissive.r, emissive.g, emissive.b, 1.0f);
-    mat->Bumpscale = bumpscale;
+    mat->Bumpiness = bumpscale;
     mat->Smoothness = shininess / 256.0f;
 
     if (glm::epsilonEqual(mat->Smoothness, 0.0f, glm::epsilon<float>()))
         mat->Smoothness = 0.1f;
 
-    if (glm::epsilonEqual(mat->Bumpscale, 0.0f, glm::epsilon<float>()))
-        mat->Bumpscale = 0.1f;
+    if (glm::epsilonEqual(mat->Bumpiness, 0.0f, glm::epsilon<float>()))
+        mat->Bumpiness = 1.0f;
 
     mat->IsTwoSided = (!two_sided && opacity < 1.0f) ? true : two_sided;
     mat->IsEmissive = emissive.IsBlack() ? false : true;
