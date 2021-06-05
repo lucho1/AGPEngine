@@ -36,6 +36,7 @@ void main()
 #version 460 core
 
 layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 brightness;
 
 
 // --- Output Values ---
@@ -133,4 +134,10 @@ void main()
 	}
 
 	color = vec4(color_vec + light_impact, 1.0);
+
+	float bright = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+	if(bright > 1.0)
+		brightness = color;
+	else
+		brightness = vec4(0.0, 0.0, 0.0, 1.0);
 }

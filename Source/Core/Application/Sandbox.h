@@ -45,13 +45,21 @@ private:
 
 	// Scene
 	CameraController m_EngineCamera = {};
-
 	std::vector<Ref<Model>> m_SceneModels;
 	Ref<Shader> m_TextureShader, m_LightingShader;
-	Ref<Framebuffer> m_DeferredFramebuffer;
-	Ref<Shader> m_DeferredLightingShader;
-	Ref<VertexArray> m_QuadArray;
 
+	// Deferred Rendering
+	Ref<VertexArray> m_QuadArray;
+	Ref<Shader> m_DeferredLightingShader;
+	Ref<Framebuffer> m_DeferredFramebuffer;
+
+	// Bloom
+	Ref<Framebuffer> m_BlurPingPongFramebuffer, m_BlurFinalFramebuffer;
+	Ref<Shader> m_BlurShader, m_FinalBloomShader;
+	float m_BloomExposure = 1.0f, m_BloomHDRGamma = 2.2f;
+	int m_BloomBlurAmount = 10;
+
+	// Timers
 	Timer m_FwRendTimer, m_DefRendTimer, m_MeasureTime;
 
 	// Viewport
@@ -64,8 +72,10 @@ private:
 	uint m_AllocationsIndex = 0;
 	MemoryMetrics m_MemoryMetrics = {};
 
+	// Rendering Options
 	bool m_DrawLightsSpheres = true;
 	bool m_DeferredRendering = true;
+	bool m_BloomActive = true;
 };
 
 #endif //_SANDBOX_H_

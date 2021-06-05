@@ -68,8 +68,10 @@ void Sandbox::Init()
 
     // -- Shader --
     m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
-    m_LightingShader = CreateRef<Shader>("Resources/Shaders/LightingShader.glsl");    
+    m_LightingShader = CreateRef<Shader>("Resources/Shaders/LightingShader.glsl");
     m_DeferredLightingShader = CreateRef<Shader>("Resources/Shaders/DeferredLightingShader.glsl");
+    m_BlurShader = CreateRef<Shader>("Resources/Shaders/BlurShader.glsl");
+    m_FinalBloomShader = CreateRef<Shader>("Resources/Shaders/BloomEffectShader.glsl");
 
     // -- Framebuffer --
     m_EditorFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT,
@@ -80,7 +82,9 @@ void Sandbox::Init()
                                                         RendererUtils::FBO_TEXTURE_FORMAT::RGBA32,          // Depth Attachment (ugly too)
                                                         RendererUtils::FBO_TEXTURE_FORMAT::DEPTH }));       // Depth
 
-    m_DeferredFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT, { RendererUtils::FBO_TEXTURE_FORMAT::RGBA8 }));
+    m_DeferredFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT, { RendererUtils::FBO_TEXTURE_FORMAT::RGBA8, RendererUtils::FBO_TEXTURE_FORMAT::RGBA32 }));
+    m_BlurPingPongFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT, { RendererUtils::FBO_TEXTURE_FORMAT::RGBA32, RendererUtils::FBO_TEXTURE_FORMAT::RGBA32 }));
+    m_BlurFinalFramebuffer = CreateRef<Framebuffer>(new Framebuffer(WINDOW_WIDTH, WINDOW_HEIGHT, { RendererUtils::FBO_TEXTURE_FORMAT::RGBA32 }));
 
     // -- Resources Print --
     Resources::PrintResourcesReferences();
@@ -209,6 +213,51 @@ void Sandbox::OnUpdate(float dt)
         m_FwRendTimer.Stop();
         rendering_measure = false;
     }
+
+    // Blur
+    if (m_BloomActive)
+    {
+        bool horizontal = true, first_iteration = true;
+        uint texture_to_use = m_DeferredRendering ? m_DeferredFramebuffer->GetFBOTextureID(1) : m_EditorFramebuffer->GetFBOTextureID(1);
+
+        m_BlurPingPongFramebuffer->Bind();
+        m_BlurShader->Bind();
+
+        for (uint i = 0; i < m_BloomBlurAmount; ++i)
+        {
+            m_BlurShader->SetUniformInt("u_HorizontalPass", horizontal);
+            if (first_iteration)
+                glBindTexture(GL_TEXTURE_2D, texture_to_use);
+            else
+                glBindTexture(GL_TEXTURE_2D, m_BlurPingPongFramebuffer->GetFBOTextureID(!horizontal));
+
+            Renderer::Submit(m_BlurShader, m_QuadArray);
+            horizontal = !horizontal;
+            if (first_iteration)
+                first_iteration = false;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        m_BlurShader->Unbind();
+        m_BlurPingPongFramebuffer->Unbind();
+
+        m_BlurFinalFramebuffer->Bind();
+        Renderer::ClearRenderer();
+        m_FinalBloomShader->Bind();
+
+        texture_to_use = m_DeferredRendering ? m_DeferredFramebuffer->GetFBOTextureID() : m_EditorFramebuffer->GetFBOTextureID();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture_to_use);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_BlurPingPongFramebuffer->GetFBOTextureID(!horizontal));
+
+        m_FinalBloomShader->SetUniformFloat("u_BloomExposure", m_BloomExposure);
+        m_FinalBloomShader->SetUniformFloat("u_HDRGamma", m_BloomHDRGamma);
+        Renderer::Submit(m_FinalBloomShader, m_QuadArray);
+
+        m_FinalBloomShader->Unbind();
+        m_BlurFinalFramebuffer->Unbind();
+    }    
 }
 
 
@@ -257,10 +306,16 @@ void Sandbox::OnUIRender(float dt)
     m_ViewportSize = glm::vec2(viewportpanel_size.x, viewportpanel_size.y);
     
     //ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(texture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
-    if(m_DeferredRendering)
-        ImGui::Image((ImTextureID)(m_DeferredFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    static uint displaytexture_index = 0;
+    if (m_BloomActive)
+        ImGui::Image((ImTextureID)(m_BlurFinalFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
     else
-        ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID()), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    {
+        if (m_DeferredRendering)
+            ImGui::Image((ImTextureID)(m_DeferredFramebuffer->GetFBOTextureID(displaytexture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+        else
+            ImGui::Image((ImTextureID)(m_EditorFramebuffer->GetFBOTextureID(displaytexture_index)), viewportpanel_size, ImVec2(0, 1), ImVec2(1, 0));
+    }
 
     ImGui::PopStyleVar();
     ImGui::End();
@@ -357,6 +412,22 @@ void Sandbox::OnUIRender(float dt)
 
         ImGui::EndCombo();
     }
+
+    // Bloom Settings
+    ImGui::NewLine(); ImGui::NewLine(); ImGui::Separator();
+    ImGui::Text(" - BLOOM EFFECT -");
+    ImGui::Checkbox("Bloom Active", &m_BloomActive);
+
+    static bool displaytexture_index_bool = false;
+    ImGui::Checkbox("Display Brightness Texture", &displaytexture_index_bool);
+    displaytexture_index = (uint)displaytexture_index_bool;
+
+    //EditorUI::DrawDragFloat("Bloom Exposure", "###bloom_exp", &m_BloomExposure, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.01f, 0.1f, 3.0f);
+    //EditorUI::DrawDragFloat("Bloom HDR Gamma", "###bloom_hdrgamma", &m_BloomHDRGamma, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.01f, 0.1f, 3.0f);
+
+    ImGui::DragFloat("Bloom Exposure", &m_BloomExposure, 0.01f, 0.1f, 3.0f, "%.2f");
+    ImGui::DragFloat("Bloom HDR Gamma", &m_BloomHDRGamma, 0.01f, 0.1f, 3.0f, "%.2f");
+    ImGui::DragInt("Bloom Blur Amount", &m_BloomBlurAmount, 1.0f, 0, 500);
 
     ImGui::End();
 }

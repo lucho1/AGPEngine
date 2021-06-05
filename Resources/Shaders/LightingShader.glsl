@@ -63,6 +63,7 @@ void main()
 #version 460 core
 
 layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 brightness;
 
 // --- Interface Block ---
 in IBlock
@@ -169,4 +170,10 @@ void main()
 
 	color = texture(u_Albedo, v_VertexData.TexCoord) * u_Material.AlbedoColor + light_impact;
 	//color = vec4(normal_vec, 1.0);
+
+	float bright = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+	if(bright > 1.0)
+		brightness = color;
+	else
+		brightness = vec4(0.0, 0.0, 0.0, 1.0);
 }
