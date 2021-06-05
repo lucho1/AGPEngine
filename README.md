@@ -3,7 +3,7 @@
 
  Made by Lucho Suaya and Joan Marin.
 
- # Controls
+# Controls
 The engines have several panels through which to interact with the scene:
 
     - At the left:
@@ -12,16 +12,16 @@ The engines have several panels through which to interact with the scene:
         - Lights: To modify the values of the scene lights such as position, color, ... They can also be added and deleted. To modify the MaxLights in the Scene, modify the value "s_MaxLights" in the file "Source/Renderer/Utils/RendererUtils.h"
     
     - At the right:
-        - Info: For generic app information such as FPS or Memory Usage
+        - Info: For generic app information such as FPS or Memory Usage.
         - Resources: To check the resources in the scene and their usage
-        - Renderer: For app's renderer and hardware information and other options. From here, we can chose to show the lights debug spheres, the rendering type or the GBuffer texture to display.
+        - Renderer: For app's renderer information, hardware information and other options. From here, we can chose to show the lights debug spheres, the rendering type or the GBuffer texture to display. Also, from here we can modify a couple of values of the bloom effect as well as visualize it.
 
     - At the center:
         - Scene: The viewport showing the scene. In here, we can move the camera
         - GBuffer View: To display the different textures in the GBuffer (Deferred Rendering must be checked in Renderer Options). From these very same options, we can chose to display the textures of Color, Normals, Position, Materials Smoothness and Depth to see different and useful color information. From here, the camera cannot be moved, it will display the scene from the camera as left in the Scene panel.
 
 
-Finally, it is important to state the camera controls in order to use the Editor Camera in the Scene Panel and see the scene from different points of view. These are (MMB, RMB & LMB = Mid, Right & Left Mouse Buttons respectively):
+Finally, it is important to state the camera controls in order to use the Editor Camera in the Scene Panel. These are the next (MMB, RMB & LMB = Mid, Right & Left Mouse Buttons respectively):
 
     - Zoom In/Out:                  MMB Scroll or ALT + RMB Drag
     - Focus Center:                 F Key
@@ -33,15 +33,10 @@ Finally, it is important to state the camera controls in order to use the Editor
     - Double FPS Speed:             Shift Key while using FPS Movement
 
 
- # Features
-    - Materials Modificator Values & Textures Load/Unload (as resources!)
-    - Normal Mapping
-    - Deferred & Forward Rendering (chose between both and compare speeds)
+# Features
+    - Textures Load/Unload (as resources!)
     - Camera Movement & Modification
-    - Custom Lighting: Add and modify lights
     - Models loading from code
-    - GBuffer view of different textures (including Materials Smoothness Values)
-    - Debug Spheres Drawing for point lights
     - Nice UI with File Dialogues to load textures :D
     - Own internal systems
     - OpenGL 4.6 with GLAD 4.6
@@ -52,3 +47,31 @@ Finally, it is important to state the camera controls in order to use the Editor
     - Extensive OpenGL Debugger
 
 Note: There are many commits from Lucho Suaya from March-April because we still didn't knew that it could be done in couples, then when we agreed to go together, that's why Joan made the biggest part of deferred rendering.
+
+# Graphics Features
+    - Materials Customization featuring Normal Mapping with Bumpiness value modification and Bump Mapping
+    - Bloom Effect
+    - Deferred & Forward Rendering (chose between both)
+    - GBuffer view of different textures (including Materials Smoothness Values)
+    - Custom Lighting: Add and modify lights
+    - Debug Spheres Drawing for point lights
+
+Note that the options of this features may be modified from the engine panels. For instance, the normal mapping is a technique supported by each material, if it has a normal texture, it will be enabled, otherwise, it won't. Also, the deferred rendering can be displayed and observed from the panel aside the scene viewport and the gbuffer texture rendered can be chosen from the rendering panel at the right.
+
+# Shaders
+The engine runs, mainly, with three shaders: the Lighting Shader, the Textured Shader and the Deferred Lighting Shader. They can be located in "Resources/Shaders".
+
+The Lighting Shader is a shader supporting basic materials features (albedo texture/color, smoothness...) plus normal mapping and scene lighting. It is used for forward rendering and makes use of certain shader resources like interface blocks or both uniform and shader-storage uniform buffers.
+
+The Texture Shader is similar but it doesn't supports lighting, it fills the textures within the gBuffer for the Deferred Rendering. Although, it's core is more or less the same, since it supports materials basic features plus normal mapping and uses uniform buffer objects and interface blocks (not shader-storage buffers because there's no lights in it).
+
+Then, the Deferred Lighting Shader is the one used for lighting in Deferred Rendering, it gets the gBuffer textures and builds up the final scene appearance by lighting it. As for it, it doesn't has material information, but as it has lighting information, it uses shader-storage uniform buffers and uniform ones as well (for camera data).
+
+We can think of the Lighting Shader as the Forward Rendering Shader and the other two as the first and second passes of the Deferred Rendering.
+
+Finally, we have the shaders used for the bloom effect. They are 2 shaders, one used to blur the brighter parts of the image resulting from rendering all the scenes (from the previous shaders), and another one to blend the resulting blurred image with the image resulting from rendering. There are a couple of values in the Rendering Panel that allow to modify and visualize the bloom effect, but some settings can be also modified from this shaders, for instance, the matrix of weights used to blur.
+
+# FALTA
+Bump Map?
+Renders from POV?
+Skybox?
