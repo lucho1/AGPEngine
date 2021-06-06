@@ -18,6 +18,8 @@ out IBlock
 	vec3 FragPos;
 	vec3 CamPos;
 	mat3 TBN;
+	vec3 Tg_CamPos;
+	vec3 Tg_FragPos;
 } v_VertexData;
 
 
@@ -52,6 +54,9 @@ void main()
 
 	mat3 TBN = mat3(T, B, N);
 	v_VertexData.TBN = TBN;
+
+	v_VertexData.Tg_CamPos = TBN * CamPosition;
+	v_VertexData.Tg_FragPos = TBN * v_VertexData.FragPos;
 	
 	gl_Position = ViewProjection * u_Model * vec4(a_Position, 1.0);
 }
@@ -73,6 +78,8 @@ in IBlock
 	vec3 FragPos;
 	vec3 CamPos;
 	mat3 TBN;
+	vec3 Tg_CamPos;
+	vec3 Tg_FragPos;
 } v_VertexData;
 
 
@@ -132,7 +139,8 @@ vec4 CalculateDirectionalLight(vec3 normal, vec3 view)
 vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
 {
 	// Direction & Distance
-	vec3 pos_to_frag = light.Pos.xyz - v_VertexData.FragPos;
+	//vec3 pos_to_frag = v_VertexData.TBN * light.Pos.xyz - v_VertexData.Tg_FragPos;
+	vec3 pos_to_frag = light.Pos.xyz  - v_VertexData.FragPos;
 	float dist = length(pos_to_frag);
 	vec3 dir = normalize(pos_to_frag);
 	vec3 halfway_dir = normalize(dir + view);
@@ -149,17 +157,52 @@ vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
 }
 
 
+vec2 CalculateParallaxMapping(vec2 tcoords, vec3 view)
+{
+	// 8 & 32 values are like the max & min depth layers for parallax, change it as you see fit
+	float layers_num = mix(32.0, 8.0, max(dot(vec3(0.0, 0.0, 1.0), view), 0.0));
+
+    // Layers Depth & TCoords Shift
+    float layer_depth = 1.0 / layers_num;
+    float current_layer_depth = 0.0;
+    vec2 P = view.xy * 0.1; // TODO: HEIGHT_SCALE!
+    vec2 tcoords_shift = P / layers_num;
+
+	// Perform Parallax Mapping
+	vec2  current_tcoords = tcoords;
+	float current_depth = texture(u_Bump, current_tcoords).r;
+
+	while(current_layer_depth < current_depth)
+	{
+	    // Move coordinates along P
+	    current_tcoords -= tcoords_shift;
+	    current_depth = texture(u_Bump, current_tcoords).r;
+	    current_layer_depth += layer_depth;  
+	}
+
+	// TCoords & Depth Before/After Collision (to interpolate)
+	vec2 prev_tcoords = current_tcoords + tcoords_shift;
+	float after_depth  = current_depth - current_layer_depth;
+	float before_depth = texture(u_Bump, prev_tcoords).r - current_layer_depth + layer_depth;
+	
+	// Interpolate TCoords
+	float weight = after_depth / (after_depth - before_depth);
+	vec2 ret = prev_tcoords * weight + current_tcoords * (1.0 - weight);
+	return ret;
+}
+
+
 // ------------------------------------------------ MAIN -------------------------------------------------
 void main()
 {
 	//vec3 normal_vec = normalize(v_VertexData.Normal);
-	vec3 view_dir = normalize(v_VertexData.CamPos - v_VertexData.FragPos);
+	vec3 view_dir = normalize(v_VertexData.Tg_CamPos - v_VertexData.Tg_FragPos);
+	vec2 tex_coords = CalculateParallaxMapping(v_VertexData.TexCoord, view_dir);
 
-	vec3 normal_vec = texture(u_Normal, v_VertexData.TexCoord).rgb;
+	vec3 normal_vec = texture(u_Normal, tex_coords).rgb;
 	normal_vec = normal_vec * 2.0 - 1.0;
 	normal_vec.z *= u_Material.Bumpiness;
-	normal_vec = normalize(v_VertexData.TBN * normal_vec);
-	
+	normal_vec = normalize(v_VertexData.TBN * normal_vec);	
 
 	vec4 light_impact = CalculateDirectionalLight(normal_vec, view_dir);
 	//vec4 light_impact = vec4(0.0);
@@ -168,7 +211,7 @@ void main()
 		light_impact += CalculateLighting(PLightsVec[i], normal_vec, view_dir);
 	}
 
-	color = texture(u_Albedo, v_VertexData.TexCoord) * u_Material.AlbedoColor + light_impact;
+	color = texture(u_Albedo, tex_coords) * u_Material.AlbedoColor + light_impact;
 	//color = vec4(normal_vec, 1.0);
 
 	float bright = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
