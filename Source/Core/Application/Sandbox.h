@@ -33,6 +33,8 @@ public:
 
 private:
 
+	void RenderSkybox();
+
 	void SetMemoryMetrics();
 
 	void DrawLightsPanel();
@@ -59,6 +61,12 @@ private:
 	float m_BloomExposure = 1.0f, m_BloomHDRGamma = 2.2f;
 	int m_BloomBlurAmount = 10;
 
+	// Skybox
+	Ref<VertexArray> m_SkyboxVArray;
+	Ref<CubemapTexture> m_SkyboxTexture;
+	Ref<Shader> m_SkyboxShader;
+	glm::vec3 m_SkyboxTint = glm::vec4(1.0f);
+
 	// Timers
 	Timer m_FwRendTimer, m_DefRendTimer, m_MeasureTime;
 
@@ -75,7 +83,8 @@ private:
 	// Rendering Options
 	bool m_DrawLightsSpheres = true;
 	bool m_DeferredRendering = true;
-	bool m_BloomActive = true;
+	bool m_BloomActive = false;
+	bool m_RenderSkybox = true;
 };
 
 #endif //_SANDBOX_H_

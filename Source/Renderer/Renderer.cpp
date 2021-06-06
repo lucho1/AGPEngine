@@ -278,6 +278,13 @@ void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_
 	vertex_array->Unbind();
 }
 
+void Renderer::DrawSkyboxCubemap(const Ref<VertexArray>& vertex_array, uint index_count)
+{
+	vertex_array->Bind();
+	RenderCommand::DrawTriangles(index_count);
+	vertex_array->Unbind();
+}
+
 
 
 // ------------------------------------------------------------------------------

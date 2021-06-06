@@ -18,7 +18,7 @@ public:
 	inline static void SetClearColor(const glm::vec4& color)		{ glClearColor(color.r, color.g, color.b, color.a); }
 	inline static void SetClearColor(const glm::vec3& color)		{ glClearColor(color.r, color.g, color.b, 1.0f); }
 
-	// --- Blending & Depth ---
+	// --- Render Settings ---
 	inline static void SetBlendingFunc(int s_val, int f_val)		{ glBlendFunc(s_val, f_val); }
 
 	inline static void SetBlending(bool enable)						{ m_BlendEnabled = enable;  enable ? glEnable(GL_BLEND) : glDisable(GL_BLEND); }
@@ -29,6 +29,9 @@ public:
 
 	inline static void SetScissorTest(bool enable)					{ m_ScissorTestEnabled = enable;  enable ? glEnable(GL_SCISSOR_TEST) : glDisable(GL_SCISSOR_TEST); }
 	inline static bool IsScissorTestEnabled()						{ return m_ScissorTestEnabled; }
+
+	inline static void SetCubemapSeamless(bool enable)				{ m_CubemapSeamless = enable; enable ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS); }
+	inline static bool IsCubemapSeamless()							{ return m_CubemapSeamless; }
 
 	// --- Rendering States ---
 	inline static void SetWireframeDraw()							{ glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
@@ -53,9 +56,14 @@ public:
 		//glBindTexture(GL_TEXTURE_2D, 0);
 	};
 
+	inline static void DrawTriangles(uint index_count = 0)
+	{
+		glDrawArrays(GL_TRIANGLES, 0, index_count);
+	}
+
 private:
 
-	static bool m_BlendEnabled, m_DepthTestEnabled, m_ScissorTestEnabled;
+	static bool m_BlendEnabled, m_DepthTestEnabled, m_ScissorTestEnabled, m_CubemapSeamless;
 };
 
 

@@ -41,6 +41,19 @@ void Sandbox::Init()
     m_QuadArray->SetIndexBuffer(ibo);
     m_QuadArray->Unbind(); vbo->Unbind(); ibo->Unbind();
 
+
+    // --- Skybox VArray & Texture ---
+    BufferLayout skyb_layout = { {SHADER_DATA::FLOAT3, "a_Position"} };
+    Ref<VertexBuffer> skyb_vbo = CreateRef<VertexBuffer>(RendererPrimitives::SkyboxVertices, sizeof(RendererPrimitives::SkyboxVertices));
+    skyb_vbo->SetLayout(skyb_layout);
+
+    m_SkyboxVArray = CreateRef<VertexArray>();
+    m_SkyboxVArray->AddVertexBuffer(skyb_vbo);
+    m_SkyboxVArray->Unbind(); skyb_vbo->Unbind();
+
+    m_SkyboxTexture = CreateRef<CubemapTexture>();
+
+
     // -- Engine Camera Startup --glm::vec3(14.0f, 15.5f, 18.8f)
     m_EngineCamera.ZoomLevel = 30.0f;
     m_EngineCamera.SetPosition(glm::vec3(10.0f, 12.0f, -5.0f) - m_EngineCamera.GetForwardVector() * m_EngineCamera.ZoomLevel);
@@ -66,7 +79,8 @@ void Sandbox::Init()
     m_SceneModels.push_back(patrick_model);
     m_SceneModels.push_back(patrick_model2);
 
-    // -- Shader --
+    // -- Shaders --
+    m_SkyboxShader = CreateRef<Shader>("Resources/Shaders/SkyboxShader.glsl");
     m_TextureShader = CreateRef<Shader>("Resources/Shaders/TexturedShader.glsl");
     m_LightingShader = CreateRef<Shader>("Resources/Shaders/LightingShader.glsl");
     m_DeferredLightingShader = CreateRef<Shader>("Resources/Shaders/DeferredLightingShader.glsl");
@@ -161,6 +175,7 @@ void Sandbox::OnUpdate(float dt)
         set_directionals = true;
     }
 
+
     Renderer::BeginScene(shader, set_directionals);
     
     // Draw Calls
@@ -173,6 +188,11 @@ void Sandbox::OnUpdate(float dt)
 
     // End Scene
     Renderer::EndScene(shader);
+
+    // Skybox
+    if (m_RenderSkybox && !m_DeferredRendering)
+        RenderSkybox();
+
     m_EditorFramebuffer->Unbind();
 
     if (m_DeferredRendering)
@@ -180,6 +200,11 @@ void Sandbox::OnUpdate(float dt)
         // -- Render Lighting --
         m_DeferredFramebuffer->Bind();
         Renderer::ClearRenderer();
+
+        // Skybox
+        if (m_RenderSkybox)
+            RenderSkybox();
+
         Renderer::BeginScene(m_DeferredLightingShader, true);
 
         // Attach & Send GBuffer Textures
@@ -257,7 +282,33 @@ void Sandbox::OnUpdate(float dt)
 
         m_FinalBloomShader->Unbind();
         m_BlurFinalFramebuffer->Unbind();
-    }    
+    }
+}
+
+
+void Sandbox::RenderSkybox()
+{
+    RenderCommand::SetCubemapSeamless(true);
+    glDepthFunc(GL_LEQUAL);
+
+    m_SkyboxShader->Bind();
+    glm::mat4 view = glm::mat4(glm::mat3(m_EngineCamera.GetCamera().GetView()));
+    glm::mat4 proj = m_EngineCamera.GetCamera().GetProjection();
+    glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    m_SkyboxShader->SetUniformMat4("u_View", view);
+    m_SkyboxShader->SetUniformMat4("u_Proj", proj);
+    m_SkyboxShader->SetUniformMat4("u_Model", model);
+    m_SkyboxShader->SetUniformVec3("u_TintColor", m_SkyboxTint);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxTexture->GetTextureID());
+    Renderer::DrawSkyboxCubemap(m_SkyboxVArray, 36);
+
+    m_SkyboxShader->Unbind();
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    glDepthFunc(GL_LESS);
+    RenderCommand::SetCubemapSeamless(false);
 }
 
 
@@ -429,8 +480,16 @@ void Sandbox::OnUIRender(float dt)
     ImGui::DragFloat("Bloom HDR Gamma", &m_BloomHDRGamma, 0.01f, 0.1f, 3.0f, "%.2f");
     ImGui::DragInt("Bloom Blur Amount", &m_BloomBlurAmount, 1.0f, 0, 500);
 
+    // Skybox Settings
+    ImGui::NewLine(); ImGui::NewLine(); ImGui::Separator();
+    ImGui::Text(" - SKYBOX -");
+    ImGui::Checkbox("Skybox Active", &m_RenderSkybox);
+    ImGui::ColorEdit3("Skybox Tint", glm::value_ptr(m_SkyboxTint), ImGuiColorEditFlags_NoInputs);
+
+    // End UI Draw
     ImGui::End();
 }
+
 
 
 

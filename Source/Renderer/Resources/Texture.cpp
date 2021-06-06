@@ -40,6 +40,7 @@ Texture::Texture(const std::string& path)
 	if (!texture_data)
 	{
 		ENGINE_LOG("Failed to load texture data from path: %s\nAborting...", path.c_str());
+		stbi_image_free(texture_data);
 		return;
 	}
 
@@ -109,4 +110,87 @@ void Texture::Bind(uint slot) const
 void Texture::Unbind() const
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+CubemapTexture::CubemapTexture()
+{
+	m_TexturePaths =
+	{
+		std::string("Resources/Textures/Skybox/right.jpg"),
+		std::string("Resources/Textures/Skybox/left.jpg"),
+		std::string("Resources/Textures/Skybox/bottom.jpg"),
+		std::string("Resources/Textures/Skybox/top.jpg"),
+		std::string("Resources/Textures/Skybox/front.jpg"),
+		std::string("Resources/Textures/Skybox/back.jpg")
+	};
+
+	LoadTextures();
+}
+
+void CubemapTexture::SetTexture(CUBEMAP_TEXTURE cubemap_texture_type, const std::string& filepath)
+{
+	if (std::filesystem::exists(filepath))
+	{
+		int w, h, channels;
+		stbi_uc* data = stbi_load(filepath.c_str(), &w, &h, &channels, 0);
+
+		if (!data)
+		{
+			ENGINE_LOG("Failed to load texture data from path: %s\nAborting...", filepath.c_str());
+			stbi_image_free(data);
+			return;
+		}
+
+		m_TexturePaths[(int)cubemap_texture_type] = filepath;
+		LoadTextures();
+	}
+}
+
+
+void CubemapTexture::LoadTextures()
+{
+	// -- Set Variables --
+	int w, h, channels;
+	std::vector<stbi_uc*> texture_data;
+	stbi_set_flip_vertically_on_load(1);
+
+	// -- Create Cubemap Texture --
+	glGenTextures(1, &m_ID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
+
+	// -- Load Cubemap Textures --
+	for (uint i = 0; i < 6; ++i)
+	{
+		texture_data.push_back(stbi_load(m_TexturePaths[i].c_str(), &w, &h, &channels, 0));
+		if (!texture_data[i])
+		{
+			ENGINE_LOG("Failed to load texture data from path: %s\nAborting...", m_TexturePaths[i].c_str());
+
+			for (uint j = 0; j <= i; ++j)
+				stbi_image_free(texture_data[j]);
+
+			return;
+		}
+	}
+
+	// -- Set Cubemap Textures --
+	m_Width = w; m_Height = h;
+	for (uint i = 0; i < 6; ++i)
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_data[i]);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	// -- Unbind & Free --
+	glBindTexture(GL_TEXTURE_2D, 0);
+	for (uint i = 0; i < texture_data.size(); ++i)
+		stbi_image_free(texture_data[i]);
 }

@@ -27,6 +27,8 @@ public:
 	inline glm::ivec2 GetViewportSize()				const { return m_ViewportSize; }
 
 	inline glm::mat4 GetViewProjection()			const { return m_Projection * m_View; }		// PxV since OGL is column-major, though in DX should be VxP (careful! TODO!)
+	inline glm::mat4 GetView()						const { return m_View; }
+	inline glm::mat4 GetProjection()				const { return m_Projection; }
 
 public:
 

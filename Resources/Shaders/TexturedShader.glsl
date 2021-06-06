@@ -26,7 +26,6 @@ layout(std140, binding = 0) uniform ub_CameraData
 };
 
 // --- Uniforms ---
-uniform mat4 u_ViewProjection = mat4(1.0);
 uniform mat4 u_Model = mat4(1.0);
 
 // --- MAIN ---

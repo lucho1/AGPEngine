@@ -51,6 +51,7 @@ public:
 
 	// Needs an already-bound shader!
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertex_array, const glm::mat4& transform = glm::mat4(1.0f));
+	static void DrawSkyboxCubemap(const Ref<VertexArray>& vertex_array, uint index_count);
 
 	// Needs an already-bound shader!
 	static void SubmitModel(const Ref<Shader>& shader, const Ref<Model>& model);
