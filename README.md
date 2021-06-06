@@ -14,7 +14,7 @@ The engines have several panels through which to interact with the scene:
     - At the right:
         - Info: For generic app information such as FPS or Memory Usage.
         - Resources: To check the resources in the scene and their usage
-        - Renderer: For app's renderer information, hardware information and other options. From here, we can chose to show the lights debug spheres, the rendering type or the GBuffer texture to display. Also, from here we can modify a couple of values of the bloom effect as well as visualize it.
+        - Renderer: For app's renderer information, hardware information and other options. From here, we can chose to show the lights debug spheres, the rendering type or the GBuffer texture to display. Also, from here we can modify a couple of values of the bloom effect as well as visualize it. In addition, some settings for the skybox are available.
 
     - At the center:
         - Scene: The viewport showing the scene. In here, we can move the camera
@@ -38,7 +38,7 @@ Finally, it is important to state the camera controls in order to use the Editor
     - Camera Movement & Modification
     - Models loading from code
     - Nice UI with File Dialogues to load textures :D
-    - Own internal systems
+    - Own internal systems (we recommend to check the function Renderer::LoadDefaultTextures() as in there we create default textures with an only pixel from a HEX code)
     - OpenGL 4.6 with GLAD 4.6
     - Memory Metrics and FPS count :D
     - Uniform and Shader-Uniform Buffers (for camera and lighting)
@@ -51,6 +51,7 @@ Note: There are many commits from Lucho Suaya from March-April because we still 
 # Graphics Features
     - Materials Customization featuring Normal Mapping with Bumpiness value modification and Bump Mapping
     - Bloom Effect
+    - Skybox
     - Deferred & Forward Rendering (chose between both)
     - GBuffer view of different textures (including Materials Smoothness Values)
     - Custom Lighting: Add and modify lights
