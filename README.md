@@ -97,3 +97,4 @@ Inactive:
 ![Normal & Bump Mapping Inactive](ReadmeImages/NormalBumpMapImgNO.png)
 
 ## Skybox
+![Skybox](ReadmeImages/Skybox_Gif.mp4)
