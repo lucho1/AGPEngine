@@ -105,3 +105,8 @@ Inactive:
 ![Depth buffer](ReadmeImages/G_Buffer_Depth.png)
 ![Normal buffer](ReadmeImages/G_Buffer_Normal.png)
 ![Position buffer](ReadmeImages/G_Buffer_Position.png)
+
+## Deferred rendering
+
+![Deferred rendering](ReadmeImages/Deferred_Rendering.png)
+![Forward rendering](ReadmeImages/Forward_Rendering.png)
