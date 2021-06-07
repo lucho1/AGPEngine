@@ -74,7 +74,26 @@ On the other side, the Skybox Shader handles the rendering of the Skybox, which 
 
 Finally, we have the shaders used for the bloom effect. They are 2 shaders, one used to blur the brighter parts of the image resulting from rendering all the scenes (from the previous shaders), and another one to blend the resulting blurred image with the image resulting from rendering. There are a couple of values in the Rendering Panel that allow to modify and visualize the bloom effect, but some settings can be also modified from this shaders, for instance, the matrix of weights used to blur.
 
-# FALTA
-Bump Map?
-Renders from POV?
-Skybox?
+# SCREENSHOTS
+## Bloom Effect
+Effect Active:
+![Bloom Active](ReadmeImages/Bloom.png)
+
+Bloom Brightness Pass:
+![Bloom Brightness](ReadmeImages/BloomBrightImg.png)
+
+Blurry Pass (Bloom Blur):
+![Bloom Blur](ReadmeImages/BloomBlurred.png)
+
+Effect Inactive:
+![Bloom Inactive](ReadmeImages/BloomNO.png)
+
+## Normal & Relief/Bump/Parallax Mapping
+Active, different values on each image:
+![Normal & Bump Mapping](ReadmeImages/NormalBumpMapImg.png)
+![Normal & Bump Mapping 2](ReadmeImages/NormalBumpMapImg2.png)
+
+Inactive:
+![Normal & Bump Mapping Inactive](ReadmeImages/NormalBumpMapImgNO.png)
+
+## Skybox
