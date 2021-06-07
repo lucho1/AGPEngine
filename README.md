@@ -77,43 +77,69 @@ Finally, we have the shaders used for the bloom effect. They are 2 shaders, one 
 # SCREENSHOTS
 ## Bloom Effect
 **Effect Active**:
-![Bloom Active](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Bloom.PNG){:height="50%" width="50%"}
 
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Bloom.PNG" alt="BloomActive" width="767" height="400">
+</p>
+ 
 **Bloom Brightness Pass:**
-![Bloom Brightness](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomBrightImg.PNG)
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomBrightImg.PNG" alt="Bloom Brightness" width="767" height="400">
+</p>
 
 **Blurry Pass (Bloom Blur):**
-![Bloom Blur](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomBlurred.PNG)
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomBlurred.PNG" alt="Bloom Blur" width="767" height="400">
+</p>
 
 **Effect Inactive:**
-![Bloom Inactive](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomNO.PNG)
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomNO.PNG" alt="Bloom Inactive" width="767" height="400">
+</p>
 
 
 ---  
 ## Normal & Relief/Bump/Parallax Mapping
 **Active, different values on each image:**
-![Normal & Bump Mapping](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImg.PNG)
-![Normal & Bump Mapping 2](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImg2.PNG)
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImg.PNG" alt="Normal & Bump Mapping" width="767" height="400">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImg2.PNG" alt="Normal & Bump Mapping 2" width="767" height="400">
+</p>
 
 **Inactive:**
-![Normal & Bump Mapping Inactive](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImgNO.PNG)
+ 
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImgNO.PNG" alt="Normal & Bump Mapping Inactive" width="767" height="400">
+</p>
+
 
 
 ---
 ## Skybox
-![Skybox](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Skybox_Gif.gif)
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Skybox_Gif.gif" alt="Skybox">
+</p>
+ 
 
 
 ---  
 ## Deferred Rendering
 **G Buffer:**
 
-![Color buffer](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Color.PNG)
-![Depth buffer](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Depth.PNG)
-![Normal buffer](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Normal.PNG)
-![Position buffer](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Position.PNG)
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Color.PNG" alt="Color Buffer" width="275" height="332">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Depth.PNG" alt="Depth Buffer" width="275" height="332">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Normal.PNG" alt="Normal Buffer" width="275" height="332">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Position.PNG" alt="Position Buffer" width="275" height="332">
+</p>
 
 **Deferred vs. Forward:**
 
-![Deferred rendering](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Deferred_Rendering.PNG)
-![Forward rendering](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Forward_Rendering.PNG)
+<p align="center">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Deferred_Rendering.PNG" alt="Deferred Rendering" width="275" height="332">
+<img src="https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Forward_Rendering.PNG" alt="Forward Rendering" width="275" height="332">
+</p>
