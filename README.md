@@ -77,7 +77,7 @@ Finally, we have the shaders used for the bloom effect. They are 2 shaders, one 
 # SCREENSHOTS
 ## Bloom Effect
 Effect Active:
-![Bloom Active](/ReadmeImages/Bloom.png)
+![Bloom Active](/ReadmeImages/Bloom.PNGraw=true "Bloom Active")
 
 Bloom Brightness Pass:
 ![Bloom Brightness](ReadmeImages/BloomBrightImg.png)
