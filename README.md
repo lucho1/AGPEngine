@@ -14,7 +14,7 @@ The engines have several panels through which to interact with the scene:
     - At the right:
         - Info: For generic app information such as FPS or Memory Usage.
         - Resources: To check the resources in the scene and their usage
-        - Renderer: For app's renderer information, hardware information and other options. From here, we can chose to show the lights debug spheres, the rendering type or the GBuffer texture to display. Also, from here we can modify a couple of values of the bloom effect as well as visualize it. In addition, some settings for the skybox are available.
+        - Renderer: For app's renderer information, hardware information and other options. From here, we can chose to show the lights debug spheres, the rendering type or the GBuffer texture to display. Also, from here we can modify a couple of values of the bloom effect as well as visualize it. In addition, some settings for the skybox are available (changing the textures might be a little tricky, check 'Graphic Features' section).
 
     - At the center:
         - Scene: The viewport showing the scene. In here, we can move the camera
@@ -49,9 +49,9 @@ Finally, it is important to state the camera controls in order to use the Editor
 Note: There are many commits from Lucho Suaya from March-April because we still didn't knew that it could be done in couples, then when we agreed to go together, that's why Joan made the biggest part of deferred rendering.
 
 # Graphics Features
-    - Materials Customization featuring Normal Mapping with Bumpiness value modification and Bump Mapping
+    - Materials Customization featuring Normal Mapping with Bumpiness value modification and Bump Mapping with Heightscale & Layers values modification
     - Bloom Effect
-    - Skybox
+    - Skybox (to change its textures, *sustitute* the images inside "Resources/Textures/Skybox" with others with the *same name* and restart the engine)
     - Deferred & Forward Rendering (chose between both)
     - GBuffer view of different textures (including Materials Smoothness Values)
     - Custom Lighting: Add and modify lights
@@ -69,6 +69,8 @@ The Texture Shader is similar but it doesn't supports lighting, it fills the tex
 Then, the Deferred Lighting Shader is the one used for lighting in Deferred Rendering, it gets the gBuffer textures and builds up the final scene appearance by lighting it. As for it, it doesn't has material information, but as it has lighting information, it uses shader-storage uniform buffers and uniform ones as well (for camera data).
 
 We can think of the Lighting Shader as the Forward Rendering Shader and the other two as the first and second passes of the Deferred Rendering.
+
+On the other side, the Skybox Shader handles the rendering of the Skybox, which is drawn before any object in the scene, both for forward and deferred rendering.
 
 Finally, we have the shaders used for the bloom effect. They are 2 shaders, one used to blur the brighter parts of the image resulting from rendering all the scenes (from the previous shaders), and another one to blend the resulting blurred image with the image resulting from rendering. There are a couple of values in the Rendering Panel that allow to modify and visualize the bloom effect, but some settings can be also modified from this shaders, for instance, the matrix of weights used to blur.
 
