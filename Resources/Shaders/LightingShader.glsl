@@ -157,6 +157,8 @@ vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
 }
 
 
+
+// ------------------------------------------ RELIEF MAP CALCULATION -------------------------------------
 vec2 CalculateParallaxMapping(vec2 tcoords, vec3 view)
 {
 	// 8 & 32 values are like the max & min depth layers for parallax, change it as you see fit
@@ -190,6 +192,7 @@ vec2 CalculateParallaxMapping(vec2 tcoords, vec3 view)
 	vec2 ret = prev_tcoords * weight + current_tcoords * (1.0 - weight);
 	return ret;
 }
+
 
 
 // ------------------------------------------------ MAIN -------------------------------------------------
