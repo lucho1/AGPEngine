@@ -77,7 +77,7 @@ Finally, we have the shaders used for the bloom effect. They are 2 shaders, one 
 # SCREENSHOTS
 ## Bloom Effect
 **Effect Active**:
-![Bloom Active](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Bloom.PNG)
+![Bloom Active](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Bloom.PNG){:height="50%" width="50%"}
 
 **Bloom Brightness Pass:**
 ![Bloom Brightness](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomBrightImg.PNG)
