@@ -76,37 +76,44 @@ Finally, we have the shaders used for the bloom effect. They are 2 shaders, one 
 
 # SCREENSHOTS
 ## Bloom Effect
-Effect Active:
-![Bloom Active](/ReadmeImages/Bloom.PNGraw=true "Bloom Active")
+**Effect Active**:
+![Bloom Active](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Bloom.PNG)
 
-Bloom Brightness Pass:
-![Bloom Brightness](ReadmeImages/BloomBrightImg.png)
+**Bloom Brightness Pass:**
+![Bloom Brightness](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomBrightImg.PNG)
 
-Blurry Pass (Bloom Blur):
-![Bloom Blur](ReadmeImages/BloomBlurred.png)
+**Blurry Pass (Bloom Blur):**
+![Bloom Blur](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomBlurred.PNG)
 
-Effect Inactive:
-![Bloom Inactive](ReadmeImages/BloomNO.png)
+**Effect Inactive:**
+![Bloom Inactive](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/BloomNO.PNG)
 
+
+---  
 ## Normal & Relief/Bump/Parallax Mapping
-Active, different values on each image:
-![Normal & Bump Mapping](ReadmeImages/NormalBumpMapImg.png)
-![Normal & Bump Mapping 2](ReadmeImages/NormalBumpMapImg2.png)
+**Active, different values on each image:**
+![Normal & Bump Mapping](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImg.PNG)
+![Normal & Bump Mapping 2](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImg2.PNG)
 
-Inactive:
-![Normal & Bump Mapping Inactive](ReadmeImages/NormalBumpMapImgNO.png)
+**Inactive:**
+![Normal & Bump Mapping Inactive](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/NormalBumpMapImgNO.PNG)
 
+
+---
 ## Skybox
-![Skybox](ReadmeImages/Skybox_Gif.mp4)
+![Skybox](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Skybox_Gif.gif)
 
-## G Buffer
 
-![Color buffer](ReadmeImages/G_Buffer_Color.png)
-![Depth buffer](ReadmeImages/G_Buffer_Depth.png)
-![Normal buffer](ReadmeImages/G_Buffer_Normal.png)
-![Position buffer](ReadmeImages/G_Buffer_Position.png)
+---  
+## Deferred Rendering
+**G Buffer:**
 
-## Deferred rendering
+![Color buffer](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Color.PNG)
+![Depth buffer](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Depth.PNG)
+![Normal buffer](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Normal.PNG)
+![Position buffer](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/G_Buffer_Position.PNG)
 
-![Deferred rendering](ReadmeImages/Deferred_Rendering.png)
-![Forward rendering](ReadmeImages/Forward_Rendering.png)
+**Deferred vs. Forward:**
+
+![Deferred rendering](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Deferred_Rendering.PNG)
+![Forward rendering](https://raw.githubusercontent.com/lucho1/AGPEngine/main/ReadmeImages/Forward_Rendering.PNG)
