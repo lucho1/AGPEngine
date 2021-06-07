@@ -218,8 +218,10 @@ void main()
 	//color = vec4(normal_vec, 1.0);
 
 	float bright = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
-	if(bright > 1.0)
-		brightness = color;
-	else
-		brightness = vec4(0.0, 0.0, 0.0, 1.0);
+	brightness = color * smoothstep(1.0, 1.1, bright);
+
+	//if(bright > 1.0)
+	//	brightness = color;
+	//else
+	//	brightness = vec4(0.0, 0.0, 0.0, 1.0);
 }
