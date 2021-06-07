@@ -176,6 +176,9 @@ void Sandbox::OnUpdate(float dt)
         set_directionals = true;
     }
 
+    // Skybox
+    if (m_RenderSkybox && !m_DeferredRendering)
+        RenderSkybox();
 
     Renderer::BeginScene(shader, set_directionals);
     
@@ -188,11 +191,7 @@ void Sandbox::OnUpdate(float dt)
         Renderer::DrawLightsSpheres(shader);
 
     // End Scene
-    Renderer::EndScene(shader);
-
-    // Skybox
-    if (m_RenderSkybox && !m_DeferredRendering)
-        RenderSkybox();
+    Renderer::EndScene(shader);    
 
     m_EditorFramebuffer->Unbind();
 
