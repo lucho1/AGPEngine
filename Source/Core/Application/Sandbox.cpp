@@ -696,9 +696,9 @@ void Sandbox::DrawMeshMaterials(const Mesh* mesh, std::vector<uint>& materials_s
         std::string sm_str = std::string("###smoothness" + std::to_string(meshindex_uitexturebtn));
         EditorUI::DrawSlider("Smoothness", sm_str.c_str(), &mat->Smoothness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
         std::string bmp_str = std::string("###bumpscale" + std::to_string(meshindex_uitexturebtn));
-        EditorUI::DrawDragFloat("Bumpiness", bmp_str.c_str(), &mat->Bumpiness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.01f, 0.1f, 2.0f);
+        EditorUI::DrawDragFloat("Bumpiness", bmp_str.c_str(), &mat->Bumpiness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.01f, 0.1f, 5.0f);
         std::string heightsc_str = std::string("###heightscale" + std::to_string(meshindex_uitexturebtn));
-        EditorUI::DrawSlider("Bump Height", heightsc_str.c_str(), &mat->Heightscale, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
+        EditorUI::DrawSlider("Bump Height", heightsc_str.c_str(), &mat->Heightscale, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 5.0f);
         std::string pxlayers_str = std::string("###parxlayers" + std::to_string(meshindex_uitexturebtn));
         EditorUI::DrawDragFloat("Bump Layers", pxlayers_str.c_str(), &mat->ParallaxLayers, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 1.0f, 10.0f, 1000.0f);
 
