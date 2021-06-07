@@ -110,11 +110,11 @@ layout(std430, binding = 0) buffer ssb_Lights // PLights SSBO
 // --- Material Struct & Uniform ---
 struct Material
 {
-	float Smoothness, Bumpiness;
+	float Smoothness, Bumpiness, Heighscale, ParallaxLayers;
 	vec4 AlbedoColor;
 };
 
-uniform Material u_Material = Material(1.0, 1.0, vec4(1.0));
+uniform Material u_Material = Material(1.0, 1.0, 0.1, 32.0, vec4(1.0));
 uniform sampler2D u_Albedo, u_Normal, u_Bump;
 
 
@@ -160,12 +160,12 @@ vec4 CalculateLighting(PointLight light, vec3 normal, vec3 view)
 vec2 CalculateParallaxMapping(vec2 tcoords, vec3 view)
 {
 	// 8 & 32 values are like the max & min depth layers for parallax, change it as you see fit
-	float layers_num = mix(32.0, 8.0, max(dot(vec3(0.0, 0.0, 1.0), view), 0.0));
+	float layers_num = mix(u_Material.ParallaxLayers, 8.0, max(dot(vec3(0.0, 0.0, 1.0), view), 0.0));
 
     // Layers Depth & TCoords Shift
     float layer_depth = 1.0 / layers_num;
     float current_layer_depth = 0.0;
-    vec2 P = view.xy * 0.1; // TODO: HEIGHT_SCALE!
+    vec2 P = view.xy * u_Material.Heighscale; // TODO: HEIGHT_SCALE!
     vec2 tcoords_shift = P / layers_num;
 
 	// Perform Parallax Mapping

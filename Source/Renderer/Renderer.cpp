@@ -247,6 +247,13 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 	shader->SetUniformVec4("u_Material.AlbedoColor", mesh_mat->AlbedoColor);
 	shader->SetUniformFloat("u_Material.Smoothness", mesh_mat->Smoothness);
 	shader->SetUniformFloat("u_Material.Bumpiness", mesh_mat->Bumpiness);
+	shader->SetUniformFloat("u_Material.Heighscale", mesh_mat->Heightscale);
+	shader->SetUniformFloat("u_Material.ParallaxLayers", mesh_mat->ParallaxLayers);
+
+	if (mesh_mat->IsTwoSided)
+		RenderCommand::SetFaceCulling(false);
+	else
+		RenderCommand::SetFaceCulling(true);
 
 	// -- Draw Call & Unbinds --
 	mesh->m_VertexArray->Bind();
@@ -256,6 +263,7 @@ void Renderer::RenderMesh(const Ref<Shader>& shader, const Mesh* mesh, const glm
 	Renderer::UnbindTexture(bump_binding, bump);
 	Renderer::UnbindTexture(norm_binding, normal);
 	Renderer::UnbindTexture(alb_binding, albedo);
+	RenderCommand::SetFaceCulling(false);
 }
 
 

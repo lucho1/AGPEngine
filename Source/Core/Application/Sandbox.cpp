@@ -678,6 +678,7 @@ void Sandbox::DrawMeshMaterials(const Mesh* mesh, std::vector<uint>& materials_s
         materials_shown.push_back(mesh->GetMaterialIndex());
         Ref<Material> mat = Resources::GetMaterial(mesh->GetMaterialIndex());
         ImGui::NewLine(); ImGui::Text("MATERIAL %i: '%s'", mat->GetID(), mat->GetName().c_str());
+        ImGui::SameLine(); ImGui::Checkbox("Two Sided", &mat->IsTwoSided); ImGui::NewLine();
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20.0f);
 
         // -- Albedo Color --
@@ -691,11 +692,15 @@ void Sandbox::DrawMeshMaterials(const Mesh* mesh, std::vector<uint>& materials_s
         EditorUI::DrawTextureButton(mat->Normal, "Normal", btn_size, meshindex_uitexturebtn, 1);
         EditorUI::DrawTextureButton(mat->Bump, "Bump", btn_size, meshindex_uitexturebtn, 2, 164.0f);
 
-        // -- Smoothness Slider --
+        // -- Sliders --
         std::string sm_str = std::string("###smoothness" + std::to_string(meshindex_uitexturebtn));
         EditorUI::DrawSlider("Smoothness", sm_str.c_str(), &mat->Smoothness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
         std::string bmp_str = std::string("###bumpscale" + std::to_string(meshindex_uitexturebtn));
         EditorUI::DrawDragFloat("Bumpiness", bmp_str.c_str(), &mat->Bumpiness, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.01f, 0.1f, 2.0f);
+        std::string heightsc_str = std::string("###heightscale" + std::to_string(meshindex_uitexturebtn));
+        EditorUI::DrawSlider("Bump Height", heightsc_str.c_str(), &mat->Heightscale, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 0.1f, 1.0f);
+        std::string pxlayers_str = std::string("###parxlayers" + std::to_string(meshindex_uitexturebtn));
+        EditorUI::DrawDragFloat("Bump Layers", pxlayers_str.c_str(), &mat->ParallaxLayers, 20.0f, ImGui::GetContentRegionAvailWidth() / 3.0f, 1.0f, 10.0f, 1000.0f);
 
         ImGui::PopID();
     }

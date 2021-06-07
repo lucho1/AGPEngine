@@ -19,6 +19,9 @@ public:
 	inline static void SetClearColor(const glm::vec3& color)		{ glClearColor(color.r, color.g, color.b, 1.0f); }
 
 	// --- Render Settings ---
+	inline static void SetFaceCulling(bool enable)					{ m_FaceCulling = enable;  enable ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE); glCullFace(GL_BACK); }
+	inline static bool IsFaceCullingEnabled()						{ return m_FaceCulling; }
+
 	inline static void SetBlendingFunc(int s_val, int f_val)		{ glBlendFunc(s_val, f_val); }
 
 	inline static void SetBlending(bool enable)						{ m_BlendEnabled = enable;  enable ? glEnable(GL_BLEND) : glDisable(GL_BLEND); }
@@ -63,7 +66,7 @@ public:
 
 private:
 
-	static bool m_BlendEnabled, m_DepthTestEnabled, m_ScissorTestEnabled, m_CubemapSeamless;
+	static bool m_BlendEnabled, m_DepthTestEnabled, m_ScissorTestEnabled, m_CubemapSeamless, m_FaceCulling;
 };
 
 

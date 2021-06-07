@@ -168,7 +168,7 @@ const Ref<Material>* MeshImporter::ProcessAssimpMaterial(aiMaterial* ai_material
 
     // -- Load Material Variables --
     ai_real shininess = 0.1f, opacity = 1.0f, bumpscale = 1.0f;
-    ai_int two_sided = 0;
+    ai_int two_sided = 1;
     aiColor3D diffuse, emissive, specular;
 
     //ai_material->Get(AI_MATKEY_COLOR_SPECULAR, specular); <- Useless
