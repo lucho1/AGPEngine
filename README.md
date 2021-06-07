@@ -98,3 +98,10 @@ Inactive:
 
 ## Skybox
 ![Skybox](ReadmeImages/Skybox_Gif.mp4)
+
+## G Buffer
+
+![Color buffer](ReadmeImages/G_Buffer_Color.png)
+![Depth buffer](ReadmeImages/G_Buffer_Depth.png)
+![Normal buffer](ReadmeImages/G_Buffer_Normal.png)
+![Position buffer](ReadmeImages/G_Buffer_Position.png)
