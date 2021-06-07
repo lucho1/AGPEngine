@@ -56,10 +56,11 @@ private:
 	Ref<Framebuffer> m_DeferredFramebuffer;
 
 	// Bloom
-	Ref<Framebuffer> m_BlurPingPongFramebuffer, m_BlurFinalFramebuffer;
+	Ref<Framebuffer> m_BlurPingPongFramebuffer[2], m_BlurFinalFramebuffer;
 	Ref<Shader> m_BlurShader, m_FinalBloomShader;
 	float m_BloomExposure = 1.0f, m_BloomHDRGamma = 2.2f;
-	int m_BloomBlurAmount = 10;
+	int m_BloomBlurAmount = 5, m_BloomBlurIterations = 10;
+	bool m_GammaCorrection = false, m_ToneMapping = false;
 
 	// Skybox
 	Ref<VertexArray> m_SkyboxVArray;

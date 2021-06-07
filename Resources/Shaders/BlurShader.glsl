@@ -24,6 +24,7 @@ in vec2 v_TexCoord;
 
 uniform sampler2D u_Texture;
 uniform bool u_HorizontalPass;
+uniform int u_BlurAmount = 5;
 
 float Weights[5] = float[] (0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
 
@@ -34,7 +35,7 @@ void main()
 
     if(u_HorizontalPass)
     {
-        for(int i = 1; i < 5; ++i)
+        for(int i = 1; i < u_BlurAmount; ++i)
         {
             res += texture(u_Texture, v_TexCoord + vec2(offset.x * i, 0.0)).rgb * Weights[i];
             res += texture(u_Texture, v_TexCoord - vec2(offset.x * i, 0.0)).rgb * Weights[i];
@@ -42,7 +43,7 @@ void main()
     }
     else
     {
-        for(int i = 1; i < 5; ++i)
+        for(int i = 1; i < u_BlurAmount; ++i)
          {
              res += texture(u_Texture, v_TexCoord + vec2(0.0, offset.y * i)).rgb * Weights[i];
              res += texture(u_Texture, v_TexCoord - vec2(0.0, offset.y * i)).rgb * Weights[i];
